@@ -9,20 +9,19 @@
 #define INITIAL_NODES_NUMBER 32
 #endif
 
-typedef int Time;
+typedef int TimeType;
 typedef int NodeId;
 typedef struct AonGraph AonGraph, *AonGraphPtr;
 typedef struct ActivityNode ActivityNode, *ActivityNodePtr;
 typedef struct AdjacencyList AdjacencyList, *AdjacencyListPtr;
 struct ActivityNode {
-    Time duration;
-    Time earlyStart;
-    Time lateStart;
-    Time slack;
+    TimeType duration;
+    TimeType earlyStart;
+    TimeType lateStart;
+    TimeType slack;
     NodeId path;
     int inDegree;
     AdjacencyListPtr pSuccessorList;
-    ActivityNodePtr next;
 };
 struct AdjacencyList {
     NodeId id;
@@ -38,7 +37,7 @@ AonGraphPtr CreateAonGraph(int nodeNum, const int *activityDurations);
 
 void DeleteAonGraph(AonGraphPtr pAonGraph);
 
-void AddActivityNode(AonGraphPtr pAonGraph, Time duration);
+void AddActivityNode(AonGraphPtr pAonGraph, TimeType duration);
 
 void EstablishDependency(AonGraphPtr pAonGraph, NodeId start, NodeId end);
 

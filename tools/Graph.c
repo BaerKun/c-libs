@@ -1,9 +1,16 @@
 #include "Graph.h"
-#include "Queue.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "HeapForGraph.h"
+#include "QueueForGraph.h"
 
-typedef struct Heap {
+typedef struct {
+    int front;
+    int rear;
+    VertexId *elements;
+}Queue;
+
+typedef struct {
     int size;
     VertexPtr *elements;
 } Heap, *HeapPtr;
@@ -12,25 +19,16 @@ static void InitIndegree(GraphPtr pGraph, int inDegree[]) {
     VertexId vertexId;
 
     for (vertexId = 0; vertexId < pGraph->vertexNum; vertexId++)
-        inDegree[vertexId] = pGraph->vertexes[vertexId].inDegree;
+        inDegree[vertexId] = pGraph->vertices[vertexId].inDegree;
 }
 
 static void InitGraph(GraphPtr pGraph) {
     VertexId vertexId;
 
     for (vertexId = 0; vertexId < pGraph->vertexNum; vertexId++) {
-        pGraph->vertexes[vertexId].path = INFINITY;
-        pGraph->vertexes[vertexId].distance = INFINITY;
+        pGraph->vertices[vertexId].path = INFINITY;
+        pGraph->vertices[vertexId].distance = INFINITY;
     }
-}
-
-static HeapPtr G_CreateHeap(int capacity) {
-    HeapPtr pHeap = malloc(sizeof(Heap));
-
-    pHeap->size = 0;
-    pHeap->elements = malloc((capacity + 1) * sizeof(VertexPtr));
-
-    return pHeap;
 }
 
 static void HeapInsert(HeapPtr pHeap, VertexPtr pVertex) {
@@ -63,11 +61,6 @@ static VertexPtr DeleteMin(HeapPtr pHeap) {
     return output;
 }
 
-static void DeleteHeap(HeapPtr pHeap) {
-    free(pHeap->elements);
-    free(pHeap);
-}
-
 static VertexId copyPath(GraphPtr pGraph, VertexId startId, VertexId endId, VertexId copyArray[]) {
     if (startId == endId) {
         *copyArray = startId;
@@ -79,23 +72,23 @@ static VertexId copyPath(GraphPtr pGraph, VertexId startId, VertexId endId, Vert
         return 0;
     }
 
-    VertexId thisIndex = copyPath(pGraph, startId, pGraph->vertexes[endId].path, copyArray);
+    VertexId thisIndex = copyPath(pGraph, startId, pGraph->vertices[endId].path, copyArray);
     copyArray[thisIndex] = endId;
 
     return thisIndex + 1;
 }
 
 GraphPtr CreateGraph(int vertexNum) {
-    VertexPtr pVertex, vertexes;
+    VertexPtr pVertex, vertices;
     GraphPtr graph = malloc(sizeof(Graph));
 
-    for (graph->capacity = INITIAL_NODES_NUMBER; vertexNum > graph->capacity; graph->capacity *= 2);
-    vertexes = malloc(sizeof(Vertex) * graph->capacity);
+    for (graph->capacity = INITIAL_VERTICES_NUMBER; vertexNum > graph->capacity; graph->capacity *= 2);
+    vertices = malloc(sizeof(Vertex) * graph->capacity);
     graph->vertexNum = vertexNum;
-    graph->vertexes = vertexes;
+    graph->vertices = vertices;
 
     for (VertexId vertexId = 0; vertexId < vertexNum; vertexId++) {
-        pVertex = vertexes + vertexId;
+        pVertex = vertices + vertexId;
         pVertex->distance = INFINITY;
         pVertex->path = INFINITY;
         pVertex->pAdjacencyList = NULL;
@@ -108,13 +101,15 @@ GraphPtr CreateGraph(int vertexNum) {
 void DeleteGraph(GraphPtr pGraph) {
     VertexId vertexId;
     AdjacencyListPtr pAdjacencyList, pNextList;
+
     for (vertexId = 0; vertexId < pGraph->vertexNum; vertexId++) {
-        for (pAdjacencyList = pGraph->vertexes[vertexId].pAdjacencyList; pAdjacencyList; pAdjacencyList = pNextList) {
+        for (pAdjacencyList = pGraph->vertices[vertexId].pAdjacencyList; pAdjacencyList; pAdjacencyList = pNextList) {
             pNextList = pAdjacencyList->next;
             free(pAdjacencyList);
         }
     }
-    free(pGraph->vertexes);
+
+    free(pGraph->vertices);
     free(pGraph);
 }
 
@@ -128,7 +123,7 @@ void Connect(GraphPtr pGraph, VertexId startId, VertexId endId, int weight, int 
         Connect(pGraph, endId, startId, weight, 1);
 
     AdjacencyListPtr pNewList;
-    VertexPtr pStartVertex = pGraph->vertexes + startId;
+    VertexPtr pStartVertex = pGraph->vertices + startId;
 
     for (pNewList = pStartVertex->pAdjacencyList; pNewList && pNewList->id != endId; pNewList = pNewList->next);
     if (pNewList)
@@ -139,7 +134,7 @@ void Connect(GraphPtr pGraph, VertexId startId, VertexId endId, int weight, int 
     pNewList->weight = weight;
     pNewList->next = pStartVertex->pAdjacencyList;
     pStartVertex->pAdjacencyList = pNewList;
-    pGraph->vertexes[endId].inDegree++;
+    pGraph->vertices[endId].inDegree++;
 }
 
 void TopSort(GraphPtr pGraph, VertexId copyArray[]) {
@@ -151,137 +146,129 @@ void TopSort(GraphPtr pGraph, VertexId copyArray[]) {
     VertexId vertexId;
     AdjacencyListPtr pAdjacencyList;
     int inDegree[pGraph->vertexNum];
-    Queue pQueue = CreateQueue(pGraph->vertexNum);
+    Queue queue;
     int counter = 0;
 
+    InitQueue(queue, pGraph->vertexNum, VertexId);
     InitIndegree(pGraph, inDegree);
     for (vertexId = 0; vertexId < pGraph->vertexNum; vertexId++) {
         if (!inDegree[vertexId])
-            Enqueue(pQueue, vertexId);
+            Enqueue(queue, vertexId);
     }
 
-    while (pQueue->size) {
-        vertexId = Dequeue(pQueue);
+    while (queue.front != queue.rear) {
+        vertexId = Dequeue(queue);
         copyArray[counter++] = vertexId;
-        for (pAdjacencyList = pGraph->vertexes[vertexId].pAdjacencyList; pAdjacencyList; pAdjacencyList = pAdjacencyList->next)
+        for (pAdjacencyList = pGraph->vertices[vertexId].pAdjacencyList; pAdjacencyList; pAdjacencyList = pAdjacencyList->next)
             if (!--inDegree[pAdjacencyList->id])
-                Enqueue(pQueue, pAdjacencyList->id);
+                Enqueue(queue, pAdjacencyList->id);
     }
 
     if (counter != pGraph->vertexNum)
         fputs("TopSort:HasCycle\n", stderr);
-
-    DeleteQueue(pQueue);
 }
 
 void BuildUnweightedPath(GraphPtr pGraph, VertexId startId, VertexId endId) {
     VertexId vertexId, adjacentVertexId;
     WeightType distance;
-    VertexPtr vertexes, pVertex;
+    VertexPtr vertices, pVertex;
     AdjacencyListPtr pAdjacencyList;
-    Queue pQueue = CreateQueue(pGraph->vertexNum);
-    vertexes = pGraph->vertexes;
+    Queue queue;
+    vertices = pGraph->vertices;
 
+    InitQueue(queue, pGraph->vertexNum, VertexId);
     InitGraph(pGraph);
-    Enqueue(pQueue, startId);
-    vertexes[startId].distance = 0;
+    Enqueue(queue, startId);
+    vertices[startId].distance = 0;
 
-    while (pQueue->size) {
-        vertexId = Dequeue(pQueue);
-        distance = vertexes[vertexId].distance + 1;
-        for (pAdjacencyList = vertexes[vertexId].pAdjacencyList; pAdjacencyList; pAdjacencyList = pAdjacencyList->next) {
+    while (queue.front != queue.rear) {
+        vertexId = Dequeue(queue);
+        distance = vertices[vertexId].distance + 1;
+        for (pAdjacencyList = vertices[vertexId].pAdjacencyList; pAdjacencyList; pAdjacencyList = pAdjacencyList->next) {
             adjacentVertexId = pAdjacencyList->id;
-            pVertex = vertexes + adjacentVertexId;
+            pVertex = vertices + adjacentVertexId;
             if (pVertex->distance == INFINITY) {
                 pVertex->distance = distance;
                 pVertex->path = vertexId;
                 if (adjacentVertexId == endId)
-                    goto END;
-                Enqueue(pQueue, adjacentVertexId);
+                    return;
+                Enqueue(queue, adjacentVertexId);
 
             }
         }
     }
-    END:
-    DeleteQueue(pQueue);
 }
 
 // 无负权值
 void BuildNonnegWeightedPath(GraphPtr pGraph, VertexId startId, VertexId endId) {
     VertexId vertexId, adjacentVertexId;
     AdjacencyListPtr pAdjacencyList;
-    VertexPtr vertexes, pVertex, pAdjacentVertex;
+    VertexPtr vertices, pVertex, pAdjacentVertex;
     char hasKnown[pGraph->vertexNum];
-    HeapPtr pHeap;
+    Heap heap;
 
-    pHeap = G_CreateHeap(pGraph->vertexNum);
-    vertexes = pGraph->vertexes;
+    InitHeap(heap, pGraph->vertexNum, VertexPtr);
+    vertices = pGraph->vertices;
 
     for (vertexId = 0; vertexId < pGraph->vertexNum; vertexId++)
         hasKnown[vertexId] = 0;
     InitGraph(pGraph);
-    vertexes[startId].distance = 0;
-    HeapInsert(pHeap, vertexes + startId);
+    vertices[startId].distance = 0;
+    HeapInsert(&heap, vertices + startId);
 
-    while (pHeap->size) {
-        pVertex = DeleteMin(pHeap);
-        vertexId = (VertexId) (pVertex - vertexes);
+    while (heap.size) {
+        pVertex = DeleteMin(&heap);
+        vertexId = (VertexId) (pVertex - vertices);
         if (vertexId == endId)
-            goto END;
+            return;
         hasKnown[vertexId] = 1;
         for (pAdjacencyList = pVertex->pAdjacencyList; pAdjacencyList; pAdjacencyList = pAdjacencyList->next) {
             adjacentVertexId = pAdjacencyList->id;
-            pAdjacentVertex = vertexes + adjacentVertexId;
+            pAdjacentVertex = vertices + adjacentVertexId;
             if (hasKnown[adjacentVertexId] || pAdjacentVertex->distance <= pVertex->distance + pAdjacencyList->weight)
                 continue;
             pAdjacentVertex->distance = pVertex->distance + pAdjacencyList->weight;
             pAdjacentVertex->path = vertexId;
-            HeapInsert(pHeap, pAdjacentVertex);
+            HeapInsert(&heap, pAdjacentVertex);
 
         }
     }
-
-    END:
-    DeleteHeap(pHeap);
 }
 
 // 无负值圈
 void BuildWeightedPath(GraphPtr pGraph, VertexId startId) {
     VertexId vertexId, adjacentVertexId;
     AdjacencyListPtr pAdjacencyList;
-    VertexPtr vertexes, pVertex, pAdjacentVertex;
+    VertexPtr vertices, pVertex, pAdjacentVertex;
     char isInQueue[pGraph->vertexNum];
-    Queue pQueue;
+    Queue queue;
+    vertices = pGraph->vertices;
 
-    vertexes = pGraph->vertexes;
-    pQueue = CreateQueue(pGraph->vertexNum);
-
+    InitQueue(queue, pGraph->vertexNum, VertexId);
     for (vertexId = 0; vertexId < pGraph->vertexNum; vertexId++)
         isInQueue[vertexId] = 0;
     InitGraph(pGraph);
-    Enqueue(pQueue, startId);
-    vertexes[startId].distance = 0;
+    Enqueue(queue, startId);
+    vertices[startId].distance = 0;
     isInQueue[startId] = 1;
 
-    while (pQueue->size) {
-        vertexId = Dequeue(pQueue);
-        pVertex = vertexes + vertexId;
+    while (queue.front != queue.rear) {
+        vertexId = Dequeue(queue);
+        pVertex = vertices + vertexId;
         isInQueue[vertexId] = 0;
         for (pAdjacencyList = pVertex->pAdjacencyList; pAdjacencyList; pAdjacencyList = pAdjacencyList->next) {
             adjacentVertexId = pAdjacencyList->id;
-            pAdjacentVertex = vertexes + adjacentVertexId;
+            pAdjacentVertex = vertices + adjacentVertexId;
             if (pAdjacentVertex->distance <= pVertex->distance + pAdjacencyList->weight)
                 continue;
             pAdjacentVertex->distance = pVertex->distance + pAdjacencyList->weight;
             pAdjacentVertex->path = vertexId;
             if (!isInQueue[adjacentVertexId]) {
-                Enqueue(pQueue, adjacentVertexId);
+                Enqueue(queue, adjacentVertexId);
                 isInQueue[adjacentVertexId] = 1;
             }
         }
     }
-
-    DeleteQueue(pQueue);
 }
 
 void CopyPath(GraphPtr pGraph, VertexId copyArray[], VertexId startId, VertexId endId) {
@@ -300,7 +287,7 @@ int HasPath(GraphPtr pGraph, VertexId startId, VertexId endId) {
     }
 
     while (startId != endId) {
-        endId = pGraph->vertexes[endId].path;
+        endId = pGraph->vertices[endId].path;
         if (endId < 0 || endId >= pGraph->vertexNum)
             return 0;
     }
@@ -314,44 +301,43 @@ WeightType GetDistance(GraphPtr pGraph, VertexId vertexId) {
         return 0;
     }
 
-    return pGraph->vertexes[vertexId].distance;
+    return pGraph->vertices[vertexId].distance;
 }
 
 void BuildTopPath(GraphPtr pGraph) {
     VertexId vertexId, adjacentVertexId;
     AdjacencyListPtr pAdjacencyList;
-    VertexPtr vertexes = pGraph->vertexes;
-    Queue pQueue = CreateQueue(pGraph->vertexNum);
+    VertexPtr vertices = pGraph->vertices;
+    Queue queue;
     int inDegree[pGraph->vertexNum];
     int counter = 0;
 
+    InitQueue(queue, pGraph->vertexNum, VertexId);
     InitIndegree(pGraph, inDegree);
     for (vertexId = 0; vertexId < pGraph->vertexNum; vertexId++) {
-        vertexes[vertexId].path = INFINITY;
+        vertices[vertexId].path = INFINITY;
         if (inDegree[vertexId])
-            vertexes[vertexId].distance = INFINITY;
+            vertices[vertexId].distance = INFINITY;
         else {
-            vertexes[vertexId].distance = 0;
-            Enqueue(pQueue, vertexId);
+            vertices[vertexId].distance = 0;
+            Enqueue(queue, vertexId);
         }
     }
 
-    while (pQueue->size) {
+    while (queue.front != queue.rear) {
         counter++;
-        vertexId = Dequeue(pQueue);
-        for (pAdjacencyList = vertexes[vertexId].pAdjacencyList; pAdjacencyList; pAdjacencyList = pAdjacencyList->next) {
+        vertexId = Dequeue(queue);
+        for (pAdjacencyList = vertices[vertexId].pAdjacencyList; pAdjacencyList; pAdjacencyList = pAdjacencyList->next) {
             adjacentVertexId = pAdjacencyList->id;
-            if (vertexes[adjacentVertexId].distance > vertexes[vertexId].distance + pAdjacencyList->weight) {
-                vertexes[adjacentVertexId].distance = vertexes[vertexId].distance + pAdjacencyList->weight;
-                vertexes[adjacentVertexId].path = vertexId;
+            if (vertices[adjacentVertexId].distance > vertices[vertexId].distance + pAdjacencyList->weight) {
+                vertices[adjacentVertexId].distance = vertices[vertexId].distance + pAdjacencyList->weight;
+                vertices[adjacentVertexId].path = vertexId;
             }
             if (!--inDegree[adjacentVertexId])
-                Enqueue(pQueue, adjacentVertexId);
+                Enqueue(queue, adjacentVertexId);
         }
     }
 
     if (counter != pGraph->vertexNum)
         fputs("BuildTopPath:HasCycle\n", stderr);
-
-    DeleteQueue(pQueue);
 }

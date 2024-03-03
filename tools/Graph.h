@@ -12,8 +12,8 @@
 #define INFINITY 0x7fffffff
 #endif
 
-#ifndef INITIAL_NODES_NUMBER
-#define INITIAL_NODES_NUMBER 32
+#ifndef INITIAL_VERTICES_NUMBER
+#define INITIAL_VERTICES_NUMBER 32
 #endif
 
 typedef int VertexId;
@@ -34,7 +34,7 @@ struct AdjacencyList {
 struct Graph {
     int capacity;
     int vertexNum;
-    Vertex *vertexes;
+    Vertex *vertices;
 };
 
 GraphPtr CreateGraph(int vertexNum);
