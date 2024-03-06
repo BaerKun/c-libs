@@ -1,4 +1,4 @@
-#include "DisjSet.h"
+#include "utils/disjiont_set.h"
 
 ClassId Find(ElementType set[], ElementType element) {
     ClassId root;

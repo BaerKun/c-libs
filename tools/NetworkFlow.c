@@ -1,11 +1,6 @@
 #include "NetworkFlow.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define InitHeap(heap, capacity) \
-    VertexPtr elements[capacity];  \
-    heap.size = 0;                  \
-    heap.elements = elements
 
 #define InitQueue(queue, capacity) \
     VertexId elements[capacity];    \

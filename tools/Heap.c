@@ -5,6 +5,7 @@
 static void PercolateDown(HeapElement *array, int father, int len){
     int child, theTop;
     theTop = array[father];
+
     for( ; (child = father << 1) < len; father = child){
         if(child + 1 != len && array[child + 1] < array[child])
             child++;
@@ -37,14 +38,14 @@ void HeapInsert(Heap heap, HeapElement element){
 }
 
 HeapElement DeleteMin(Heap heap){
-    HeapElement theMin;
     if(heap->size == 0){
         fputs("DeleteMin:Empty\n", stderr);
         return MINUS_INFINITY;
     }
-    theMin = heap->elements[1];
+
+    HeapElement theMin = heap->elements[1];
     heap->elements[1] = heap->elements[heap->size];
-    PercolateDown(heap->elements, 1, heap->size--);
+    PercolateDown(heap->elements, 1, heap->size-- + 1);
     return theMin;
 }
 
