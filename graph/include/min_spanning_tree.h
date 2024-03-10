@@ -3,8 +3,8 @@
 
 #include "graph.h"
 
-void PrimMinSpanningTree(GraphPtr pGraph, VertexId root);
+void PrimMinSpanningTree(GraphPtr pGraph, Vertex root, Vertex *parent);
 
-void PrintTree(GraphPtr pGraph, VertexId root);
+void PrintTree(GraphPtr pGraph, Vertex *parent, Vertex root);
 
 #endif //GRAPH_MIN_SPANNING_TREE_H

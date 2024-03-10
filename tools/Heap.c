@@ -45,7 +45,7 @@ HeapElement DeleteMin(Heap heap){
 
     HeapElement theMin = heap->elements[1];
     heap->elements[1] = heap->elements[heap->size];
-    PercolateDown(heap->elements, 1, heap->size-- + 1);
+    PercolateDown(heap->elements, 1, heap->size--);
     return theMin;
 }
 

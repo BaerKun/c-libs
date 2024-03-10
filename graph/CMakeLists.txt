@@ -1,16 +1,21 @@
 cmake_minimum_required(VERSION 3.27)
-project(Graph C)
+project(Graph)
 
 set(CMAKE_C_STANDARD 11)
 
-file(GLOB SOURCES "src/*.c" "src/utils/*.c")
+set(EXECUTABLE_OUTPUT_PATH /Users/bearkun/Desktop/C-codes/graph/bin)
 
-add_library(_graph STATIC ${SOURCES})
+set(LIBRARY_OUTPUT_PATH /Users/bearkun/Desktop/C-codes/graph/lib)
 
-target_include_directories(_graph PRIVATE include)
+include_directories(include)
 
-add_executable(Test tests/test.c)
+link_directories(lib)
 
-target_include_directories(Test PRIVATE include)
+add_subdirectory(src)
 
-target_link_libraries(Test PRIVATE _graph)
+add_subdirectory(example)
+
+add_executable(test tests/test.c)
+
+target_link_libraries(test PRIVATE graph)
+

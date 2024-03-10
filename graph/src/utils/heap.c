@@ -17,13 +17,13 @@ static void PercolateDown(WeightType **heap, int father, int len){
 }
 
 void G_HeapInsert(HeapPtr pHeap, WeightType *pWeight) {
-    WeightType **elements = pHeap->elements;
+    WeightType **elements = pHeap->elements - 1;
     int i, father;
 
     for (i = ++pHeap->size; (father = i >> 1) && *elements[father] > *pWeight; i = father)
-        pHeap->elements[i] = elements[father];
+        elements[i] = elements[father];
 
-    pHeap->elements[i] = pWeight;
+    elements[i] = pWeight;
 }
 
 WeightType *G_DeleteMin(HeapPtr pHeap) {

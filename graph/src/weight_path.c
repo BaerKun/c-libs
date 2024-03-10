@@ -1,74 +1,68 @@
 #include "weight_path.h"
 #include "utils/queue.h"
 #include "utils/heap.h"
-#include <stddef.h>
 
-void BuildNonnegWeightedPath(GraphPtr pGraph, VertexId startId, VertexId endId) {
-    VertexId vertexId, adjacentVertexId;
+void DijkstraWeightedPath(GraphPtr pGraph, Vertex source, Vertex target, Vertex *parent) {
+    Vertex vertex, adjacentVertex;
     EdgePtr pEdge;
-    VertexPtr vertices, pVertex, pAdjacentVertex;
     char hasKnown[pGraph->vertexNum];
+    int distance[pGraph->vertexNum];
     Heap heap;
 
     InitHeap(heap, pGraph->vertexNum);
-    vertices = pGraph->vertices;
 
-    for (vertexId = 0; vertexId < pGraph->vertexNum; vertexId++)
-        hasKnown[vertexId] = 0;
-    InitGraph(pGraph);
-    vertices[startId].distance = 0;
-    G_HeapInsert(&heap, &vertices[startId].distance);
+    for (vertex = 0; vertex < pGraph->vertexNum; vertex++) {
+        hasKnown[vertex] = 0;
+        distance[vertex] = INFINITY;
+    }
+    distance[source] = 0;
+    G_HeapInsert(&heap, distance + source);
 
     while (heap.size) {
-        pVertex = (void *)G_DeleteMin(&heap) - offsetof(Vertex, distance);
-        vertexId = (VertexId) (pVertex - vertices);
-        if (vertexId == endId)
+        vertex = (Vertex) (G_DeleteMin(&heap) - distance);
+        if (vertex == target)
             return;
-        hasKnown[vertexId] = 1;
-        for (pEdge = pVertex->pEdge; pEdge; pEdge = pEdge->next) {
-            adjacentVertexId = pEdge->id;
-            pAdjacentVertex = vertices + adjacentVertexId;
-            if (hasKnown[adjacentVertexId] || pAdjacentVertex->distance <= pVertex->distance + pEdge->weight)
+        hasKnown[vertex] = 1;
+        for (pEdge = pGraph->edges[vertex]; pEdge; pEdge = pEdge->next) {
+            adjacentVertex = pEdge->target;
+            if (hasKnown[adjacentVertex] || distance[adjacentVertex] <= distance[vertex] + pEdge->data.weight)
                 continue;
-            pAdjacentVertex->distance = pVertex->distance + pEdge->weight;
-            pAdjacentVertex->path = vertexId;
-            G_HeapInsert(&heap, &pAdjacentVertex->distance);
-
+            distance[adjacentVertex] = distance[vertex] + pEdge->data.weight;
+            parent[adjacentVertex] = vertex;
+            G_HeapInsert(&heap, distance + adjacentVertex);
         }
     }
 }
 
 // 无负值圈
-void BuildWeightedPath(GraphPtr pGraph, VertexId startId) {
-    VertexId vertexId, adjacentVertexId;
+void WeightedPath(GraphPtr pGraph, Vertex source, Vertex *parent) {
+    Vertex vertex, adjacentVertex;
     EdgePtr pEdge;
-    VertexPtr vertices, pVertex, pAdjacentVertex;
     char isInQueue[pGraph->vertexNum];
+    int distance[pGraph->vertexNum];
     Queue queue;
-    vertices = pGraph->vertices;
 
     InitQueue(queue, pGraph->vertexNum);
-    for (vertexId = 0; vertexId < pGraph->vertexNum; vertexId++)
-        isInQueue[vertexId] = 0;
-    InitGraph(pGraph);
-    Enqueue(queue, startId);
-    vertices[startId].distance = 0;
-    isInQueue[startId] = 1;
+    for (vertex = 0; vertex < pGraph->vertexNum; vertex++) {
+        isInQueue[vertex] = 0;
+        distance[vertex] = INFINITY;
+    }
+    Enqueue(queue, source);
+    distance[source] = 0;
+    isInQueue[source] = 1;
 
     while (queue.front != queue.rear) {
-        vertexId = Dequeue(queue);
-        pVertex = vertices + vertexId;
-        isInQueue[vertexId] = 0;
-        for (pEdge = pVertex->pEdge; pEdge; pEdge = pEdge->next) {
-            adjacentVertexId = pEdge->id;
-            pAdjacentVertex = vertices + adjacentVertexId;
-            if (pAdjacentVertex->distance <= pVertex->distance + pEdge->weight)
+        vertex = Dequeue(queue);
+        isInQueue[vertex] = 0;
+        for (pEdge = pGraph->edges[vertex]; pEdge; pEdge = pEdge->next) {
+            adjacentVertex = pEdge->target;
+            if (distance[adjacentVertex] <= distance[vertex] + pEdge->data.weight)
                 continue;
-            pAdjacentVertex->distance = pVertex->distance + pEdge->weight;
-            pAdjacentVertex->path = vertexId;
-            if (!isInQueue[adjacentVertexId]) {
-                Enqueue(queue, adjacentVertexId);
-                isInQueue[adjacentVertexId] = 1;
+            distance[adjacentVertex] = distance[vertex] + pEdge->data.weight;
+            parent[adjacentVertex] = vertex;
+            if (!isInQueue[adjacentVertex]) {
+                Enqueue(queue, adjacentVertex);
+                isInQueue[adjacentVertex] = 1;
             }
         }
     }

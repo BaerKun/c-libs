@@ -42,8 +42,10 @@ void Calculate24(int array[], int len) {
 
 int main() {
     int n;
+    printf("数字的个数：");
     scanf("%d", &n);
     int array[n];
+    printf("输入数字：");
     for (int i = 0; i < n; i++)
         scanf("%d", array + i);
     Calculate24(array, n);

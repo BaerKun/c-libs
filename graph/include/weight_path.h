@@ -3,9 +3,8 @@
 
 #include "graph.h"
 
-void BuildNonnegWeightedPath(GraphPtr pGraph, VertexId startId, VertexId endId);
+void DijkstraWeightedPath(GraphPtr pGraph, Vertex source, Vertex target, Vertex *parent);
 
-void BuildWeightedPath(GraphPtr pGraph, VertexId startId);
-
+void WeightedPath(GraphPtr pGraph, Vertex source, Vertex *parent);
 
 #endif //GRAPH_WEIGHT_PATH_H

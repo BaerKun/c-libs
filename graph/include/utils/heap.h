@@ -1,12 +1,12 @@
 #ifndef GRAPH_HEAP_H
 #define GRAPH_HEAP_H
 
+#include "graph.h"
+
 #define InitHeap(heap, capacity) \
     WeightType *elements[capacity];  \
     heap.size = 0;                  \
     heap.elements = elements
-
-typedef int WeightType;
 
 typedef struct {
     int size;

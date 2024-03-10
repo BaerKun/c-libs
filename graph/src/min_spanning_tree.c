@@ -1,57 +1,57 @@
 #include "min_spanning_tree.h"
 #include "utils/heap.h"
 #include <stdio.h>
-#include <string.h>
-#include <stddef.h>
 
-static void printTree(GraphPtr pGraph, VertexId root, int level){
-    for(int i = 0; i < level; i++)
-        putchar('\t');
-    printf("%d\n", root);
+static GraphPtr pGlobalGraph;
+static Vertex *globalParent;
+
+static void printTree(Vertex root, int deepth){
+    for(int i = 0; i < deepth; i++)
+        printf("\t");
+    printf("|-%d\n", root);
 
     EdgePtr pEdge;
 
-    for(pEdge = pGraph->vertices[root].pEdge; pEdge; pEdge = pEdge->next){
-        if(pGraph->vertices[pEdge->id].path == root)
-            printTree(pGraph, pEdge->id, level + 1);
-    }
-
+    for(pEdge = pGlobalGraph->edges[root]; pEdge; pEdge = pEdge->next)
+        if(globalParent[pEdge->target] == root)
+            printTree(pEdge->target, deepth + 1);
 }
 
-void PrimMinSpanningTree(GraphPtr pGraph, VertexId root) {
-    VertexId vertexId, adjacentVertexId;
+void PrimMinSpanningTree(GraphPtr pGraph, Vertex root, Vertex *parent) {
+    Vertex vertex, adjacentVertex;
     EdgePtr pEdge;
-    VertexPtr vertices, pVertex, pAdjacentVertex;
     char hasKnown[pGraph->vertexNum];
+    int minWeight[pGraph->vertexNum];
     Heap heap;
 
-    vertices = pGraph->vertices;
-    vertices[root].path = root;
-    memset(hasKnown, 0, pGraph->vertexNum);
+    parent[root] = root;
+    for(vertex = 0; vertex < pGraph->vertexNum; vertex++){
+        hasKnown[vertex] = 0;
+        minWeight[vertex] = INFINITY;
+    }
     InitHeap(heap, pGraph->vertexNum);
-    G_HeapInsert(&heap, &vertices[root].distance);
+    G_HeapInsert(&heap, minWeight + root);
 
     while (heap.size) {
-        pVertex = (void *)G_DeleteMin(&heap) - offsetof(Vertex, distance);
-        vertexId = (VertexId) (pVertex - vertices);
-        hasKnown[vertexId] = 1;
-        for (pEdge = pVertex->pEdge; pEdge; pEdge = pEdge->next) {
-            adjacentVertexId = pEdge->id;
-            pAdjacentVertex = vertices + adjacentVertexId;
-            if (!hasKnown[adjacentVertexId] && vertices[adjacentVertexId].distance > pEdge->weight){
-                vertices[adjacentVertexId].distance = pEdge->weight;
-                vertices[adjacentVertexId].path = vertexId;
-                G_HeapInsert(&heap, &pAdjacentVertex->distance);
+        vertex = (Vertex) (G_DeleteMin(&heap) - minWeight);
+        hasKnown[vertex] = 1;
+        for (pEdge = pGraph->edges[vertex]; pEdge; pEdge = pEdge->next) {
+            adjacentVertex = pEdge->target;
+            if (!hasKnown[adjacentVertex] && minWeight[adjacentVertex] > pEdge->data.weight){
+                minWeight[adjacentVertex] = pEdge->data.weight;
+                parent[adjacentVertex] = vertex;
+                G_HeapInsert(&heap, minWeight + adjacentVertex);
             }
         }
     }
 }
 
-void PrintTree(GraphPtr pGraph, VertexId root) {
-    if (root < 0 || root >= pGraph->vertexNum || pGraph->vertices[root].path != root) {
+void PrintTree(GraphPtr pGraph, Vertex *parent, Vertex root) {
+    if (root < 0 || root >= pGraph->vertexNum || parent[root] != root) {
         fputs("PrintTree: Invalid root vertex!\n", stderr);
         return;
     }
-
-    printTree(pGraph, root, 0);
+    pGlobalGraph = pGraph;
+    globalParent = parent;
+    printTree(root, 0);
 }

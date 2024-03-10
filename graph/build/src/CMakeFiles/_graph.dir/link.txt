@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc /Users/bearkun/Desktop/C-codes/graph/lib/lib_graph.a CMakeFiles/_graph.dir/find_articulation.c.o CMakeFiles/_graph.dir/graph.c.o CMakeFiles/_graph.dir/min_spanning_tree.c.o CMakeFiles/_graph.dir/utils/global_variables_for_dfs.c.o CMakeFiles/_graph.dir/utils/heap.c.o CMakeFiles/_graph.dir/weight_path.c.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib /Users/bearkun/Desktop/C-codes/graph/lib/lib_graph.a

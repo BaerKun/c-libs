@@ -1,53 +1,42 @@
-/*
- * GraphPtr 类型包括 顶点数 和 邻接表数组；
- * 邻接表的表头存储了 路径 和 距离 信息；
- * BuildPath 会修改这些数据；
- * 无效的终点输入， 或 起点->终点的路径 不存在， BuildPath 会遍历所有可到达的顶点；
- * */
-
 #ifndef GRAPH_GRAPH_H
 #define GRAPH_GRAPH_H
 
 #ifndef INFINITY
-#define INFINITY 0x7fffffff
+#define INFINITY 0xefff
 #endif
 
-#ifndef INITIAL_VERTICES_NUMBER
-#define INITIAL_VERTICES_NUMBER 32
-#endif
+#include "utils/vertex_edge.h"
 
-typedef int VertexId;
+typedef int Vertex;
 typedef int WeightType;
 typedef struct AdjacencyList Edge, *EdgePtr;
-typedef struct Vertex {
-    WeightType distance;
-    VertexId path;
-    EdgePtr pEdge;
-}Vertex, *VertexPtr;
 typedef struct Graph Graph, *GraphPtr;
+typedef struct EdgeData EdgeData;
+typedef struct VertexData VertexData;
 struct AdjacencyList {
-    VertexId id;
-    WeightType weight;
+    Vertex target;
+    EdgeData data;
     EdgePtr next;
 };
 struct Graph {
     int capacity;
     int vertexNum;
-    Vertex *vertices;
+    EdgePtr *edges;
+    int *indegree;
+    Vertex *parent;
+    VertexData *vertexData;
 };
 
-GraphPtr CreateGraph(int vertexNum);
-
-void InitGraph(GraphPtr pGraph);
-
-void AddEdge(GraphPtr pGraph, VertexId startId, VertexId endId, int weight, int isDirected);
+GraphPtr CreateGraph(int capacity, int vertexNum);
 
 void DeleteGraph(GraphPtr pGraph);
 
-void CopyPath(GraphPtr pGraph, VertexId CopyArray[], VertexId startId, VertexId endId);
+void AddEdge(GraphPtr pGraph, Vertex source, Vertex target, EdgeData data);
 
-int HasPath(GraphPtr pGraph, VertexId startId, VertexId endId);
+int HasPath(const Vertex *parent, int vertexNum, Vertex source, Vertex target);
 
-int GetDistance(GraphPtr pGraph, VertexId vertexId);
+void UseIndegree(GraphPtr pGraph);
+
+void UseParent(GraphPtr pGraph);
 
 #endif //GRAPH_GRAPH_H
