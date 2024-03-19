@@ -15,7 +15,11 @@ add_subdirectory(src)
 
 add_subdirectory(example)
 
-add_executable(test tests/test.c)
+add_executable(test1 tests/test.c)
 
-target_link_libraries(test PRIVATE graph)
+add_executable(test2 tests/test2.c)
+
+target_link_libraries(test1 PRIVATE graph)
+
+target_link_libraries(test2 PRIVATE graph)
 

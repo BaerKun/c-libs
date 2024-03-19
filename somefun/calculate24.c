@@ -37,7 +37,7 @@ int calculate24(int array[], int len) {
 
 void Calculate24(int array[], int len) {
     if (!calculate24(array, len))
-        fputs("Calculate24:NoSolution\n", stderr);
+        puts("No Solution\n");
 }
 
 int main() {

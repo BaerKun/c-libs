@@ -1,15 +1,15 @@
 #ifndef GRAPH_VERTEX_LIST_H
 #define GRAPH_VERTEX_LIST_H
 
-#include "graph.h"
+#include "adjacency_list/graph.h"
 
 typedef struct VertexList VertexList, *VertexListPtr;
 struct VertexList {
-    Vertex vertex;
+    VertexId vertexId;
     VertexListPtr next;
 };
 
-void VertexListInsert(VertexListPtr pPreNode, Vertex vertex);
+void VertexListInsert(VertexListPtr pPreNode, VertexId vertex);
 
 void MakeListEmpty(VertexListPtr pHead);
 

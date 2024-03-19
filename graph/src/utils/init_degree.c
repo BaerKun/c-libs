@@ -2,7 +2,7 @@
 #include <string.h>
 
 void InitIndegree(GraphPtr pGraph, int *indegree, QueuePtr pQueue) {
-    Vertex vertex;
+    VertexId vertex;
 
     if(pGraph->indegree){
         for(vertex = 0; vertex < pGraph->vertexNum; vertex++) {
@@ -14,7 +14,7 @@ void InitIndegree(GraphPtr pGraph, int *indegree, QueuePtr pQueue) {
 
     memset(indegree, 0, pGraph->vertexNum * sizeof(int));
     for(vertex = 0; vertex < pGraph->vertexNum; vertex++) {
-        for (EdgePtr pEdge = pGraph->edges[vertex]; pEdge; pEdge = pEdge->next)
+        for (EdgePtr pEdge = pGraph->vertices[vertex]; pEdge; pEdge = pEdge->next)
             indegree[pEdge->target]++;
     }
 

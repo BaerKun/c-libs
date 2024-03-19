@@ -2,7 +2,7 @@
 #define GRAPH_QUEUE_H
 
 #define InitQueue(queue, capacity) \
-    Vertex elements[capacity];    \
+    VertexId elements[capacity];    \
     (queue).front = (queue).rear = 0;   \
     (queue).elements = elements
 
@@ -11,12 +11,12 @@
 
 #define Dequeue(queue) (queue).elements[(queue).front++]
 
-#include "graph.h"
+#include "adjacency_list/graph.h"
 
 typedef struct {
     int front;
     int rear;
-    Vertex *elements;
+    VertexId *elements;
 }Queue, *QueuePtr;
 
 #endif //GRAPH_QUEUE_H

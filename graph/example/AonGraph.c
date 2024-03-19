@@ -123,7 +123,7 @@ void EstablishDependency(AonGraphPtr pAonGraph, NodeId start, NodeId end) {
          pSuccessorList && pSuccessorList->id != end; pSuccessorList = pSuccessorList->next);
     if (pSuccessorList)
         return;
-    pSuccessorList = (AdjacencyListPtr) malloc(sizeof(AdjacencyList));
+    pSuccessorList = (AdjacencyListPtr) malloc(sizeof(Edge));
     pSuccessorList->id = end;
     pSuccessorList->next = pPredecessorNode->pSuccessorList;
     pPredecessorNode->pSuccessorList = pSuccessorList;

@@ -1,9 +1,9 @@
 #include "utils/vertex_list.h"
 #include <stdlib.h>
 
-void VertexListInsert(VertexListPtr pPreNode, Vertex vertex) {
+void VertexListInsert(VertexListPtr pPreNode, VertexId vertex) {
     VertexListPtr pNewNode = malloc(sizeof(VertexList));
-    pNewNode->vertex = vertex;
+    pNewNode->vertexId = vertex;
     pNewNode->next = pPreNode->next;
     pPreNode->next = pNewNode;
 }

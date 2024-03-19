@@ -12,9 +12,15 @@ struct VertexData {
 #ifndef EDGE_DATA
 #define EDGE_DATA
 
+typedef int WeightType;
+
 struct EdgeData {
-    int weight;
+    WeightType weight;
 };
+
+#ifndef WEIGHT_FOR_WEIGHTED_PATH
+#define WEIGHT_FOR_WEIGHTED_PATH weight
+#endif
 
 #endif
 

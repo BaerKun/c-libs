@@ -1,7 +1,7 @@
 #ifndef GRAPH_HEAP_H
 #define GRAPH_HEAP_H
 
-#include "graph.h"
+#include "adjacency_list/graph.h"
 
 #define InitHeap(heap, capacity) \
     WeightType *elements[capacity];  \

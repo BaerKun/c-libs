@@ -1,10 +1,10 @@
 #include <stdio.h>
-#include "min_spanning_tree.h"
-#include "weight_path.h"
-#include "find_articulation.h"
-#include "Euler_path.h"
+#include "adjacency_list/min_spanning_tree.h"
+#include "adjacency_list/weight_path.h"
+#include "adjacency_list/find_articulation.h"
+#include "adjacency_list/Euler_path.h"
 
-void AddUndirectedEdge(GraphPtr pGraph, Vertex source, Vertex target) {
+void AddUndirectedEdge(GraphPtr pGraph, VertexId source, VertexId target) {
     AddEdge(pGraph, source, target, (EdgeData){1});
     AddEdge(pGraph, target, source, (EdgeData){1});
 }
@@ -31,7 +31,7 @@ int main() {
     EulerCircuit(pGraph, &path, 0);
 
     for(VertexListPtr p = &path; p != NULL; p = p->next){
-        printf("%d ", p->vertex);
+        printf("%d ", p->vertexId);
     }
     DeleteGraph(pGraph);
     return 0;

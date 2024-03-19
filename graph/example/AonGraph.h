@@ -13,7 +13,7 @@ typedef int TimeType;
 typedef int NodeId;
 typedef struct AonGraph AonGraph, *AonGraphPtr;
 typedef struct ActivityNode ActivityNode, *ActivityNodePtr;
-typedef struct AdjacencyList AdjacencyList, *AdjacencyListPtr;
+typedef struct Edge AdjacencyList, *AdjacencyListPtr;
 struct ActivityNode {
     TimeType duration;
     TimeType earlyStart;
@@ -23,7 +23,7 @@ struct ActivityNode {
     int inDegree;
     AdjacencyListPtr pSuccessorList;
 };
-struct AdjacencyList {
+struct Edge {
     NodeId id;
     AdjacencyListPtr next;
 };
