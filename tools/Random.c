@@ -5,6 +5,8 @@
 int RandInt(int start, int end){
     srand(time(0));
     return rand() % (end - start + 1) + start;
+//    if in Unix, better
+//    return random() % (end - start + 1) + start;
 }
 void ShuffleArray(int *array, int len){
     int i, b, c;

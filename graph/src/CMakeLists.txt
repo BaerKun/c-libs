@@ -12,4 +12,4 @@ file(GLOB SOURCES "matrix/*.c")
 
 add_library(matrix_graph SHARED ${SOURCES})
 
-target_link_libraries(matrix_graph PRIVATE utils)
+#target_link_libraries(matrix_graph PRIVATE utils)

@@ -42,8 +42,6 @@ TreeNodeId createTreeNode(BinaryTreePtr pTree);
 
 DataIndex insertData(BinaryTreePtr pTree, TreeNodeId nodeId, DataIndex dataIdx, DataType data);
 
-DataIndex deleteData(BinaryTreePtr pTree, TreeNodeId nodeId);
-
 TreeNodeId binaryTreeInsert(BinaryTreePtr pTree, TreeNodeId parent, int isRight, DataIndex dataIdx, DataType data);
 
 DataIndex binaryTreeDelete(BinaryTreePtr pTree, TreeNodeId parent, int isRight);

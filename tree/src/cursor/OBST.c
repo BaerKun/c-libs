@@ -1,9 +1,10 @@
 #include "cursor/OBST.h"
 #include "utils/queue.h"
+#include "cursor/macro.h"
 #include <stdlib.h>
 
 
-void OptimalBST(BinaryTreePtr pTree, const DataType data[], const WeightType weight[], int number) {
+void OptimalBST(BSTPtr pTree, const DataType data[], const WeightType weight[], int number) {
     int left, root, right, treeWidth;
     WeightType minTreeWeight;
     WeightType (*treeWeight)[number] = malloc(number * number * sizeof(WeightType));
@@ -54,22 +55,25 @@ void OptimalBST(BinaryTreePtr pTree, const DataType data[], const WeightType wei
         right = Dequeue(pRightQueue);
         root = treeRoot[left][right];
 
-        pTree->nodes[root].data = data[root];
+        DATAIDX(root) = createData(pTree, NO_DATA_INDEX, data[root]);
 
         if (root != left) {
             Enqueue(pLeftQueue, left);
             Enqueue(pRightQueue, root - 1);
             left = treeRoot[left][root - 1];
-            pTree->nodes[root].left = left;
+            LEFT(root) = left;
         }
 
         if (root != right) {
             Enqueue(pLeftQueue, root + 1);
             Enqueue(pRightQueue, right);
             right = treeRoot[root + 1][right];
-            pTree->nodes[root].right = right;
+            RIGHT(root) = right;
         }
     }
+
+    pTree->nextAvailableNodeId = number;
+    pTree->nextAvailableDataIdx = number;
 
     free(treeRoot);
     DeleteQueue(pLeftQueue);

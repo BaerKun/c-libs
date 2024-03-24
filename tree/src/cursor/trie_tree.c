@@ -1,5 +1,6 @@
 #include "cursor/trie_tree.h"
 #include "utils/heap.h"
+#include "cursor/macro.h"
 
 void HuffmanCode(TrieTreePtr pTree, DataType *data, const int *cost, int number) {
     HeapPtr pHeap = CreateHeap(number);
@@ -14,16 +15,21 @@ void HuffmanCode(TrieTreePtr pTree, DataType *data, const int *cost, int number)
 
     while (pHeap->size > 1) {
         minCost = DeleteMin(pHeap);
-        root = pTree->nodeNum++;
-        if(minCost.key >= number)
+        root = createTreeNode(pTree);
+
+        if(minCost.key >= number) {
             left = minCost.key - number;
+            LEFT(root) = left;
+        }
         else
-            left = CreateTreeNode(pTree, data[minCost.key]);
-        if(pHeap->elements[1].key >= number)
+            binaryTreeInsert(pTree, root, 0, NO_DATA_INDEX, data[minCost.key]);
+        if(pHeap->elements[1].key >= number) {
             right = pHeap->elements[1].key - number;
+            RIGHT(root) = right;
+        }
         else
-            right = CreateTreeNode(pTree, data[pHeap->elements[1].key]);
-        pTree->nodes[root] = (BinaryTreeNode){left, right, NO_DATA};
+            binaryTreeInsert(pTree, root, 1, NO_DATA_INDEX, data[pHeap->elements[1].key]);
+
         pHeap->elements[1].value += minCost.value;
         pHeap->elements[1].key = number + root;
         PercolateDown(pHeap, 1);

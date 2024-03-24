@@ -19,7 +19,12 @@ add_executable(test1 tests/test.c)
 
 add_executable(test2 tests/test2.c)
 
-target_link_libraries(test1 PRIVATE graph)
+add_executable(test3 tests/test3.c)
 
-target_link_libraries(test2 PRIVATE graph)
+target_link_libraries(test1 PRIVATE adjacency_list_graph)
+
+target_link_libraries(test2 PRIVATE adjacency_list_graph)
+
+target_link_libraries(test3 PRIVATE matrix_graph)
+
 
