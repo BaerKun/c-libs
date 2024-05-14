@@ -1,50 +1,58 @@
 #ifndef TREE_BINARY_TREE_H
 #define TREE_BINARY_TREE_H
 
-#define NO_TREE_NODE (-1)
-#define NO_DATA_INDEX (-1)
+#define TREE_NODE_NULLPTR (-1)
+#define DATA_NULLPTR (-1)
 #define NO_DATA (-1)
 
-typedef int TreeNodeId;
+typedef int TreeNodePtr;
 typedef int DataType;
-typedef int DataIndex;
+typedef int DataPtr;
 //typedef int TreeKey;
 
 typedef struct {
-    TreeNodeId left;
-    TreeNodeId right;
+    TreeNodePtr left;
+    TreeNodePtr right;
 //    TreeKey key;
-    DataIndex dataIdx;
-    TreeNodeId nextAvailableNodeId;
+    DataPtr dataPtr;
+    TreeNodePtr nextAvailableNodePtr;
 }BinaryTreeNode, *BinaryTreeNodePtr;
 
 typedef struct {
     int capacity;
     int nodeNum;
-    int shouldFreeDatas;
-    TreeNodeId root;
-    TreeNodeId nextAvailableNodeId;
-    DataIndex nextAvailableDataIdx;
+    int shouldFreeData;
+    TreeNodePtr root;
+    TreeNodePtr nextAvailableNodePtr;
+    DataPtr nextAvailableDataPtr;
     BinaryTreeNode *nodes;
-    DataIndex *nextDataIdx;
-    DataType *datas;
+    DataPtr *nextDataPtr;
+    DataType *data;
 }BinaryTree, *BinaryTreePtr;
 
-BinaryTreePtr createBinaryTreeWithoutDatas(int capacity);
+BinaryTreePtr createBinaryTreeWithoutData(int capacity);
 
 BinaryTreePtr CreateBinaryTree(int capacity);
 
 void DeleteBinaryTree(BinaryTreePtr pTree);
 
-DataIndex createData(BinaryTreePtr pTree, DataIndex dataIdx, DataType data);
+DataPtr createData_ptr(BinaryTreePtr pTree, DataPtr dataPtr);
 
-TreeNodeId createTreeNode(BinaryTreePtr pTree);
+DataPtr createData_val(BinaryTreePtr pTree, DataType data);
 
-DataIndex insertData(BinaryTreePtr pTree, TreeNodeId nodeId, DataIndex dataIdx, DataType data);
+TreeNodePtr createTreeNode(BinaryTreePtr pTree);
 
-TreeNodeId binaryTreeInsert(BinaryTreePtr pTree, TreeNodeId parent, int isRight, DataIndex dataIdx, DataType data);
+void insertData_ptr(BinaryTreePtr pTree, TreeNodePtr nodeId, DataPtr dataPtr);
 
-DataIndex binaryTreeDelete(BinaryTreePtr pTree, TreeNodeId parent, int isRight);
+void insertData_val(BinaryTreePtr pTree, TreeNodePtr nodePtr, DataType data);
+
+DataPtr deleteData(BinaryTreePtr pTree, TreeNodePtr nodeId);
+
+void binaryTreeInsert_ptr(BinaryTreePtr pTree, TreeNodePtr parent, int isRight, DataPtr dataPtr);
+
+void binaryTreeInsert_val(BinaryTreePtr pTree, TreeNodePtr parent, int isRight, DataType data);
+
+DataPtr binaryTreeDelete(BinaryTreePtr pTree, TreeNodePtr parent, int isRight);
 
 //void PrintBinaryTree(BinaryTreePtr pTree);
 

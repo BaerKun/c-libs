@@ -5,7 +5,7 @@
 void HuffmanCode(TrieTreePtr pTree, DataType *data, const int *cost, int number) {
     HeapPtr pHeap = CreateHeap(number);
     HeapElement minCost;
-    TreeNodeId root, left, right;
+    TreeNodePtr root, left, right;
 
     for (int i = 0; i < number; i++) {
         pHeap->elements[i + 1] = (HeapElement) {i, cost[i]};
@@ -22,13 +22,13 @@ void HuffmanCode(TrieTreePtr pTree, DataType *data, const int *cost, int number)
             LEFT(root) = left;
         }
         else
-            binaryTreeInsert(pTree, root, 0, NO_DATA_INDEX, data[minCost.key]);
+            binaryTreeInsert_val(pTree, root, 0, data[minCost.key]);
         if(pHeap->elements[1].key >= number) {
             right = pHeap->elements[1].key - number;
             RIGHT(root) = right;
         }
         else
-            binaryTreeInsert(pTree, root, 1, NO_DATA_INDEX, data[pHeap->elements[1].key]);
+            binaryTreeInsert_val(pTree, root, 1, data[pHeap->elements[1].key]);
 
         pHeap->elements[1].value += minCost.value;
         pHeap->elements[1].key = number + root;

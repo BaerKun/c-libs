@@ -8,7 +8,7 @@ void OptimalBST(BSTPtr pTree, const DataType data[], const WeightType weight[], 
     int left, root, right, treeWidth;
     WeightType minTreeWeight;
     WeightType (*treeWeight)[number] = malloc(number * number * sizeof(WeightType));
-    TreeNodeId (*treeRoot)[number] = malloc(number * number * sizeof(TreeNodeId));
+    TreeNodePtr (*treeRoot)[number] = malloc(number * number * sizeof(TreeNodePtr));
 
     for (root = 0; root < number; root++) {
         treeWeight[root][root] = weight[root];
@@ -55,7 +55,7 @@ void OptimalBST(BSTPtr pTree, const DataType data[], const WeightType weight[], 
         right = Dequeue(pRightQueue);
         root = treeRoot[left][right];
 
-        DATAIDX(root) = createData(pTree, NO_DATA_INDEX, data[root]);
+        DATAPTR(root) = createData_val(pTree, data[root]);
 
         if (root != left) {
             Enqueue(pLeftQueue, left);
@@ -72,8 +72,8 @@ void OptimalBST(BSTPtr pTree, const DataType data[], const WeightType weight[], 
         }
     }
 
-    pTree->nextAvailableNodeId = number;
-    pTree->nextAvailableDataIdx = number;
+    pTree->nextAvailableNodePtr = number;
+    pTree->nextAvailableDataPtr = number;
 
     free(treeRoot);
     DeleteQueue(pLeftQueue);

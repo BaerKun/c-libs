@@ -2,40 +2,41 @@
 #include "cursor/macro.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
-int getIsRight(BSTPtr pTree, TreeNodeId parent, DataType data) {
-    if(parent == NO_DATA_INDEX || LESS(data, DATA(DATAIDX(parent))))
+static int getIsRight(BSTPtr pTree, TreeNodePtr parent, const DataType data) {
+    if(parent == DATA_NULLPTR || LESS(data, DATA(DATAPTR(parent))))
         return 0;
     else
         return 1;
 }
 
-DataIndex bstFindMax(BSTPtr pTree) {
-    TreeNodeId nodeId;
+DataPtr bstFindMax(BSTPtr pTree) {
+    TreeNodePtr nodeId;
 
-    for(nodeId = pTree->root; RIGHT(nodeId) != NO_TREE_NODE; nodeId = RIGHT(nodeId));
+    for(nodeId = pTree->root; RIGHT(nodeId) != TREE_NODE_NULLPTR; nodeId = RIGHT(nodeId));
 
-    return DATAIDX(nodeId);
+    return DATAPTR(nodeId);
 }
 
-DataIndex bstDeleteMax(BSTPtr pTree) {
-    TreeNodeId parent, child;
+DataPtr bstDeleteMax(BSTPtr pTree) {
+    TreeNodePtr parent, child;
 
-    parent = NO_DATA_INDEX;
+    parent = DATA_NULLPTR;
     child = pTree->root;
-    for(; RIGHT(child) != NO_TREE_NODE; parent = child, child = RIGHT(child));
+    for(; RIGHT(child) != TREE_NODE_NULLPTR; parent = child, child = RIGHT(child));
 
     return binaryTreeDelete(pTree, parent, 1);
 }
 
-TreeNodeId bstFindParent(BSTPtr pTree, DataType data) {
-    TreeNodeId nodeId, nextNodeId;
+static TreeNodePtr bstFindParent(BSTPtr pTree, DataType data) {
+    TreeNodePtr nodeId, nextNodeId;
 
-    for (nodeId = NO_TREE_NODE, nextNodeId = pTree->root; nextNodeId != NO_TREE_NODE;) {
-        if (LESS(data, DATA(DATAIDX(nextNodeId)))) {
+    for (nodeId = TREE_NODE_NULLPTR, nextNodeId = pTree->root; nextNodeId != TREE_NODE_NULLPTR;) {
+        if (LESS(data, DATA(DATAPTR(nextNodeId)))) {
             nodeId = nextNodeId;
             nextNodeId = LEFT(nextNodeId);
-        } else if (GREATER(data, DATA(DATAIDX(nextNodeId)))) {
+        } else if (GREATER(data, DATA(DATAPTR(nextNodeId)))) {
             nodeId = nextNodeId;
             nextNodeId = RIGHT(nextNodeId);
         } else {
@@ -46,29 +47,36 @@ TreeNodeId bstFindParent(BSTPtr pTree, DataType data) {
     return nodeId;
 }
 
-void bstInsert(BSTPtr pTree, DataIndex dataIdx, DataType data) {
-    TreeNodeId parentId;
+void bstInsert_ptr(BSTPtr pTree, DataPtr dataPtr) {
+    TreeNodePtr parent;
 
-    if(dataIdx != NO_DATA_INDEX)
-        data = DATA(dataIdx);
+    DataType data = DATA(dataPtr);
 
-    parentId = bstFindParent(pTree, data);
+    parent = bstFindParent(pTree, data);
 
-    binaryTreeInsert(pTree, parentId, getIsRight(pTree, parentId, data), dataIdx, data);
+    binaryTreeInsert_ptr(pTree, parent, getIsRight(pTree, parent, data), dataPtr);
 }
 
-DataIndex bstDeleteRightMin(BSTPtr pTree, TreeNodeId nodeId) {
-    TreeNodeId this, next;
-    DataIndex min;
+void bstInsert_val(BSTPtr pTree, const DataType data){
+    TreeNodePtr parent;
+
+    parent = bstFindParent(pTree, data);
+
+    binaryTreeInsert_val(pTree, parent, getIsRight(pTree, parent, data), data);
+}
+
+static DataPtr bstDeleteRightMin(BSTPtr pTree, TreeNodePtr nodeId) {
+    TreeNodePtr this, next;
+    DataPtr min;
 
     this = nodeId;
     next = RIGHT(nodeId);
-    while (LEFT(next) != NO_TREE_NODE) {
+    while (LEFT(next) != TREE_NODE_NULLPTR) {
         this = next;
         next = LEFT(next);
     }
 
-    min = DATAIDX(next);
+    min = DATAPTR(next);
     if(this == nodeId)
         binaryTreeDelete(pTree, this, 1);
     else
@@ -77,36 +85,39 @@ DataIndex bstDeleteRightMin(BSTPtr pTree, TreeNodeId nodeId) {
     return min;
 }
 
-int bstDelete(BSTPtr pTree, DataType data) {
-    TreeNodeId parentId, nodeId;
+DataPtr bstDelete(BSTPtr pTree, DataType data) {
+    TreeNodePtr parentId, nodeId;
+    DataPtr dataPtr;
     int isRight;
 
     parentId = bstFindParent(pTree, data);
 
-    if(NO_DATA_INDEX == binaryTreeDelete(pTree, parentId, isRight = getIsRight(pTree, parentId, data)))
-        return 0;
+    dataPtr = binaryTreeDelete(pTree, parentId, isRight = getIsRight(pTree, parentId, data));
 
-    if(isRight)
-        nodeId = RIGHT(parentId);
-    else if(parentId == NO_TREE_NODE)
+    if(dataPtr == DATA_NULLPTR)
+        return DATA_NULLPTR;
+
+    if(parentId == TREE_NODE_NULLPTR)
         nodeId = pTree->root;
+    else if(isRight)
+        nodeId = RIGHT(parentId);
     else
         nodeId = LEFT(parentId);
 
-    if(DATAIDX(nodeId) == NO_DATA_INDEX){
-        DATAIDX(nodeId) = createData(pTree, bstDeleteRightMin(pTree, nodeId), NO_DATA);
+    if(nodeId != DATA_NULLPTR && DATAPTR(nodeId) == DATA_NULLPTR){
+        DATAPTR(nodeId) = createData_ptr(pTree, bstDeleteRightMin(pTree, nodeId));
     }
 
-    return 1;
+    return dataPtr;
 }
 
-TreeNodeId bstFind(BSTPtr pTree, DataType data) {
-    TreeNodeId nodeId;
+TreeNodePtr bstFind(BSTPtr pTree, DataType data) {
+    TreeNodePtr nodeId;
 
-    for(nodeId = pTree->root; nodeId != NO_TREE_NODE;){
-        if(LESS(data, DATA(DATAIDX(nodeId))))
+    for(nodeId = pTree->root; nodeId != TREE_NODE_NULLPTR;){
+        if(LESS(data, DATA(DATAPTR(nodeId))))
             nodeId = LEFT(nodeId);
-        else if(GREATER(data, DATA(DATAIDX(nodeId))))
+        else if(GREATER(data, DATA(DATAPTR(nodeId))))
             nodeId = RIGHT(nodeId);
         else
             break;
@@ -131,25 +142,25 @@ static int median(const DataType *array, int len) {
     return b[2];
 }
 
-BSTPtr buildBST(DataType datas[], int len, int capacity, int pleaseCopy) {
-    BSTPtr pTree = createBinaryTreeWithoutDatas(capacity);
+BSTPtr buildBST(DataType data[], int len, int capacity, int pleaseCopy) {
+    BSTPtr pTree = createBinaryTreeWithoutData(capacity);
 
     if(pleaseCopy) {
-        pTree->shouldFreeDatas = 1;
-        pTree->datas = (DataType *)malloc(capacity * sizeof(DataType));
-        memcpy(pTree->datas, datas, len * sizeof(DataType));
+        pTree->shouldFreeData = 1;
+        pTree->data = (DataType *)malloc(capacity * sizeof(DataType));
+        memcpy(pTree->data, data, len * sizeof(DataType));
     } else{
-        pTree->shouldFreeDatas = 0;
-        pTree->datas = datas;
+        pTree->shouldFreeData = 0;
+        pTree->data = data;
     }
 
-    DataIndex middle = median(datas, len);
+    DataPtr middle = median(data, len);
 
-    bstInsert(pTree, middle, NO_DATA);
+    bstInsert_ptr(pTree, middle);
 
     for(int i = 0; i < len; i++){
         if(i != middle)
-            bstInsert(pTree, i, NO_DATA);
+            bstInsert_ptr(pTree, i);
     }
 
     return pTree;

@@ -3,173 +3,237 @@
 #include <stdio.h>
 #include "cursor/macro.h"
 
-BinaryTreePtr createBinaryTreeWithoutDatas(int capacity) {
+BinaryTreePtr createBinaryTreeWithoutData(int capacity) {
     BinaryTreePtr pTree = malloc(sizeof(BinaryTree));
 
     pTree->capacity = capacity;
     pTree->nodeNum = 0;
-    pTree->root = NO_TREE_NODE;
-    pTree->nextAvailableNodeId = 0;
-    pTree->nextAvailableDataIdx = 0;
+    pTree->root = TREE_NODE_NULLPTR;
+    pTree->nextAvailableNodePtr = 0;
+    pTree->nextAvailableDataPtr = 0;
     pTree->nodes = (BinaryTreeNodePtr) malloc(capacity * sizeof(BinaryTreeNode));
-    pTree->nextDataIdx = malloc(capacity * sizeof(DataIndex));
-    pTree->datas = NULL;
+    pTree->nextDataPtr = malloc(capacity * sizeof(DataPtr));
+    pTree->data = NULL;
 
     for (int i = 0; i < capacity; i++) {
-        pTree->nodes[i] = (BinaryTreeNode) {NO_TREE_NODE, NO_TREE_NODE, NO_DATA_INDEX, i + 1};
-        pTree->nextDataIdx[i] = i + 1;
+        pTree->nodes[i] = (BinaryTreeNode) {TREE_NODE_NULLPTR, TREE_NODE_NULLPTR, DATA_NULLPTR, i + 1};
+        pTree->nextDataPtr[i] = i + 1;
     }
-    pTree->nodes[capacity - 1].nextAvailableNodeId = NO_TREE_NODE;
-    pTree->nextDataIdx[capacity - 1] = NO_DATA_INDEX;
+    pTree->nodes[capacity - 1].nextAvailableNodePtr = TREE_NODE_NULLPTR;
+    pTree->nextDataPtr[capacity - 1] = DATA_NULLPTR;
 
     return pTree;
 }
 
 BinaryTreePtr CreateBinaryTree(int capacity) {
-    BinaryTreePtr pTree = createBinaryTreeWithoutDatas(capacity);
+    BinaryTreePtr pTree = createBinaryTreeWithoutData(capacity);
 
-    pTree->shouldFreeDatas = 1;
-    pTree->datas = malloc(capacity * sizeof(DataType));
+    pTree->shouldFreeData = 1;
+    pTree->data = malloc(capacity * sizeof(DataType));
 
     return pTree;
 }
 
 void DeleteBinaryTree(BinaryTreePtr pTree) {
     free(pTree->nodes);
-    free(pTree->nextDataIdx);
-    if (pTree->shouldFreeDatas)
-        free(pTree->datas);
+    free(pTree->nextDataPtr);
+    if (pTree->shouldFreeData)
+        free(pTree->data);
     free(pTree);
 }
 
-int takeData(BinaryTreePtr pTree, DataIndex dataIdx) {
-    DataIndex this, next;
+static int takeData(BinaryTreePtr pTree, DataPtr dataIdx) {
+    DataPtr this, next;
 
-    this = pTree->nextAvailableDataIdx;
+    this = pTree->nextAvailableDataPtr;
     if (this == dataIdx) {
-        pTree->nextAvailableDataIdx = NEXT(this);
+        pTree->nextAvailableDataPtr = NEXT(this);
         return 1;
     }
     for (next = NEXT(this); next != dataIdx; this = next, next = NEXT(next)) {
-        if (next == NO_DATA_INDEX)
+        if (next == DATA_NULLPTR)
             return 0;
     }
     NEXT(this) = NEXT(next);
     return 1;
 }
 
-DataIndex createData(BinaryTreePtr pTree, DataIndex dataIdx, DataType data) {
-    DataIndex thisDataIdx;
+DataPtr createData_ptr(BinaryTreePtr pTree, DataPtr dataPtr){
+    if(takeData(pTree, dataPtr)){
+        NEXT(dataPtr) = DATA_NULLPTR;
+        return dataPtr;
+    }
+    return DATA_NULLPTR;
+}
 
-    if (dataIdx != NO_DATA_INDEX && takeData(pTree, dataIdx)) {
-        thisDataIdx = dataIdx;
-    }else {
-        if (pTree->nextAvailableDataIdx == NO_DATA_INDEX) {
-            fputs("createData: No available data index.\n", stderr);
-            return NO_DATA_INDEX;
-        }
-
-        thisDataIdx = pTree->nextAvailableDataIdx;
-        pTree->nextAvailableDataIdx = NEXT(thisDataIdx);
-
-        if (data != NO_DATA) {
-            DATA(thisDataIdx) = data;
-        }
+DataPtr createData_val(BinaryTreePtr pTree, const DataType data){
+    if (pTree->nextAvailableDataPtr == DATA_NULLPTR) {
+        fputs("createData: No available data index.\n", stderr);
+        return DATA_NULLPTR;
     }
 
-    NEXT(thisDataIdx) = NO_DATA_INDEX;
+    DataPtr thisDataIdx = pTree->nextAvailableDataPtr;
+    pTree->nextAvailableDataPtr = NEXT(thisDataIdx);
+    DATA(thisDataIdx) = data;
 
     return thisDataIdx;
 }
 
-DataIndex insertData(BinaryTreePtr pTree, TreeNodeId nodeId, DataIndex dataIdx, DataType data) {
-    DataIndex inDataIdx;
+//DataPtr createData(BinaryTreePtr pTree, DataPtr dataIdx, DataType data) {
+//    DataPtr thisDataIdx;
+//
+//    if (dataIdx != DATA_NULLPTR && takeData(pTree, dataIdx)) {
+//        thisDataIdx = dataIdx;
+//    }else {
+//        if (pTree->nextAvailableDataPtr == DATA_NULLPTR) {
+//            fputs("createData: No available data index.\n", stderr);
+//            return DATA_NULLPTR;
+//        }
+//
+//        thisDataIdx = pTree->nextAvailableDataPtr;
+//        pTree->nextAvailableDataPtr = NEXT(thisDataIdx);
+//
+//        if (data != NO_DATA) {
+//            DATA(thisDataIdx) = data;
+//        }
+//    }
+//
+//    NEXT(thisDataIdx) = DATA_NULLPTR;
+//
+//    return thisDataIdx;
+//}
 
-    if (nodeId == NO_TREE_NODE)
-        return NO_DATA_INDEX;
+void insertData_ptr(BinaryTreePtr pTree, TreeNodePtr nodePtr, DataPtr dataPtr){
+    if(createData_ptr(pTree, dataPtr) == DATA_NULLPTR)
+        return;
 
-    inDataIdx = createData(pTree, dataIdx, data);
-
-    NEXT(inDataIdx) = DATAIDX(nodeId);
-    DATAIDX(nodeId) = inDataIdx;
-
-    return inDataIdx;
+    NEXT(dataPtr) = DATAPTR(nodePtr);
+    DATAPTR(nodePtr) = dataPtr;
 }
 
-void freeData(BinaryTreePtr pTree, DataIndex dataIdx) {
-    NEXT(dataIdx) = pTree->nextAvailableDataIdx;
-    pTree->nextAvailableDataIdx = dataIdx;
+void insertData_val(BinaryTreePtr pTree, TreeNodePtr nodePtr, const DataType data){
+    DataPtr dataPtr = createData_val(pTree, data);
+
+    if(dataPtr == DATA_NULLPTR)
+        return;
+
+    NEXT(dataPtr) = DATAPTR(nodePtr);
+    DATAPTR(nodePtr) = dataPtr;
 }
 
-DataIndex deleteData(BinaryTreePtr pTree, TreeNodeId nodeId) {
-    DataIndex dataIdx;
+//DataPtr insertData(BinaryTreePtr pTree, TreeNodePtr nodeId, DataPtr dataIdx, DataType data) {
+//    DataPtr inDataIdx;
+//
+//    if (nodeId == TREE_NODE_NULLPTR) {
+//        fputs("insertData: No node to insert.", stderr);
+//        return DATA_NULLPTR;
+//    }
+//
+//    inDataIdx = createData(pTree, dataIdx, data);
+//
+//    NEXT(inDataIdx) = DATAPTR(nodeId);
+//    DATAPTR(nodeId) = inDataIdx;
+//
+//    return inDataIdx;
+//}
 
-    if (nodeId == NO_TREE_NODE)
-        return NO_DATA_INDEX;
+static void freeData(BinaryTreePtr pTree, DataPtr dataIdx) {
+    NEXT(dataIdx) = pTree->nextAvailableDataPtr;
+    pTree->nextAvailableDataPtr = dataIdx;
+}
 
-    dataIdx = DATAIDX(nodeId);
+DataPtr deleteData(BinaryTreePtr pTree, TreeNodePtr nodeId) {
+    DataPtr dataIdx;
 
-    if (dataIdx == NO_DATA_INDEX)
-        return NO_DATA_INDEX;
+    if (nodeId == TREE_NODE_NULLPTR)
+        return DATA_NULLPTR;
 
-    DATAIDX(nodeId) = NEXT(dataIdx);
+    dataIdx = DATAPTR(nodeId);
+
+    if (dataIdx == DATA_NULLPTR)
+        return DATA_NULLPTR;
+
+    DATAPTR(nodeId) = NEXT(dataIdx);
     freeData(pTree, dataIdx);
 
     return dataIdx;
 }
 
-TreeNodeId createTreeNode(BinaryTreePtr pTree) {
-    TreeNodeId nodeId = pTree->nextAvailableNodeId;
+TreeNodePtr createTreeNode(BinaryTreePtr pTree) {
+    TreeNodePtr nodeId = pTree->nextAvailableNodePtr;
 
-    if (nodeId == NO_TREE_NODE) {
+    if (nodeId == TREE_NODE_NULLPTR) {
         fputs("createTreeNode: Tree is full!\n", stderr);
-        return NO_TREE_NODE;
+        return TREE_NODE_NULLPTR;
     }
-    pTree->nextAvailableNodeId = NODE(nodeId).nextAvailableNodeId;
+    pTree->nextAvailableNodePtr = NODE(nodeId).nextAvailableNodePtr;
 
-    LEFT(nodeId) = RIGHT(nodeId) = NO_TREE_NODE;
-    DATAIDX(nodeId) = NO_TREE_NODE;
+    LEFT(nodeId) = RIGHT(nodeId) = TREE_NODE_NULLPTR;
+    DATAPTR(nodeId) = TREE_NODE_NULLPTR;
     pTree->nodeNum++;
 
     return nodeId;
 }
 
-TreeNodeId binaryTreeInsert(BinaryTreePtr pTree, TreeNodeId parent, int isRight, DataIndex dataIdx, DataType data) {
-    if (parent == NO_TREE_NODE) {
-        if (pTree->root == NO_TREE_NODE)
+void binaryTreeInsert_ptr(BinaryTreePtr pTree, TreeNodePtr parent, int isRight, DataPtr dataPtr){
+    if(parent == TREE_NODE_NULLPTR){
+        if(pTree->root == TREE_NODE_NULLPTR)
             pTree->root = createTreeNode(pTree);
-        insertData(pTree, pTree->root, dataIdx, data);
-        return pTree->root;
+        insertData_ptr(pTree, pTree->root, dataPtr);
+        return;
     }
 
-    if (isRight) {
-        if (RIGHT(parent) == NO_TREE_NODE) {
+    if(isRight){
+        if(RIGHT(parent) == TREE_NODE_NULLPTR)
             RIGHT(parent) = createTreeNode(pTree);
-        }
-        insertData(pTree, RIGHT(parent), dataIdx, data);
-        return RIGHT(parent);
+        insertData_ptr(pTree, RIGHT(parent), dataPtr);
+    } else{
+        if(LEFT(parent) == TREE_NODE_NULLPTR)
+            LEFT(parent) = createTreeNode(pTree);
+        insertData_ptr(pTree, LEFT(parent), dataPtr);
     }
-
-    if (LEFT(parent) == NO_TREE_NODE) {
-        LEFT(parent) = createTreeNode(pTree);
-    }
-    insertData(pTree, LEFT(parent), dataIdx, data);
-    return LEFT(parent);
 }
 
-void freeTreeNode(BinaryTreePtr pTree, TreeNodeId nodeId) {
-    NODE(nodeId).nextAvailableNodeId = pTree->nextAvailableNodeId;
-    pTree->nextAvailableNodeId = nodeId;
+void binaryTreeInsert_val(BinaryTreePtr pTree, TreeNodePtr parent, int isRight, const DataType data){
+    binaryTreeInsert_ptr(pTree, parent, isRight, createData_val(pTree, data));
 }
 
-TreeNodeId deleteBinaryTreeNode(BinaryTreePtr pTree, TreeNodeId nodeId) {
-    TreeNodeId outNodeId;
+//TreeNodePtr binaryTreeInsert(BinaryTreePtr pTree, TreeNodePtr parent, int isRight, DataPtr dataIdx, DataType data) {
+//    if (parent == TREE_NODE_NULLPTR) {
+//        if (pTree->root == TREE_NODE_NULLPTR)
+//            pTree->root = createTreeNode(pTree);
+//        insertData(pTree, pTree->root, dataIdx, data);
+//        return pTree->root;
+//    }
+//
+//    if (isRight) {
+//        if (RIGHT(parent) == TREE_NODE_NULLPTR) {
+//            RIGHT(parent) = createTreeNode(pTree);
+//        }
+//        insertData(pTree, RIGHT(parent), dataIdx, data);
+//        return RIGHT(parent);
+//    }
+//
+//    if (LEFT(parent) == TREE_NODE_NULLPTR) {
+//        LEFT(parent) = createTreeNode(pTree);
+//    }
+//    insertData(pTree, LEFT(parent), dataIdx, data);
+//    return LEFT(parent);
+//}
 
-    if (LEFT(nodeId) == NO_TREE_NODE) {
+static void freeTreeNode(BinaryTreePtr pTree, TreeNodePtr nodeId) {
+    NODE(nodeId).nextAvailableNodePtr = pTree->nextAvailableNodePtr;
+    pTree->nextAvailableNodePtr = nodeId;
+}
+
+static TreeNodePtr deleteBinaryTreeNode(BinaryTreePtr pTree, TreeNodePtr nodeId) {
+    TreeNodePtr outNodeId;
+
+    if (LEFT(nodeId) == TREE_NODE_NULLPTR) {
         outNodeId = RIGHT(nodeId);
         freeTreeNode(pTree, nodeId);
         pTree->nodeNum--;
-    } else if (RIGHT(nodeId) == NO_TREE_NODE) {
+    } else if (RIGHT(nodeId) == TREE_NODE_NULLPTR) {
         outNodeId = LEFT(nodeId);
         freeTreeNode(pTree, nodeId);
         pTree->nodeNum--;
@@ -180,23 +244,23 @@ TreeNodeId deleteBinaryTreeNode(BinaryTreePtr pTree, TreeNodeId nodeId) {
     return outNodeId;
 }
 
-DataIndex binaryTreeDelete(BinaryTreePtr pTree, TreeNodeId parent, int isRight) {
-    TreeNodeId thisNodeId;
-    DataIndex outDataIdx;
+DataPtr binaryTreeDelete(BinaryTreePtr pTree, TreeNodePtr parent, int isRight) {
+    TreeNodePtr thisNodeId;
+    DataPtr outDataIdx;
 
-    if (parent == NO_TREE_NODE) {
+    if (parent == TREE_NODE_NULLPTR) {
         thisNodeId = pTree->root;
     } else {
         thisNodeId = (isRight) ? RIGHT(parent) : LEFT(parent);
     }
 
-    if (thisNodeId == NO_TREE_NODE)
-        return NO_DATA_INDEX;
+    if (thisNodeId == TREE_NODE_NULLPTR)
+        return DATA_NULLPTR;
 
     outDataIdx = deleteData(pTree, thisNodeId);
-    if (DATAIDX(thisNodeId) == NO_DATA_INDEX) {
+    if (DATAPTR(thisNodeId) == DATA_NULLPTR) {
         thisNodeId = deleteBinaryTreeNode(pTree, thisNodeId);
-        if (parent == NO_TREE_NODE) {
+        if (parent == TREE_NODE_NULLPTR) {
             pTree->root = thisNodeId;
         } else {
             if (isRight)
