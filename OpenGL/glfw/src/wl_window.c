@@ -1494,7 +1494,7 @@ static void pointerHandleMotion(void* userData,
 
             if (window->wl.bufferScale > 1 && _glfw.wl.cursorThemeHiDPI)
             {
-                // We only support up to scale=2 for now, since libwayland-cursor
+                // We only support up to scale=2 for now, since libwayland-super_tree
                 // requires us to load a different theme for each size.
                 scale = 2;
                 theme = _glfw.wl.cursorThemeHiDPI;
@@ -2668,7 +2668,7 @@ void _glfwGetCursorPosWayland(_GLFWwindow* window, double* xpos, double* ypos)
 void _glfwSetCursorPosWayland(_GLFWwindow* window, double x, double y)
 {
     _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Wayland: The platform does not support setting the cursor position");
+                    "Wayland: The platform does not support setting the super_tree position");
 }
 
 void _glfwSetCursorModeWayland(_GLFWwindow* window, int mode)
@@ -2828,7 +2828,7 @@ GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
                 break;
             default:
                 _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
-                                "Wayland: Standard cursor shape unavailable");
+                                "Wayland: Standard super_tree shape unavailable");
                 return GLFW_FALSE;
         }
 
@@ -2836,7 +2836,7 @@ GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
         if (!cursor->wl.cursor)
         {
             _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
-                            "Wayland: Failed to create standard cursor \"%s\"",
+                            "Wayland: Failed to create standard super_tree \"%s\"",
                             name);
             return GLFW_FALSE;
         }
@@ -2856,7 +2856,7 @@ GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
 
 void _glfwDestroyCursorWayland(_GLFWcursor* cursor)
 {
-    // If it's a standard cursor we don't need to do anything here
+    // If it's a standard super_tree we don't need to do anything here
     if (cursor->wl.cursor)
         return;
 
@@ -2997,12 +2997,12 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
 
     window->wl.currentCursor = cursor;
 
-    // If we're not in the correct window just save the cursor
-    // the next time the pointer enters the window the cursor will change
+    // If we're not in the correct window just save the super_tree
+    // the next time the pointer enters the window the super_tree will change
     if (!window->wl.hovered)
         return;
 
-    // Update pointer lock to match cursor mode
+    // Update pointer lock to match super_tree mode
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         if (window->wl.confinedPointer)
@@ -3038,7 +3038,7 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
             if (!defaultCursor)
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
-                                "Wayland: Standard cursor not found");
+                                "Wayland: Standard super_tree not found");
                 return;
             }
 

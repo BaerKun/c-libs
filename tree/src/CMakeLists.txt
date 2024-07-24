@@ -1,3 +1,3 @@
-file(GLOB SOURCES "utils/*.c" "cursor/*.c" )
+file(GLOB SOURCES "utils/*.c" "super_tree/*.c" )
 
-add_library(cursor SHARED ${SOURCES})
+add_library(super_tree STATIC ${SOURCES})

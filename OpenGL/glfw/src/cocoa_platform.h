@@ -152,8 +152,8 @@ typedef struct _GLFWwindowNS
     int             fbWidth, fbHeight;
     float           xscale, yscale;
 
-    // The total sum of the distances the cursor has been warped
-    // since the last cursor motion event was processed
+    // The total sum of the distances the super_tree has been warped
+    // since the last super_tree motion event was processed
     // This is kept to counteract Cocoa doing the same internally
     double          cursorWarpDeltaX, cursorWarpDeltaY;
 } _GLFWwindowNS;
@@ -177,9 +177,9 @@ typedef struct _GLFWlibraryNS
     short int           scancodes[GLFW_KEY_LAST + 1];
     char*               clipboardString;
     CGPoint             cascadePoint;
-    // Where to place the cursor when re-enabled
+    // Where to place the super_tree when re-enabled
     double              restoreCursorPosX, restoreCursorPosY;
-    // The window whose disabled cursor mode is active
+    // The window whose disabled super_tree mode is active
     _GLFWwindow*        disabledCursorWindow;
 
     struct {
@@ -202,7 +202,7 @@ typedef struct _GLFWmonitorNS
     double              fallbackRefreshRate;
 } _GLFWmonitorNS;
 
-// Cocoa-specific per-cursor data
+// Cocoa-specific per-super_tree data
 //
 typedef struct _GLFWcursorNS
 {

@@ -61,7 +61,7 @@
 // GLFW uses DirectInput8 interfaces
 #define DIRECTINPUT_VERSION 0x0800
 
-// GLFW uses OEM cursor resources
+// GLFW uses OEM super_tree resources
 #define OEMRESOURCE
 
 #include <wctype.h>
@@ -429,7 +429,7 @@ typedef struct _GLFWwindowWin32
     // Cached size used to filter out duplicate events
     int                 width, height;
 
-    // The last received cursor position, regardless of source
+    // The last received super_tree position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;
     // The last received high surrogate when decoding pairs of UTF-16 messages
     WCHAR               highSurrogate;
@@ -449,16 +449,16 @@ typedef struct _GLFWlibraryWin32
     short int           keycodes[512];
     short int           scancodes[GLFW_KEY_LAST + 1];
     char                keynames[GLFW_KEY_LAST + 1][5];
-    // Where to place the cursor when re-enabled
+    // Where to place the super_tree when re-enabled
     double              restoreCursorPosX, restoreCursorPosY;
-    // The window whose disabled cursor mode is active
+    // The window whose disabled super_tree mode is active
     _GLFWwindow*        disabledCursorWindow;
-    // The window the cursor is captured in
+    // The window the super_tree is captured in
     _GLFWwindow*        capturedCursorWindow;
     RAWINPUT*           rawInput;
     int                 rawInputSize;
     UINT                mouseTrailSize;
-    // The cursor handle to use to hide the cursor (NULL or a transparent cursor)
+    // The super_tree handle to use to hide the super_tree (NULL or a transparent super_tree)
     HCURSOR             blankCursor;
 
     struct {
@@ -518,7 +518,7 @@ typedef struct _GLFWmonitorWin32
     GLFWbool            modeChanged;
 } _GLFWmonitorWin32;
 
-// Win32-specific per-cursor data
+// Win32-specific per-super_tree data
 //
 typedef struct _GLFWcursorWin32
 {

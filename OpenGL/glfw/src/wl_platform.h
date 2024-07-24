@@ -596,7 +596,7 @@ typedef struct _GLFWmonitorWayland
     int32_t                     scale;
 } _GLFWmonitorWayland;
 
-// Wayland-specific per-cursor data
+// Wayland-specific per-super_tree data
 //
 typedef struct _GLFWcursorWayland
 {

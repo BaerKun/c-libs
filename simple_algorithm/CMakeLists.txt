@@ -2,20 +2,12 @@ cmake_minimum_required(VERSION 3.27)
 
 project(Algorithm)
 
-file(GLOB SOURCES "utils/*.c")
-
-add_library(utilities STATIC ${SOURCES})
+include_directories(include)
 
 file(GLOB SOURCES "*.c")
 
 add_library(algorithm STATIC ${SOURCES})
 
-find_library(TREE cursor PATHS lib)
+add_executable(alg_test tests/test1.c)
 
-target_link_libraries(algorithm PRIVATE utilities)
-
-target_link_libraries(algorithm PRIVATE ${TREE})
-
-add_executable(Test1 tests/test1.c)
-
-target_link_libraries(Test1 PRIVATE algorithm)
+target_link_libraries(alg_test PRIVATE algorithm)

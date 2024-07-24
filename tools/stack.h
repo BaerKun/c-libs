@@ -1,21 +1,47 @@
 #ifndef STACK_H
 #define STACK_H
 
-typedef int StackElement;
+#include <stdlib.h>
+#include <stdio.h>
+
+#ifndef STACK_ELEMENT_TYPE
+#define STACK_ELEMENT_TYPE int
+#endif
+
 typedef struct Stack Stack, *StackPtr;
 
 struct Stack{
-    StackElement *elements;
+    STACK_ELEMENT_TYPE *elements;
     int capacity;
     int top;
 };
 
-StackPtr newStack(int capacity);
+static StackPtr newStack(int capacity){
+    StackPtr stack = malloc(sizeof(Stack));
 
-void stackPush(StackPtr stack, StackElement element);
+    *stack = (Stack){malloc(sizeof(STACK_ELEMENT_TYPE) * capacity), capacity, 0};
 
-StackElement stackPop(StackPtr stack);
+    return stack;
+}
 
-void deleteStack(StackPtr stack);
+static void stackPush(StackPtr stack, STACK_ELEMENT_TYPE element){
+    if(stack->top == stack->capacity)
+        fputs("stackPush: Stack is full!", stderr);
+    else
+        stack->elements[stack->top++] = element;
+}
+
+static STACK_ELEMENT_TYPE stackPop(StackPtr stack){
+    if(stack->top == 0){
+        fputs("stackPop: Stack is empty!", stderr);
+        return;
+    }
+    return stack->elements[--stack->top];
+}
+
+static void deleteStack(StackPtr stack){
+    free(stack->elements);
+    free(stack);
+}
 
 #endif //STACK_H

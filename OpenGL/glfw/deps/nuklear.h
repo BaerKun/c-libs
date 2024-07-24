@@ -724,7 +724,7 @@ NK_API void nk_set_user_data(struct nk_context*, nk_handle handle);
 /// Function            | Description
 /// --------------------|-------------------------------------------------------
 /// __nk_input_begin__  | Begins the input mirroring process. Needs to be called before all other `nk_input_xxx` calls
-/// __nk_input_motion__ | Mirrors mouse cursor position
+/// __nk_input_motion__ | Mirrors mouse super_tree position
 /// __nk_input_key__    | Mirrors key state with either pressed or released
 /// __nk_input_button__ | Mirrors mouse button state with either pressed or released
 /// __nk_input_scroll__ | Mirrors mouse scroll values
@@ -798,8 +798,8 @@ NK_API void nk_input_begin(struct nk_context*);
 /// Parameter   | Description
 /// ------------|-----------------------------------------------------------
 /// __ctx__     | Must point to a previously initialized `nk_context` struct
-/// __x__       | Must hold an integer describing the current mouse cursor x-position
-/// __y__       | Must hold an integer describing the current mouse cursor y-position
+/// __x__       | Must hold an integer describing the current mouse super_tree x-position
+/// __y__       | Must hold an integer describing the current mouse super_tree y-position
 */
 NK_API void nk_input_motion(struct nk_context*, int x, int y);
 /*/// #### nk_input_key
@@ -827,8 +827,8 @@ NK_API void nk_input_key(struct nk_context*, enum nk_keys, int down);
 /// ------------|-----------------------------------------------------------
 /// __ctx__     | Must point to a previously initialized `nk_context` struct
 /// __btn__     | Must be any value specified in enum `nk_buttons` that needs to be mirrored
-/// __x__       | Must contain an integer describing mouse cursor x-position on click up/down
-/// __y__       | Must contain an integer describing mouse cursor y-position on click up/down
+/// __x__       | Must contain an integer describing mouse super_tree x-position on click up/down
+/// __y__       | Must contain an integer describing mouse super_tree y-position on click up/down
 /// __down__    | Must be 0 for key is up and 1 for key is down
 */
 NK_API void nk_input_button(struct nk_context*, enum nk_buttons, int x, int y, int down);
@@ -900,7 +900,7 @@ NK_API void nk_input_glyph(struct nk_context*, const nk_glyph);
 NK_API void nk_input_unicode(struct nk_context*, nk_rune);
 /*/// #### nk_input_end
 /// End the input mirroring process by resetting mouse grabbing
-/// state to ensure the mouse cursor is not grabbed indefinitely.
+/// state to ensure the mouse super_tree is not grabbed indefinitely.
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
 /// void nk_input_end(struct nk_context *ctx);
@@ -4857,7 +4857,7 @@ struct nk_style_toggle {
     struct nk_style_item active;
     struct nk_color border_color;
 
-    /* cursor */
+    /* super_tree */
     struct nk_style_item cursor_normal;
     struct nk_style_item cursor_hover;
 
@@ -4928,7 +4928,7 @@ struct nk_style_slider {
     struct nk_color bar_active;
     struct nk_color bar_filled;
 
-    /* cursor */
+    /* super_tree */
     struct nk_style_item cursor_normal;
     struct nk_style_item cursor_hover;
     struct nk_style_item cursor_active;
@@ -4961,7 +4961,7 @@ struct nk_style_progress {
     struct nk_style_item active;
     struct nk_color border_color;
 
-    /* cursor */
+    /* super_tree */
     struct nk_style_item cursor_normal;
     struct nk_style_item cursor_hover;
     struct nk_style_item cursor_active;
@@ -4987,7 +4987,7 @@ struct nk_style_scrollbar {
     struct nk_style_item active;
     struct nk_color border_color;
 
-    /* cursor */
+    /* super_tree */
     struct nk_style_item cursor_normal;
     struct nk_style_item cursor_hover;
     struct nk_style_item cursor_active;
@@ -5021,7 +5021,7 @@ struct nk_style_edit {
     struct nk_color border_color;
     struct nk_style_scrollbar scrollbar;
 
-    /* cursor  */
+    /* super_tree  */
     struct nk_color cursor_normal;
     struct nk_color cursor_hover;
     struct nk_color cursor_text_normal;
@@ -5592,7 +5592,7 @@ struct nk_context {
      * each window for temporary use cases, so I only provide *one* instance
      * for all windows. This works because the content is cleared anyway */
     struct nk_text_edit text_edit;
-    /* draw buffer used for overlay drawing operation like cursor */
+    /* draw buffer used for overlay drawing operation like super_tree */
     struct nk_command_buffer overlay;
 
     /* windows */
@@ -10711,7 +10711,7 @@ nk_rp__skyline_find_best_pos(struct nk_rp_context *c, int width, int height)
     while (node->x + width <= c->width) {
         int y,waste;
         y = nk_rp__skyline_find_min_y(c, node, node->x, width, &waste);
-        /* actually just want to test BL */
+        /* actually just want to tests BL */
         if (c->heuristic == NK_RP_HEURISTIC_Skyline_BL_sortHeight) {
             /* bottom left */
             if (y < best_y) {
@@ -13793,7 +13793,7 @@ nk_font_atlas_bake(struct nk_font_atlas *atlas, int *width, int *height,
             config->font, nk_handle_ptr(0));
     }
 
-    /* initialize each cursor */
+    /* initialize each super_tree */
     {NK_STORAGE const struct nk_vec2 nk_cursor_data[NK_CURSOR_COUNT][3] = {
         /* Pos      Size        Offset */
         {{ 0, 3},   {12,19},    { 0, 0}},
@@ -15208,7 +15208,7 @@ nk_build(struct nk_context *ctx)
     struct nk_command *cmd = 0;
     nk_byte *buffer = 0;
 
-    /* draw cursor overlay */
+    /* draw super_tree overlay */
     if (!ctx->style.cursor_active)
         ctx->style.cursor_active = ctx->style.cursors[NK_CURSOR_ARROW];
     if (ctx->style.cursor_active && !ctx->input.mouse.grabbed && ctx->style.cursor_visible) {
@@ -15856,7 +15856,7 @@ nk_panel_end(struct nk_context *ctx)
     scrollbar_size = style->window.scrollbar_size;
     panel_padding = nk_panel_get_padding(style, layout->type);
 
-    /* update the current cursor Y-position to point over the last added widget */
+    /* update the current super_tree Y-position to point over the last added widget */
     layout->at_y += layout->row.height;
 
     /* dynamic panels */
@@ -18445,7 +18445,7 @@ nk_tree_state_base(struct nk_context *ctx, enum nk_tree_type type,
     nk_widget_text(out, label, title, nk_strlen(title), &text,
         NK_TEXT_LEFT, style->font);}
 
-    /* increase x-axis cursor widget position pointer */
+    /* increase x-axis super_tree widget position pointer */
     if (*state == NK_MAXIMIZED) {
         layout->at_x = header.x + (float)*layout->offset_x + style->tab.indent;
         layout->bounds.w = NK_MAX(layout->bounds.w, style->tab.indent);
@@ -18628,7 +18628,7 @@ nk_tree_element_image_push_hashed_base(struct nk_context *ctx, enum nk_tree_type
     } else nk_do_selectable(&dummy, &win->buffer, label, title, title_len, NK_TEXT_LEFT,
             selected, &style->selectable, in, style->font);
     }
-    /* increase x-axis cursor widget position pointer */
+    /* increase x-axis super_tree widget position pointer */
     if (*state == NK_MAXIMIZED) {
         layout->at_x = header.x + (float)*layout->offset_x + style->tab.indent;
         layout->bounds.w = NK_MAX(layout->bounds.w, style->tab.indent);
@@ -20397,7 +20397,7 @@ nk_draw_checkbox(struct nk_command_buffer *out,
         text.text = style->text_normal;
     }
 
-    /* draw background and cursor */
+    /* draw background and super_tree */
     if (background->type == NK_STYLE_ITEM_COLOR) {
         nk_fill_rect(out, *selector, 0, style->border_color);
         nk_fill_rect(out, nk_shrink_rect(*selector, style->border), 0, background->data.color);
@@ -20439,7 +20439,7 @@ nk_draw_option(struct nk_command_buffer *out,
         text.text = style->text_normal;
     }
 
-    /* draw background and cursor */
+    /* draw background and super_tree */
     if (background->type == NK_STYLE_ITEM_COLOR) {
         nk_fill_circle(out, *selector, style->border_color);
         nk_fill_circle(out, nk_shrink_rect(*selector, style->border), background->data.color);
@@ -20489,7 +20489,7 @@ nk_do_toggle(nk_flags *state,
     select.y = r.y + r.h/2.0f - select.h/2.0f;
     select.x = r.x;
 
-    /* calculate the bounds of the cursor inside the selector */
+    /* calculate the bounds of the super_tree inside the selector */
     cursor.x = select.x + style->padding.x + style->border;
     cursor.y = select.y + style->padding.y + style->border;
     cursor.w = select.w - (2 * style->padding.x + 2 * style->border);
@@ -21009,7 +21009,7 @@ nk_slider_behavior(nk_flags *state, struct nk_rect *logical_cursor,
     int left_mouse_down;
     int left_mouse_click_in_cursor;
 
-    /* check if visual cursor is being dragged */
+    /* check if visual super_tree is being dragged */
     nk_widget_state_reset(state);
     left_mouse_down = in && in->mouse.buttons[NK_BUTTON_LEFT].down;
     left_mouse_click_in_cursor = in && nk_input_has_mouse_click_down_in_rect(in,
@@ -21096,7 +21096,7 @@ nk_draw_slider(struct nk_command_buffer *out, nk_flags state,
     nk_fill_rect(out, bar, style->rounding, bar_color);
     nk_fill_rect(out, fill, style->rounding, style->bar_filled);
 
-    /* draw cursor */
+    /* draw super_tree */
     if (cursor->type == NK_STYLE_ITEM_IMAGE)
         nk_draw_image(out, *visual_cursor, &cursor->data.image, nk_white);
     else nk_fill_circle(out, *visual_cursor, cursor->data.color);
@@ -21155,7 +21155,7 @@ nk_do_slider(nk_flags *state,
         bounds.w = bounds.w - (2*button.w + 2*style->spacing.x);
     }
 
-    /* remove one cursor size to support visual cursor */
+    /* remove one super_tree size to support visual super_tree */
     bounds.x += style->cursor_size.x*0.5f;
     bounds.w -= style->cursor_size.x;
 
@@ -21167,9 +21167,9 @@ nk_do_slider(nk_flags *state,
     slider_steps = slider_range / step;
     cursor_offset = (slider_value - slider_min) / step;
 
-    /* calculate cursor
+    /* calculate super_tree
     Basically you have two cursors. One for visual representation and interaction
-    and one for updating the actual cursor value. */
+    and one for updating the actual super_tree value. */
     logical_cursor.h = bounds.h;
     logical_cursor.w = bounds.w / slider_steps;
     logical_cursor.x = bounds.x + (logical_cursor.w * cursor_offset);
@@ -21314,7 +21314,7 @@ nk_draw_progress(struct nk_command_buffer *out, nk_flags state,
         nk_stroke_rect(out, *bounds, style->rounding, style->border, style->border_color);
     } else nk_draw_image(out, *bounds, &background->data.image, nk_white);
 
-    /* draw cursor */
+    /* draw super_tree */
     if (cursor->type == NK_STYLE_ITEM_COLOR) {
         nk_fill_rect(out, *scursor, style->rounding, cursor->data.color);
         nk_stroke_rect(out, *scursor, style->rounding, style->border, style->border_color);
@@ -21334,7 +21334,7 @@ nk_do_progress(nk_flags *state,
     NK_ASSERT(out);
     if (!out || !style) return 0;
 
-    /* calculate progressbar cursor */
+    /* calculate progressbar super_tree */
     cursor.w = NK_MAX(bounds.w, 2 * style->padding.x + 2 * style->border);
     cursor.h = NK_MAX(bounds.h, 2 * style->padding.y + 2 * style->border);
     cursor = nk_pad_rect(bounds, nk_vec2(style->padding.x + style->border, style->padding.y + style->border));
@@ -21423,7 +21423,7 @@ nk_scrollbar_behavior(nk_flags *state, struct nk_input *in,
 
     scroll_delta = (o == NK_VERTICAL) ? in->mouse.scroll_delta.y: in->mouse.scroll_delta.x;
     if (left_mouse_down && left_mouse_click_in_cursor && !left_mouse_clicked) {
-        /* update cursor by mouse dragging */
+        /* update super_tree by mouse dragging */
         float pixel, delta;
         *state = NK_WIDGET_STATE_ACTIVE;
         if (o == NK_VERTICAL) {
@@ -21455,16 +21455,16 @@ nk_scrollbar_behavior(nk_flags *state, struct nk_input *in,
         else scroll_offset = NK_MIN(scroll_offset + scroll->w, target - scroll->w);
     } else if (has_scrolling) {
         if ((scroll_delta < 0 || (scroll_delta > 0))) {
-            /* update cursor by mouse scrolling */
+            /* update super_tree by mouse scrolling */
             scroll_offset = scroll_offset + scroll_step * (-scroll_delta);
             if (o == NK_VERTICAL)
                 scroll_offset = NK_CLAMP(0, scroll_offset, target - scroll->h);
             else scroll_offset = NK_CLAMP(0, scroll_offset, target - scroll->w);
         } else if (nk_input_is_key_pressed(in, NK_KEY_SCROLL_START)) {
-            /* update cursor to the beginning  */
+            /* update super_tree to the beginning  */
             if (o == NK_VERTICAL) scroll_offset = 0;
         } else if (nk_input_is_key_pressed(in, NK_KEY_SCROLL_END)) {
-            /* update cursor to the end */
+            /* update super_tree to the end */
             if (o == NK_VERTICAL) scroll_offset = target - scroll->h;
         }
     }
@@ -21502,7 +21502,7 @@ nk_draw_scrollbar(struct nk_command_buffer *out, nk_flags state,
         nk_draw_image(out, *bounds, &background->data.image, nk_white);
     }
 
-    /* draw cursor */
+    /* draw super_tree */
     if (cursor->type == NK_STYLE_ITEM_COLOR) {
         nk_fill_rect(out, *scroll, style->rounding_cursor, cursor->data.color);
         nk_stroke_rect(out, *scroll, style->rounding_cursor, style->border_cursor, style->cursor_border_color);
@@ -21568,13 +21568,13 @@ nk_do_scrollbarv(nk_flags *state,
     scroll_ratio = scroll.h / target;
     scroll_off = scroll_offset / target;
 
-    /* calculate scrollbar cursor bounds */
+    /* calculate scrollbar super_tree bounds */
     cursor.h = NK_MAX((scroll_ratio * scroll.h) - (2*style->border + 2*style->padding.y), 0);
     cursor.y = scroll.y + (scroll_off * scroll.h) + style->border + style->padding.y;
     cursor.w = scroll.w - (2 * style->border + 2 * style->padding.x);
     cursor.x = scroll.x + style->border + style->padding.x;
 
-    /* calculate empty space around cursor */
+    /* calculate empty space around super_tree */
     empty_north.x = scroll.x;
     empty_north.y = scroll.y;
     empty_north.w = scroll.w;
@@ -21656,13 +21656,13 @@ nk_do_scrollbarh(nk_flags *state,
     scroll_ratio = scroll.w / target;
     scroll_off = scroll_offset / target;
 
-    /* calculate cursor bounds */
+    /* calculate super_tree bounds */
     cursor.w = (scroll_ratio * scroll.w) - (2*style->border + 2*style->padding.x);
     cursor.x = scroll.x + (scroll_off * scroll.w) + style->border + style->padding.x;
     cursor.h = scroll.h - (2 * style->border + 2 * style->padding.y);
     cursor.y = scroll.y + style->border + style->padding.y;
 
-    /* calculate empty space around cursor */
+    /* calculate empty space around super_tree */
     empty_west.x = scroll.x;
     empty_west.y = scroll.y;
     empty_west.w = cursor.x - scroll.x;
@@ -21813,7 +21813,7 @@ NK_LIB void
 nk_textedit_click(struct nk_text_edit *state, float x, float y,
     const struct nk_user_font *font, float row_height)
 {
-    /* API click: on mouse down, move the cursor to the clicked location,
+    /* API click: on mouse down, move the super_tree to the clicked location,
      * and reset the selection */
     state->cursor = nk_textedit_locate_coord(state, x, y, font, row_height);
     state->select_start = state->cursor;
@@ -21824,7 +21824,7 @@ NK_LIB void
 nk_textedit_drag(struct nk_text_edit *state, float x, float y,
     const struct nk_user_font *font, float row_height)
 {
-    /* API drag: on mouse drag, move the cursor and selection endpoint
+    /* API drag: on mouse drag, move the super_tree and selection endpoint
      * to the clicked location */
     int p = nk_textedit_locate_coord(state, x, y, font, row_height);
     if (state->select_start == state->select_end)
@@ -21891,12 +21891,12 @@ nk_textedit_find_charpos(struct nk_text_find *find, struct nk_text_edit *state,
 NK_INTERN void
 nk_textedit_clamp(struct nk_text_edit *state)
 {
-    /* make the selection/cursor state valid if client altered the string */
+    /* make the selection/super_tree state valid if client altered the string */
     int n = state->string.len;
     if (NK_TEXT_HAS_SELECTION(state)) {
         if (state->select_start > n) state->select_start = n;
         if (state->select_end   > n) state->select_end = n;
-        /* if clamping forced them to be equal, move the cursor to match */
+        /* if clamping forced them to be equal, move the super_tree to match */
         if (state->select_start == state->select_end)
             state->cursor = state->select_start;
     }
@@ -21941,7 +21941,7 @@ nk_textedit_sortselection(struct nk_text_edit *state)
 NK_INTERN void
 nk_textedit_move_to_first(struct nk_text_edit *state)
 {
-    /* move cursor to first character of selection */
+    /* move super_tree to first character of selection */
     if (NK_TEXT_HAS_SELECTION(state)) {
         nk_textedit_sortselection(state);
         state->cursor = state->select_start;
@@ -21952,7 +21952,7 @@ nk_textedit_move_to_first(struct nk_text_edit *state)
 NK_INTERN void
 nk_textedit_move_to_last(struct nk_text_edit *state)
 {
-    /* move cursor to last character of selection */
+    /* move super_tree to last character of selection */
     if (NK_TEXT_HAS_SELECTION(state)) {
         nk_textedit_sortselection(state);
         nk_textedit_clamp(state);
@@ -22000,7 +22000,7 @@ nk_textedit_move_to_word_next(struct nk_text_edit *state)
 NK_INTERN void
 nk_textedit_prep_selection_at_cursor(struct nk_text_edit *state)
 {
-    /* update selection and cursor to match each other */
+    /* update selection and super_tree to match each other */
     if (!NK_TEXT_HAS_SELECTION(state))
         state->select_start = state->select_end = state->cursor;
     else state->cursor = state->select_end;
@@ -22149,7 +22149,7 @@ retry:
             state->has_preferred_x = 0;
         } else {
             /* if currently there's a selection,
-             * move cursor to start of selection */
+             * move super_tree to start of selection */
             if (NK_TEXT_HAS_SELECTION(state))
                 nk_textedit_move_to_first(state);
             else if (state->cursor > 0)
@@ -22167,7 +22167,7 @@ retry:
             state->has_preferred_x = 0;
         } else {
             /* if currently there's a selection,
-             * move cursor to end of selection */
+             * move super_tree to end of selection */
             if (NK_TEXT_HAS_SELECTION(state))
                 nk_textedit_move_to_last(state);
             else ++state->cursor;
@@ -22223,7 +22223,7 @@ retry:
         else if (NK_TEXT_HAS_SELECTION(state))
             nk_textedit_move_to_last(state);
 
-        /* compute current position of cursor point */
+        /* compute current position of super_tree point */
         nk_textedit_clamp(state);
         nk_textedit_find_charpos(&find, state, state->cursor, state->single_line,
             font, row_height);
@@ -22271,7 +22271,7 @@ retry:
         else if (NK_TEXT_HAS_SELECTION(state))
             nk_textedit_move_to_first(state);
 
-         /* compute current position of cursor point */
+         /* compute current position of super_tree point */
          nk_textedit_clamp(state);
          nk_textedit_find_charpos(&find, state, state->cursor, state->single_line,
                 font, row_height);
@@ -23069,7 +23069,7 @@ nk_do_edit(nk_flags *state, struct nk_command_buffer *out,
         int selection_begin = NK_MIN(edit->select_start, edit->select_end);
         int selection_end = NK_MAX(edit->select_start, edit->select_end);
 
-        /* calculate total line count + total space + cursor/selection position */
+        /* calculate total line count + total space + super_tree/selection position */
         float line_width = 0.0f;
         if (text && len)
         {
@@ -23088,7 +23088,7 @@ nk_do_edit(nk_flags *state, struct nk_command_buffer *out,
             /* iterate all lines */
             while ((text_len < len) && glyph_len)
             {
-                /* set cursor 2D position and line */
+                /* set super_tree 2D position and line */
                 if (!cursor_ptr && glyphs == edit->cursor)
                 {
                     int glyph_offset;
@@ -23163,7 +23163,7 @@ nk_do_edit(nk_flags *state, struct nk_command_buffer *out,
             }
             text_size.y = (float)total_lines * row_height;
 
-            /* handle case when cursor is at end of text buffer */
+            /* handle case when super_tree is at end of text buffer */
             if (!cursor_ptr && edit->cursor == edit->string.len) {
                 cursor_pos.x = line_width;
                 cursor_pos.y = text_size.y - row_height;
@@ -23173,7 +23173,7 @@ nk_do_edit(nk_flags *state, struct nk_command_buffer *out,
             /* scrollbar */
             if (cursor_follow)
             {
-                /* update scrollbar to follow cursor */
+                /* update scrollbar to follow super_tree */
                 if (!(flags & NK_EDIT_NO_HORIZONTAL_SCROLL)) {
                     /* horizontal scroll */
                     const float scroll_increment = area.w * 0.25f;
@@ -23302,12 +23302,12 @@ nk_do_edit(nk_flags *state, struct nk_command_buffer *out,
             }
         }
 
-        /* cursor */
+        /* super_tree */
         if (edit->select_start == edit->select_end)
         {
             if (edit->cursor >= nk_str_len(&edit->string) ||
                 (cursor_ptr && *cursor_ptr == '\n')) {
-                /* draw cursor at end of line */
+                /* draw super_tree at end of line */
                 struct nk_rect cursor;
                 cursor.w = style->cursor_size;
                 cursor.h = font->height;
@@ -23316,7 +23316,7 @@ nk_do_edit(nk_flags *state, struct nk_command_buffer *out,
                 cursor.y -= edit->scrollbar.y;
                 nk_fill_rect(out, cursor, 0, cursor_color);
             } else {
-                /* draw cursor inside text */
+                /* draw super_tree inside text */
                 int glyph_len;
                 struct nk_rect label;
                 struct nk_text txt;
@@ -25488,7 +25488,7 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 ///                        clear provided buffers. So make sure to either free
 ///                        or clear each passed buffer after calling nk_convert.
 /// - 2018/02/23 (3.00.6) - Fixed slider dragging behavior.
-/// - 2018/01/31 (3.00.5) - Fixed overcalculation of cursor data in font baking process.
+/// - 2018/01/31 (3.00.5) - Fixed overcalculation of super_tree data in font baking process.
 /// - 2018/01/31 (3.00.4) - Removed name collision with stb_truetype.
 /// - 2018/01/28 (3.00.3) - Fixed panel window border drawing bug.
 /// - 2018/01/12 (3.00.2) - Added `nk_group_begin_titled` for separed group identifier and title.
@@ -25591,7 +25591,7 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 ///                        rectangle for less overdraw and widget background transparency.
 /// - 2016/10/18 (1.23.0) - Added `nk_edit_focus` for manually edit widget focus control.
 /// - 2016/09/29 (1.22.7) - Fixed deduction of basic type in non `<stdint.h>` compilation.
-/// - 2016/09/29 (1.22.6) - Fixed edit widget UTF-8 text cursor drawing bug.
+/// - 2016/09/29 (1.22.6) - Fixed edit widget UTF-8 text super_tree drawing bug.
 /// - 2016/09/28 (1.22.5) - Fixed edit widget UTF-8 text appending/inserting/removing.
 /// - 2016/09/28 (1.22.4) - Fixed drawing bug inside edit widgets which offset all text
 ///                        text in every edit widget if one of them is scrolled.
@@ -25729,7 +25729,7 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 /// - 2016/08/03 (1.04.0) - Added color parameter to `nk_draw_image`.
 /// - 2016/08/03 (1.04.0) - Added additional window padding style attributes for
 ///                        sub windows (combo, menu, ...).
-/// - 2016/08/03 (1.04.0) - Added functions to show/hide software cursor.
+/// - 2016/08/03 (1.04.0) - Added functions to show/hide software super_tree.
 /// - 2016/08/03 (1.04.0) - Added `NK_WINDOW_BACKGROUND` flag to force a window
 ///                        to be always in the background of the screen.
 /// - 2016/08/03 (1.03.2) - Removed invalid assert macro for NK_RGB color picker.
@@ -25742,7 +25742,7 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 ///                        seconds without window interaction. To make it work
 ///                        you have to also set a delta time inside the `nk_context`.
 /// - 2016/07/25 (1.01.1) - Fixed small panel and panel border drawing bugs.
-/// - 2016/07/15 (1.01.0) - Added software cursor to `nk_style` and `nk_context`.
+/// - 2016/07/15 (1.01.0) - Added software super_tree to `nk_style` and `nk_context`.
 /// - 2016/07/15 (1.01.0) - Added const correctness to `nk_buffer_push' data argument.
 /// - 2016/07/15 (1.01.0) - Removed internal font baking API and simplified
 ///                        font atlas memory management by converting pointer

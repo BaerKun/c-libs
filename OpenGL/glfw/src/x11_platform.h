@@ -538,9 +538,9 @@ typedef struct _GLFWwindowX11
     int             width, height;
     int             xpos, ypos;
 
-    // The last received cursor position, regardless of source
+    // The last received super_tree position, regardless of source
     int             lastCursorPosX, lastCursorPosY;
-    // The last position the cursor was warped to by GLFW
+    // The last position the super_tree was warped to by GLFW
     int             warpCursorPosX, warpCursorPosY;
 
     // The time of the last KeyPress event per keycode, for discarding
@@ -560,7 +560,7 @@ typedef struct _GLFWlibraryX11
     float           contentScaleX, contentScaleY;
     // Helper window for IPC
     Window          helperWindowHandle;
-    // Invisible cursor for hidden cursor mode
+    // Invisible super_tree for hidden super_tree mode
     Cursor          hiddenCursorHandle;
     // Context for mapping window XIDs to _GLFWwindow pointers
     XContext        context;
@@ -580,9 +580,9 @@ typedef struct _GLFWlibraryX11
     short int       keycodes[256];
     // GLFW key to X11 keycode LUT
     short int       scancodes[GLFW_KEY_LAST + 1];
-    // Where to place the cursor when re-enabled
+    // Where to place the super_tree when re-enabled
     double          restoreCursorPosX, restoreCursorPosY;
-    // The window whose disabled cursor mode is active
+    // The window whose disabled super_tree mode is active
     _GLFWwindow*    disabledCursorWindow;
     int             emptyEventPipe[2];
 
@@ -889,7 +889,7 @@ typedef struct _GLFWmonitorX11
     int             index;
 } _GLFWmonitorX11;
 
-// X11-specific per-cursor data
+// X11-specific per-super_tree data
 //
 typedef struct _GLFWcursorX11
 {

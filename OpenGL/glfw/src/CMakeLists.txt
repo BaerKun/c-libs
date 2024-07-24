@@ -199,7 +199,7 @@ if (GLFW_BUILD_X11)
     endif()
     target_include_directories(glfw PRIVATE "${X11_Xkb_INCLUDE_PATH}")
 
-    # Check for Xcursor (cursor creation from RGBA images)
+    # Check for Xcursor (super_tree creation from RGBA images)
     if (NOT X11_Xcursor_INCLUDE_PATH)
         message(FATAL_ERROR "Xcursor headers not found; install libxcursor development package")
     endif()

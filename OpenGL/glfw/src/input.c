@@ -367,7 +367,7 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
         window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods);
 }
 
-// Notifies shared code of a cursor motion event
+// Notifies shared code of a super_tree motion event
 // The position is specified in content area relative screen coordinates
 //
 void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos)
@@ -388,7 +388,7 @@ void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos)
         window->callbacks.cursorPos((GLFWwindow*) window, xpos, ypos);
 }
 
-// Notifies shared code of a cursor enter/leave event
+// Notifies shared code of a super_tree enter/leave event
 //
 void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered)
 {
@@ -542,7 +542,7 @@ void _glfwFreeJoystick(_GLFWjoystick* js)
     memset(js, 0, sizeof(_GLFWjoystick));
 }
 
-// Center the cursor in the content area of the specified window
+// Center the super_tree in the content area of the specified window
 //
 void _glfwCenterCursorInContentArea(_GLFWwindow* window)
 {
@@ -599,7 +599,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
                 value != GLFW_CURSOR_CAPTURED)
             {
                 _glfwInputError(GLFW_INVALID_ENUM,
-                                "Invalid cursor mode 0x%08X",
+                                "Invalid super_tree mode 0x%08X",
                                 value);
                 return;
             }
@@ -812,7 +812,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
         ypos != ypos || ypos < -DBL_MAX || ypos > DBL_MAX)
     {
         _glfwInputError(GLFW_INVALID_VALUE,
-                        "Invalid cursor position %f %f",
+                        "Invalid super_tree position %f %f",
                         xpos, ypos);
         return;
     }
@@ -822,13 +822,13 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
-        // Only update the accumulated position if the cursor is disabled
+        // Only update the accumulated position if the super_tree is disabled
         window->virtualCursorPosX = xpos;
         window->virtualCursorPosY = ypos;
     }
     else
     {
-        // Update system cursor position
+        // Update system super_tree position
         _glfw.platform.setCursorPos(window, xpos, ypos);
     }
 }
@@ -844,7 +844,7 @@ GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
 
     if (image->width <= 0 || image->height <= 0)
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid image dimensions for cursor");
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid image dimensions for super_tree");
         return NULL;
     }
 
@@ -878,7 +878,7 @@ GLFWAPI GLFWcursor* glfwCreateStandardCursor(int shape)
         shape != GLFW_RESIZE_ALL_CURSOR &&
         shape != GLFW_NOT_ALLOWED_CURSOR)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid standard cursor 0x%08X", shape);
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid standard super_tree 0x%08X", shape);
         return NULL;
     }
 
@@ -904,7 +904,7 @@ GLFWAPI void glfwDestroyCursor(GLFWcursor* handle)
     if (cursor == NULL)
         return;
 
-    // Make sure the cursor is not being used by any window
+    // Make sure the super_tree is not being used by any window
     {
         _GLFWwindow* window;
 
@@ -917,7 +917,7 @@ GLFWAPI void glfwDestroyCursor(GLFWcursor* handle)
 
     _glfw.platform.destroyCursor(cursor);
 
-    // Unlink cursor from global linked list
+    // Unlink super_tree from global linked list
     {
         _GLFWcursor** prev = &_glfw.cursorListHead;
 

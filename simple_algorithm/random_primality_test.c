@@ -1,5 +1,5 @@
 #include "random_primality_test.h"
-#include "utils/random.h"
+#include "random.h"
 
 long primalityTestBody(long base, long exponent, long n){
     if(exponent == 0)

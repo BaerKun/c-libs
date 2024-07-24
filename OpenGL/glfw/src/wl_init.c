@@ -407,7 +407,7 @@ static GLFWbool loadCursorTheme(void)
     if (!_glfw.wl.cursorTheme)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to load default cursor theme");
+                        "Wayland: Failed to load default super_tree theme");
         return GLFW_FALSE;
     }
 
@@ -624,11 +624,11 @@ int _glfwInitWayland(void)
         return GLFW_FALSE;
     }
 
-    _glfw.wl.cursor.handle = _glfwPlatformLoadModule("libwayland-cursor.so.0");
+    _glfw.wl.cursor.handle = _glfwPlatformLoadModule("libwayland-super_tree.so.0");
     if (!_glfw.wl.cursor.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to load libwayland-cursor");
+                        "Wayland: Failed to load libwayland-super_tree");
         return GLFW_FALSE;
     }
 

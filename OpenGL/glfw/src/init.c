@@ -344,7 +344,7 @@ void _glfwInputError(int code, const char* format, ...)
         else if (code == GLFW_NO_WINDOW_CONTEXT)
             strcpy(description, "The specified window has no context");
         else if (code == GLFW_CURSOR_UNAVAILABLE)
-            strcpy(description, "The specified cursor shape is unavailable");
+            strcpy(description, "The specified super_tree shape is unavailable");
         else if (code == GLFW_FEATURE_UNAVAILABLE)
             strcpy(description, "The requested feature cannot be implemented for this platform");
         else if (code == GLFW_FEATURE_UNIMPLEMENTED)

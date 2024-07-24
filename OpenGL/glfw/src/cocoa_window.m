@@ -35,7 +35,7 @@
 //       having been (according to documentation) added in Mac OS X 10.7
 #define NSWindowCollectionBehaviorFullScreenNone (1 << 9)
 
-// Returns whether the cursor is in the content area of the specified window
+// Returns whether the super_tree is in the content area of the specified window
 //
 static GLFWbool cursorInContentArea(_GLFWwindow* window)
 {
@@ -43,7 +43,7 @@ static GLFWbool cursorInContentArea(_GLFWwindow* window)
     return [window->ns.view mouse:pos inRect:[window->ns.view frame]];
 }
 
-// Hides the cursor if not already hidden
+// Hides the super_tree if not already hidden
 //
 static void hideCursor(_GLFWwindow* window)
 {
@@ -54,7 +54,7 @@ static void hideCursor(_GLFWwindow* window)
     }
 }
 
-// Shows the cursor if not already shown
+// Shows the super_tree if not already shown
 //
 static void showCursor(_GLFWwindow* window)
 {
@@ -65,7 +65,7 @@ static void showCursor(_GLFWwindow* window)
     }
 }
 
-// Updates the cursor image according to its cursor mode
+// Updates the super_tree image according to its super_tree mode
 //
 static void updateCursorImage(_GLFWwindow* window)
 {
@@ -82,7 +82,7 @@ static void updateCursorImage(_GLFWwindow* window)
         hideCursor(window);
 }
 
-// Apply chosen cursor mode to a focused window
+// Apply chosen super_tree mode to a focused window
 //
 static void updateCursorMode(_GLFWwindow* window)
 {
@@ -1629,8 +1629,8 @@ void _glfwSetCursorPosCocoa(_GLFWwindow* window, double x, double y)
                                               _glfwTransformYCocoa(globalPoint.y)));
     }
 
-    // HACK: Calling this right after setting the cursor position prevents macOS
-    //       from freezing the cursor for a fraction of a second afterwards
+    // HACK: Calling this right after setting the super_tree position prevents macOS
+    //       from freezing the super_tree for a fraction of a second afterwards
     if (window->cursorMode != GLFW_CURSOR_DISABLED)
         CGAssociateMouseAndMouseCursorPosition(true);
 
@@ -1644,7 +1644,7 @@ void _glfwSetCursorModeCocoa(_GLFWwindow* window, int mode)
     if (mode == GLFW_CURSOR_CAPTURED)
     {
         _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
-                        "Cocoa: Captured cursor mode not yet implemented");
+                        "Cocoa: Captured super_tree mode not yet implemented");
     }
 
     if (_glfwWindowFocusedCocoa(window))
@@ -1816,7 +1816,7 @@ GLFWbool _glfwCreateStandardCursorCocoa(_GLFWcursor* cursor, int shape)
     if (!cursor->ns.object)
     {
         _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
-                        "Cocoa: Standard cursor shape unavailable");
+                        "Cocoa: Standard super_tree shape unavailable");
         return GLFW_FALSE;
     }
 

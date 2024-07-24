@@ -452,7 +452,7 @@ static char* convertLatin1toUTF8(const char* source)
     return target;
 }
 
-// Updates the cursor image according to its cursor mode
+// Updates the super_tree image according to its super_tree mode
 //
 static void updateCursorImage(_GLFWwindow* window)
 {
@@ -474,7 +474,7 @@ static void updateCursorImage(_GLFWwindow* window)
     }
 }
 
-// Grabs the cursor and confines it to the window
+// Grabs the super_tree and confines it to the window
 //
 static void captureCursor(_GLFWwindow* window)
 {
@@ -486,7 +486,7 @@ static void captureCursor(_GLFWwindow* window)
                  CurrentTime);
 }
 
-// Ungrabs the cursor
+// Ungrabs the super_tree
 //
 static void releaseCursor(void)
 {
@@ -522,7 +522,7 @@ static void disableRawMouseMotion(_GLFWwindow* window)
     XISelectEvents(_glfw.x11.display, _glfw.x11.root, &em, 1);
 }
 
-// Apply disabled cursor mode to a focused window
+// Apply disabled super_tree mode to a focused window
 //
 static void disableCursor(_GLFWwindow* window)
 {
@@ -538,7 +538,7 @@ static void disableCursor(_GLFWwindow* window)
     captureCursor(window);
 }
 
-// Exit disabled cursor mode for the specified window
+// Exit disabled super_tree mode for the specified window
 //
 static void enableCursor(_GLFWwindow* window)
 {
@@ -1432,7 +1432,7 @@ static void processEvent(XEvent *event)
             const int y = event->xcrossing.y;
 
             // HACK: This is a workaround for WMs (KWM, Fluxbox) that otherwise
-            //       ignore the defined cursor for hidden cursor mode
+            //       ignore the defined super_tree for hidden super_tree mode
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                 updateCursorImage(window);
 
@@ -1458,7 +1458,7 @@ static void processEvent(XEvent *event)
             if (x != window->x11.warpCursorPosX ||
                 y != window->x11.warpCursorPosY)
             {
-                // The cursor was moved by something other than GLFW
+                // The super_tree was moved by something other than GLFW
 
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 {
@@ -2802,7 +2802,7 @@ void _glfwPollEventsX11(void)
         int width, height;
         _glfwGetWindowSizeX11(window, &width, &height);
 
-        // NOTE: Re-center the cursor only if it has moved since the last call,
+        // NOTE: Re-center the super_tree only if it has moved since the last call,
         //       to avoid breaking glfwWaitEvents with MotionNotify
         if (window->x11.lastCursorPosX != width / 2 ||
             window->x11.lastCursorPosY != height / 2)
@@ -3028,7 +3028,7 @@ GLFWbool _glfwCreateStandardCursorX11(_GLFWcursor* cursor, int shape)
                 break;
             default:
                 _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
-                                "X11: Standard cursor shape unavailable");
+                                "X11: Standard super_tree shape unavailable");
                 return GLFW_FALSE;
         }
 
@@ -3036,7 +3036,7 @@ GLFWbool _glfwCreateStandardCursorX11(_GLFWcursor* cursor, int shape)
         if (!cursor->x11.handle)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "X11: Failed to create standard cursor");
+                            "X11: Failed to create standard super_tree");
             return GLFW_FALSE;
         }
     }

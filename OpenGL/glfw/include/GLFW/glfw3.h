@@ -787,15 +787,15 @@ extern "C" {
  *  @analysis Application programmer error.  Fix the offending call.
  */
 #define GLFW_NO_WINDOW_CONTEXT      0x0001000A
-/*! @brief The specified cursor shape is not available.
+/*! @brief The specified super_tree shape is not available.
  *
- *  The specified standard cursor shape is not available, either because the
- *  current platform cursor theme does not provide it or because it is not
+ *  The specified standard super_tree shape is not available, either because the
+ *  current platform super_tree theme does not provide it or because it is not
  *  available on the platform.
  *
  *  @analysis Platform or system settings limitation.  Pick another
- *  [standard cursor shape](@ref shapes) or create a
- *  [custom cursor](@ref cursor_custom).
+ *  [standard super_tree shape](@ref shapes) or create a
+ *  [custom super_tree](@ref cursor_custom).
  */
 #define GLFW_CURSOR_UNAVAILABLE     0x0001000B
 /*! @brief The requested feature is not provided by the platform.
@@ -910,9 +910,9 @@ extern "C" {
  *  [window attribute](@ref GLFW_TRANSPARENT_FRAMEBUFFER_attrib).
  */
 #define GLFW_TRANSPARENT_FRAMEBUFFER 0x0002000A
-/*! @brief Mouse cursor hover window attribute.
+/*! @brief Mouse super_tree hover window attribute.
  *
- *  Mouse cursor hover [window attribute](@ref GLFW_HOVERED_attrib).
+ *  Mouse super_tree hover [window attribute](@ref GLFW_HOVERED_attrib).
  */
 #define GLFW_HOVERED                0x0002000B
 /*! @brief Input focus on calling show window hint and attribute
@@ -1181,33 +1181,33 @@ extern "C" {
 
 #define GLFW_ANY_POSITION           0x80000000
 
-/*! @defgroup shapes Standard cursor shapes
- *  @brief Standard system cursor shapes.
+/*! @defgroup shapes Standard super_tree shapes
+ *  @brief Standard system super_tree shapes.
  *
- *  These are the [standard cursor shapes](@ref cursor_standard) that can be
+ *  These are the [standard super_tree shapes](@ref cursor_standard) that can be
  *  requested from the platform (window system).
  *
  *  @ingroup input
  *  @{ */
 
-/*! @brief The regular arrow cursor shape.
+/*! @brief The regular arrow super_tree shape.
  *
- *  The regular arrow cursor shape.
+ *  The regular arrow super_tree shape.
  */
 #define GLFW_ARROW_CURSOR           0x00036001
-/*! @brief The text input I-beam cursor shape.
+/*! @brief The text input I-beam super_tree shape.
  *
- *  The text input I-beam cursor shape.
+ *  The text input I-beam super_tree shape.
  */
 #define GLFW_IBEAM_CURSOR           0x00036002
-/*! @brief The crosshair cursor shape.
+/*! @brief The crosshair super_tree shape.
  *
- *  The crosshair cursor shape.
+ *  The crosshair super_tree shape.
  */
 #define GLFW_CROSSHAIR_CURSOR       0x00036003
-/*! @brief The pointing hand cursor shape.
+/*! @brief The pointing hand super_tree shape.
  *
- *  The pointing hand cursor shape.
+ *  The pointing hand super_tree shape.
  */
 #define GLFW_POINTING_HAND_CURSOR   0x00036004
 /*! @brief The horizontal resize/move arrow shape.
@@ -1231,10 +1231,10 @@ extern "C" {
  *  with @ref GLFW_CURSOR_UNAVAILABLE in the future.
  *
  *  @note @wayland This shape is provided by a newer standard not supported by
- *  all cursor themes.
+ *  all super_tree themes.
  *
  *  @note @x11 This shape is provided by a newer standard not supported by all
- *  cursor themes.
+ *  super_tree themes.
  */
 #define GLFW_RESIZE_NWSE_CURSOR     0x00036007
 /*! @brief The top-right to bottom-left diagonal resize/move arrow shape.
@@ -1246,15 +1246,15 @@ extern "C" {
  *  with @ref GLFW_CURSOR_UNAVAILABLE in the future.
  *
  *  @note @wayland This shape is provided by a newer standard not supported by
- *  all cursor themes.
+ *  all super_tree themes.
  *
  *  @note @x11 This shape is provided by a newer standard not supported by all
- *  cursor themes.
+ *  super_tree themes.
  */
 #define GLFW_RESIZE_NESW_CURSOR     0x00036008
-/*! @brief The omni-directional resize/move cursor shape.
+/*! @brief The omni-directional resize/move super_tree shape.
  *
- *  The omni-directional resize cursor/move shape.  This is usually either
+ *  The omni-directional resize super_tree/move shape.  This is usually either
  *  a combined horizontal and vertical double-headed arrow or a grabbing hand.
  */
 #define GLFW_RESIZE_ALL_CURSOR      0x00036009
@@ -1264,10 +1264,10 @@ extern "C" {
  *  line through it.
  *
  *  @note @wayland This shape is provided by a newer standard not supported by
- *  all cursor themes.
+ *  all super_tree themes.
  *
  *  @note @x11 This shape is provided by a newer standard not supported by all
- *  cursor themes.
+ *  super_tree themes.
  */
 #define GLFW_NOT_ALLOWED_CURSOR     0x0003600A
 /*! @brief Legacy name for compatibility.
@@ -1402,9 +1402,9 @@ typedef struct GLFWmonitor GLFWmonitor;
  */
 typedef struct GLFWwindow GLFWwindow;
 
-/*! @brief Opaque cursor object.
+/*! @brief Opaque super_tree object.
  *
- *  Opaque cursor object.
+ *  Opaque super_tree object.
  *
  *  @see @ref cursor_object
  *
@@ -1805,18 +1805,18 @@ typedef void (* GLFWwindowcontentscalefun)(GLFWwindow* window, float xscale, flo
  */
 typedef void (* GLFWmousebuttonfun)(GLFWwindow* window, int button, int action, int mods);
 
-/*! @brief The function pointer type for cursor position callbacks.
+/*! @brief The function pointer type for super_tree position callbacks.
  *
- *  This is the function pointer type for cursor position callbacks.  A cursor
+ *  This is the function pointer type for super_tree position callbacks.  A super_tree
  *  position callback function has the following signature:
  *  @code
  *  void function_name(GLFWwindow* window, double xpos, double ypos);
  *  @endcode
  *
  *  @param[in] window The window that received the event.
- *  @param[in] xpos The new cursor x-coordinate, relative to the left edge of
+ *  @param[in] xpos The new super_tree x-coordinate, relative to the left edge of
  *  the content area.
- *  @param[in] ypos The new cursor y-coordinate, relative to the top edge of the
+ *  @param[in] ypos The new super_tree y-coordinate, relative to the top edge of the
  *  content area.
  *
  *  @sa @ref cursor_pos
@@ -1828,16 +1828,16 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow* window, int button, int action, 
  */
 typedef void (* GLFWcursorposfun)(GLFWwindow* window, double xpos, double ypos);
 
-/*! @brief The function pointer type for cursor enter/leave callbacks.
+/*! @brief The function pointer type for super_tree enter/leave callbacks.
  *
- *  This is the function pointer type for cursor enter/leave callbacks.
- *  A cursor enter/leave callback function has the following signature:
+ *  This is the function pointer type for super_tree enter/leave callbacks.
+ *  A super_tree enter/leave callback function has the following signature:
  *  @code
  *  void function_name(GLFWwindow* window, int entered)
  *  @endcode
  *
  *  @param[in] window The window that received the event.
- *  @param[in] entered `GLFW_TRUE` if the cursor entered the window's content
+ *  @param[in] entered `GLFW_TRUE` if the super_tree entered the window's content
  *  area, or `GLFW_FALSE` if it left it.
  *
  *  @sa @ref cursor_enter
@@ -3188,7 +3188,7 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  hint is `GLFW_TRUE` and the `NSHighResolutionCapable` key is enabled in the
  *  application bundle's `Info.plist`.  For more information, see
  *  [High Resolution Guidelines for OS X][hidpi-guide] in the Mac Developer
- *  Library.  The GLFW test and example programs use a custom `Info.plist`
+ *  Library.  The GLFW tests and example programs use a custom `Info.plist`
  *  template for this, which can be found as `CMake/Info.plist.in` in the source
  *  tree.
  *
@@ -4679,15 +4679,15 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  @ref GLFW_STICKY_MOUSE_BUTTONS, @ref GLFW_LOCK_KEY_MODS or
  *  @ref GLFW_RAW_MOUSE_MOTION.
  *
- *  If the mode is `GLFW_CURSOR`, the value must be one of the following cursor
+ *  If the mode is `GLFW_CURSOR`, the value must be one of the following super_tree
  *  modes:
- *  - `GLFW_CURSOR_NORMAL` makes the cursor visible and behaving normally.
- *  - `GLFW_CURSOR_HIDDEN` makes the cursor invisible when it is over the
- *    content area of the window but does not restrict the cursor from leaving.
- *  - `GLFW_CURSOR_DISABLED` hides and grabs the cursor, providing virtual
- *    and unlimited cursor movement.  This is useful for implementing for
+ *  - `GLFW_CURSOR_NORMAL` makes the super_tree visible and behaving normally.
+ *  - `GLFW_CURSOR_HIDDEN` makes the super_tree invisible when it is over the
+ *    content area of the window but does not restrict the super_tree from leaving.
+ *  - `GLFW_CURSOR_DISABLED` hides and grabs the super_tree, providing virtual
+ *    and unlimited super_tree movement.  This is useful for implementing for
  *    example 3D camera controls.
- *  - `GLFW_CURSOR_CAPTURED` makes the cursor visible and confines it to the
+ *  - `GLFW_CURSOR_CAPTURED` makes the super_tree visible and confines it to the
  *    content area of the window.
  *
  *  If the mode is `GLFW_STICKY_KEYS`, the value must be either `GLFW_TRUE` to
@@ -4712,7 +4712,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  and the @ref GLFW_MOD_NUM_LOCK bit when Num Lock was on.
  *
  *  If the mode is `GLFW_RAW_MOUSE_MOTION`, the value must be either `GLFW_TRUE`
- *  to enable raw (unscaled and unaccelerated) mouse motion when the cursor is
+ *  to enable raw (unscaled and unaccelerated) mouse motion when the super_tree is
  *  disabled, or `GLFW_FALSE` to disable it.  If raw motion is not supported,
  *  attempting to set this will emit @ref GLFW_FEATURE_UNAVAILABLE.  Call @ref
  *  glfwRawMouseMotionSupported to check for support.
@@ -4746,9 +4746,9 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
  *
  *  Raw mouse motion is closer to the actual motion of the mouse across
  *  a surface.  It is not affected by the scaling and acceleration applied to
- *  the motion of the desktop cursor.  That processing is suitable for a cursor
+ *  the motion of the desktop super_tree.  That processing is suitable for a super_tree
  *  while raw motion is better for controlling for example a 3D camera.  Because
- *  of this, raw mouse motion is only provided when the cursor is disabled.
+ *  of this, raw mouse motion is only provided when the super_tree is disabled.
  *
  *  @return `GLFW_TRUE` if raw mouse motion is supported on the current machine,
  *  or `GLFW_FALSE` otherwise.
@@ -4929,14 +4929,14 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
  */
 GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
 
-/*! @brief Retrieves the position of the cursor relative to the content area of
+/*! @brief Retrieves the position of the super_tree relative to the content area of
  *  the window.
  *
- *  This function returns the position of the cursor, in screen coordinates,
+ *  This function returns the position of the super_tree, in screen coordinates,
  *  relative to the upper-left corner of the content area of the specified
  *  window.
  *
- *  If the cursor is disabled (with `GLFW_CURSOR_DISABLED`) then the cursor
+ *  If the super_tree is disabled (with `GLFW_CURSOR_DISABLED`) then the super_tree
  *  position is unbounded and limited only by the minimum and maximum values of
  *  a `double`.
  *
@@ -4948,9 +4948,9 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  *  non-`NULL` position arguments will be set to zero.
  *
  *  @param[in] window The desired window.
- *  @param[out] xpos Where to store the cursor x-coordinate, relative to the
+ *  @param[out] xpos Where to store the super_tree x-coordinate, relative to the
  *  left edge of the content area, or `NULL`.
- *  @param[out] ypos Where to store the cursor y-coordinate, relative to the to
+ *  @param[out] ypos Where to store the super_tree y-coordinate, relative to the to
  *  top edge of the content area, or `NULL`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
@@ -4967,20 +4967,20 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  */
 GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
 
-/*! @brief Sets the position of the cursor, relative to the content area of the
+/*! @brief Sets the position of the super_tree, relative to the content area of the
  *  window.
  *
- *  This function sets the position, in screen coordinates, of the cursor
+ *  This function sets the position, in screen coordinates, of the super_tree
  *  relative to the upper-left corner of the content area of the specified
  *  window.  The window must have input focus.  If the window does not have
  *  input focus when this function is called, it fails silently.
  *
  *  __Do not use this function__ to implement things like camera controls.  GLFW
- *  already provides the `GLFW_CURSOR_DISABLED` cursor mode that hides the
- *  cursor, transparently re-centers it and provides unconstrained cursor
+ *  already provides the `GLFW_CURSOR_DISABLED` super_tree mode that hides the
+ *  super_tree, transparently re-centers it and provides unconstrained super_tree
  *  motion.  See @ref glfwSetInputMode for more information.
  *
- *  If the cursor mode is `GLFW_CURSOR_DISABLED` then the cursor position is
+ *  If the super_tree mode is `GLFW_CURSOR_DISABLED` then the super_tree position is
  *  unconstrained and limited only by the minimum and maximum values of
  *  a `double`.
  *
@@ -4993,7 +4993,7 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_PLATFORM_ERROR and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
- *  @remark @wayland This function will only work when the cursor mode is
+ *  @remark @wayland This function will only work when the super_tree mode is
  *  `GLFW_CURSOR_DISABLED`, otherwise it will emit @ref GLFW_FEATURE_UNAVAILABLE.
  *
  *  @thread_safety This function must only be called from the main thread.
@@ -5007,24 +5007,24 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  */
 GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
 
-/*! @brief Creates a custom cursor.
+/*! @brief Creates a custom super_tree.
  *
- *  Creates a new custom cursor image that can be set for a window with @ref
- *  glfwSetCursor.  The cursor can be destroyed with @ref glfwDestroyCursor.
+ *  Creates a new custom super_tree image that can be set for a window with @ref
+ *  glfwSetCursor.  The super_tree can be destroyed with @ref glfwDestroyCursor.
  *  Any remaining cursors are destroyed by @ref glfwTerminate.
  *
  *  The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
  *  bits per channel with the red channel first.  They are arranged canonically
  *  as packed sequential rows, starting from the top-left corner.
  *
- *  The cursor hotspot is specified in pixels, relative to the upper-left corner
- *  of the cursor image.  Like all other coordinate systems in GLFW, the X-axis
+ *  The super_tree hotspot is specified in pixels, relative to the upper-left corner
+ *  of the super_tree image.  Like all other coordinate systems in GLFW, the X-axis
  *  points to the right and the Y-axis points down.
  *
- *  @param[in] image The desired cursor image.
- *  @param[in] xhot The desired x-coordinate, in pixels, of the cursor hotspot.
- *  @param[in] yhot The desired y-coordinate, in pixels, of the cursor hotspot.
- *  @return The handle of the created cursor, or `NULL` if an
+ *  @param[in] image The desired super_tree image.
+ *  @param[in] xhot The desired x-coordinate, in pixels, of the super_tree hotspot.
+ *  @param[in] yhot The desired y-coordinate, in pixels, of the super_tree hotspot.
+ *  @return The handle of the created super_tree, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
@@ -5045,11 +5045,11 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  */
 GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot);
 
-/*! @brief Creates a cursor with a standard shape.
+/*! @brief Creates a super_tree with a standard shape.
  *
- *  Returns a cursor with a standard shape, that can be set for a window with
+ *  Returns a super_tree with a standard shape, that can be set for a window with
  *  @ref glfwSetCursor.  The images for these cursors come from the system
- *  cursor theme and their exact appearance will vary between platforms.
+ *  super_tree theme and their exact appearance will vary between platforms.
  *
  *  Most of these shapes are guaranteed to exist on every supported platform but
  *  a few may not be present.  See the table below for details.
@@ -5069,13 +5069,13 @@ GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
  *
  *  1) This uses a private system API and may fail in the future.
  *
- *  2) This uses a newer standard that not all cursor themes support.
+ *  2) This uses a newer standard that not all super_tree themes support.
  *
  *  If the requested shape is not available, this function emits a @ref
  *  GLFW_CURSOR_UNAVAILABLE error and returns `NULL`.
  *
  *  @param[in] shape One of the [standard shapes](@ref shapes).
- *  @return A new cursor ready to use or `NULL` if an
+ *  @return A new super_tree ready to use or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
@@ -5093,16 +5093,16 @@ GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
  */
 GLFWAPI GLFWcursor* glfwCreateStandardCursor(int shape);
 
-/*! @brief Destroys a cursor.
+/*! @brief Destroys a super_tree.
  *
- *  This function destroys a cursor previously created with @ref
+ *  This function destroys a super_tree previously created with @ref
  *  glfwCreateCursor.  Any remaining cursors will be destroyed by @ref
  *  glfwTerminate.
  *
- *  If the specified cursor is current for any window, that window will be
- *  reverted to the default cursor.  This does not affect the cursor mode.
+ *  If the specified super_tree is current for any window, that window will be
+ *  reverted to the default super_tree.  This does not affect the super_tree mode.
  *
- *  @param[in] cursor The cursor object to destroy.
+ *  @param[in] super_tree The super_tree object to destroy.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -5120,19 +5120,19 @@ GLFWAPI GLFWcursor* glfwCreateStandardCursor(int shape);
  */
 GLFWAPI void glfwDestroyCursor(GLFWcursor* cursor);
 
-/*! @brief Sets the cursor for the window.
+/*! @brief Sets the super_tree for the window.
  *
- *  This function sets the cursor image to be used when the cursor is over the
- *  content area of the specified window.  The set cursor will only be visible
- *  when the [cursor mode](@ref cursor_mode) of the window is
+ *  This function sets the super_tree image to be used when the super_tree is over the
+ *  content area of the specified window.  The set super_tree will only be visible
+ *  when the [super_tree mode](@ref cursor_mode) of the window is
  *  `GLFW_CURSOR_NORMAL`.
  *
- *  On some platforms, the set cursor may not be visible unless the window also
+ *  On some platforms, the set super_tree may not be visible unless the window also
  *  has input focus.
  *
- *  @param[in] window The window to set the cursor for.
- *  @param[in] cursor The cursor to set, or `NULL` to switch back to the default
- *  arrow cursor.
+ *  @param[in] window The window to set the super_tree for.
+ *  @param[in] super_tree The super_tree to set, or `NULL` to switch back to the default
+ *  arrow super_tree.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -5319,10 +5319,10 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
  */
 GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun callback);
 
-/*! @brief Sets the cursor position callback.
+/*! @brief Sets the super_tree position callback.
  *
- *  This function sets the cursor position callback of the specified window,
- *  which is called when the cursor is moved.  The callback is provided with the
+ *  This function sets the super_tree position callback of the specified window,
+ *  which is called when the super_tree is moved.  The callback is provided with the
  *  position, in screen coordinates, relative to the upper-left corner of the
  *  content area of the window.
  *
@@ -5351,10 +5351,10 @@ GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmo
  */
 GLFWAPI GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursorposfun callback);
 
-/*! @brief Sets the cursor enter/leave callback.
+/*! @brief Sets the super_tree enter/leave callback.
  *
- *  This function sets the cursor boundary crossing callback of the specified
- *  window, which is called when the cursor enters or leaves the content area of
+ *  This function sets the super_tree boundary crossing callback of the specified
+ *  window, which is called when the super_tree enters or leaves the content area of
  *  the window.
  *
  *  @param[in] window The window whose callback to set.
@@ -5567,7 +5567,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count);
  *  `GLFW_HAT_LEFT_DOWN`  | `GLFW_HAT_LEFT` \| `GLFW_HAT_DOWN`
  *
  *  The diagonal directions are bitwise combinations of the primary (up, right,
- *  down and left) directions and you can test for these individually by ANDing
+ *  down and left) directions and you can tests for these individually by ANDing
  *  it with the corresponding direction.
  *
  *  @code

@@ -3,12 +3,10 @@ project(Tree)
 
 set(CMAKE_C_STANDARD 11)
 
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-
 include_directories(include)
 
 add_subdirectory(src)
 
-add_executable(Test tests/test1.c)
+add_executable(test test/test.c)
 
-target_link_libraries(Test cursor)
+target_link_libraries(test super_tree)

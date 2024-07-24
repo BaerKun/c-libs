@@ -95,7 +95,7 @@ static const GLFWimage* chooseImage(int count, const GLFWimage* images,
     return closest;
 }
 
-// Creates an RGBA icon or cursor
+// Creates an RGBA icon or super_tree
 //
 static HICON createIcon(const GLFWimage* image, int xhot, int yhot, GLFWbool icon)
 {
@@ -177,7 +177,7 @@ static HICON createIcon(const GLFWimage* image, int xhot, int yhot, GLFWbool ico
         else
         {
             _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                                 "Win32: Failed to create cursor");
+                                 "Win32: Failed to create super_tree");
         }
     }
 
@@ -219,7 +219,7 @@ static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
     }
 }
 
-// Updates the cursor image according to its cursor mode
+// Updates the super_tree image according to its super_tree mode
 //
 static void updateCursorImage(_GLFWwindow* window)
 {
@@ -233,14 +233,14 @@ static void updateCursorImage(_GLFWwindow* window)
     }
     else
     {
-        // NOTE: Via Remote Desktop, setting the cursor to NULL does not hide it.
+        // NOTE: Via Remote Desktop, setting the super_tree to NULL does not hide it.
         // HACK: When running locally, it is set to NULL, but when connected via Remote
-        //       Desktop, this is a transparent cursor.
+        //       Desktop, this is a transparent super_tree.
         SetCursor(_glfw.win32.blankCursor);
     }
 }
 
-// Sets the cursor clip rect to the window content area
+// Sets the super_tree clip rect to the window content area
 //
 static void captureCursor(_GLFWwindow* window)
 {
@@ -252,7 +252,7 @@ static void captureCursor(_GLFWwindow* window)
     _glfw.win32.capturedCursorWindow = window;
 }
 
-// Disabled clip cursor
+// Disabled clip super_tree
 //
 static void releaseCursor(void)
 {
@@ -286,7 +286,7 @@ static void disableRawMouseMotion(_GLFWwindow* window)
     }
 }
 
-// Apply disabled cursor mode to a focused window
+// Apply disabled super_tree mode to a focused window
 //
 static void disableCursor(_GLFWwindow* window)
 {
@@ -302,7 +302,7 @@ static void disableCursor(_GLFWwindow* window)
         enableRawMouseMotion(window);
 }
 
-// Exit disabled cursor mode for the specified window
+// Exit disabled super_tree mode for the specified window
 //
 static void enableCursor(_GLFWwindow* window)
 {
@@ -317,7 +317,7 @@ static void enableCursor(_GLFWwindow* window)
     updateCursorImage(window);
 }
 
-// Returns whether the cursor is in the content area of the specified window
+// Returns whether the super_tree is in the content area of the specified window
 //
 static GLFWbool cursorInContentArea(_GLFWwindow* window)
 {
@@ -445,7 +445,7 @@ static void acquireMonitor(_GLFWwindow* window)
     {
         SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED);
 
-        // HACK: When mouse trails are enabled the cursor becomes invisible when
+        // HACK: When mouse trails are enabled the super_tree becomes invisible when
         //       the OpenGL ICD switches to page flipping
         SystemParametersInfoW(SPI_GETMOUSETRAILS, 0, &_glfw.win32.mouseTrailSize, 0);
         SystemParametersInfoW(SPI_SETMOUSETRAILS, 0, 0, 0);
@@ -558,7 +558,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     {
         case WM_MOUSEACTIVATE:
         {
-            // HACK: Postpone cursor disabling when the window was activated by
+            // HACK: Postpone super_tree disabling when the window was activated by
             //       clicking a caption button
             if (HIWORD(lParam) == WM_LBUTTONDOWN)
             {
@@ -571,7 +571,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_CAPTURECHANGED:
         {
-            // HACK: Disable the cursor once the caption button action has been
+            // HACK: Disable the super_tree once the caption button action has been
             //       completed or cancelled
             if (lParam == 0 && window->win32.frameAction)
             {
@@ -590,7 +590,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         {
             _glfwInputWindowFocus(window, GLFW_TRUE);
 
-            // HACK: Do not disable cursor while the user is interacting with
+            // HACK: Do not disable super_tree while the user is interacting with
             //       a caption button
             if (window->win32.frameAction)
                 break;
@@ -994,7 +994,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             if (window->win32.frameAction)
                 break;
 
-            // HACK: Enable the cursor while the user is moving or
+            // HACK: Enable the super_tree while the user is moving or
             //       resizing the window or using the window menu
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 enableCursor(window);
@@ -1010,7 +1010,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             if (window->win32.frameAction)
                 break;
 
-            // HACK: Disable the cursor once the user is done moving or
+            // HACK: Disable the super_tree once the user is done moving or
             //       resizing the window or using the menu
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 disableCursor(window);
@@ -1316,8 +1316,8 @@ static int createNativeWindow(_GLFWwindow* window,
 
     if (GetSystemMetrics(SM_REMOTESESSION))
     {
-        // NOTE: On Remote Desktop, setting the cursor to NULL does not hide it
-        // HACK: Create a transparent cursor and always set that instead of NULL
+        // NOTE: On Remote Desktop, setting the super_tree to NULL does not hide it
+        // HACK: Create a transparent super_tree and always set that instead of NULL
         //       When not on Remote Desktop, this handle is NULL and normal hiding is used
         if (!_glfw.win32.blankCursor)
         {
@@ -1329,7 +1329,7 @@ static int createNativeWindow(_GLFWwindow* window,
                 return GLFW_FALSE;
 
             // NOTE: Windows checks whether the image is fully transparent and if so
-            //       just ignores the alpha channel and makes the whole cursor opaque
+            //       just ignores the alpha channel and makes the whole super_tree opaque
             // HACK: Make one pixel slightly less transparent
             cursorPixels[3] = 1;
 
@@ -2170,9 +2170,9 @@ void _glfwPollEventsWin32(void)
         int width, height;
         _glfwGetWindowSizeWin32(window, &width, &height);
 
-        // NOTE: Re-center the cursor only if it has moved since the last call,
+        // NOTE: Re-center the super_tree only if it has moved since the last call,
         //       to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
-        // The re-center is required in order to prevent the mouse cursor stopping at the edges of the screen.
+        // The re-center is required in order to prevent the mouse super_tree stopping at the edges of the screen.
         if (window->win32.lastCursorPosX != width / 2 ||
             window->win32.lastCursorPosY != height / 2)
         {
@@ -2334,7 +2334,7 @@ GLFWbool _glfwCreateStandardCursorWin32(_GLFWcursor* cursor, int shape)
             id = OCR_NO;
             break;
         default:
-            _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Unknown standard cursor");
+            _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Unknown standard super_tree");
             return GLFW_FALSE;
     }
 
@@ -2344,7 +2344,7 @@ GLFWbool _glfwCreateStandardCursorWin32(_GLFWcursor* cursor, int shape)
     if (!cursor->win32.handle)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                             "Win32: Failed to create standard cursor");
+                             "Win32: Failed to create standard super_tree");
         return GLFW_FALSE;
     }
 
