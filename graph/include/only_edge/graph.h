@@ -31,10 +31,10 @@ typedef struct Graph {
     EdgePtr edges;
 }Graph, *GraphPtr;
 
-GraphPtr CreateGraph(int edgeCapacity, int vertexNum);
+GraphPtr newGraph(int edgeCapacity, int vertexNum);
 
-void AddEdge(GraphPtr pGraph, VertexId vertex1, VertexId vertex2, int weight);
+void addEdge(GraphPtr pGraph, VertexId vertex1, VertexId vertex2, int weight);
 
-void DeleteGraph(GraphPtr pGraph);
+void graphDestroy(GraphPtr graph);
 
 #endif //GRAPH_GRAPH_H

@@ -3,6 +3,6 @@
 
 #include "graph.h"
 
-void FindScc(GraphPtr pGraph, VertexId *parent);
+void graphFindScc(GraphPtr graph, VertexId *parent);
 
 #endif //GRAPH_FIND_SCC_H

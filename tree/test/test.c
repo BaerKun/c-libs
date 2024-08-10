@@ -20,9 +20,9 @@ int main() {
     // BSTPtr tree = optimalBST(data, weight, 26);
     TrieTreePtr tree1 = HuffmanCode(data, weight, 26);
     print(tree1->root);
-    // BinaryTreePtr tree = createBinaryTree_fixedCapacity(3);
-    // binaryTreeInsert_data(tree, NULL, 1, 0);
-    // binaryTreeInsert_data(tree, tree->root, 2, 0);
-    // binaryTreeInsert_data(tree, tree->root, 3, 1);
+    // BinaryTreePtr tree = newBinaryTree_fixedCapacity(3);
+    // BT_insertData(tree, NULL, 1, 0);
+    // BT_insertData(tree, tree->root, 2, 0);
+    // BT_insertData(tree, tree->root, 3, 1);
     return 0;
 }

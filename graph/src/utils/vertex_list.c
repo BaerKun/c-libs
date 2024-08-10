@@ -1,14 +1,14 @@
 #include "utils/vertex_list.h"
 #include <stdlib.h>
 
-void VertexListInsert(VertexListPtr pPreNode, VertexId vertex) {
+void vertexList_insert(VertexListPtr pPreNode, VertexId vertex) {
     VertexListPtr pNewNode = malloc(sizeof(VertexList));
-    pNewNode->vertexId = vertex;
+    pNewNode->vertex = vertex;
     pNewNode->next = pPreNode->next;
     pPreNode->next = pNewNode;
 }
 
-void MakeListEmpty(VertexListPtr pHead) {
+void vertexList_MakeEmpty(VertexListPtr pHead) {
     VertexListPtr pThisNode, pNextNode;
 
     for(pThisNode = pHead->next; pThisNode; pThisNode = pNextNode){

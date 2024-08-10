@@ -27,8 +27,8 @@ typedef struct {
 
 GraphPtr createGraph(int capacity, int vertexNum);
 
-void deleteGraph(GraphPtr pGraph);
+void deleteGraph(GraphPtr graph);
 
-void addEdge(GraphPtr pGraph, VertexId source, VertexId target, WeightType weight);
+void addEdge(GraphPtr graph, VertexId source, VertexId target, WeightType weight);
 
 #endif //GRAPH_GRAPH_H

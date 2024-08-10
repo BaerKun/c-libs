@@ -1,6 +1,0 @@
-/Users/bearkun/Desktop/C-codes/graph/build/CMakeFiles/Test.dir
-/Users/bearkun/Desktop/C-codes/graph/build/CMakeFiles/edit_cache.dir
-/Users/bearkun/Desktop/C-codes/graph/build/CMakeFiles/rebuild_cache.dir
-/Users/bearkun/Desktop/C-codes/graph/build/src/CMakeFiles/_graph.dir
-/Users/bearkun/Desktop/C-codes/graph/build/src/CMakeFiles/edit_cache.dir
-/Users/bearkun/Desktop/C-codes/graph/build/src/CMakeFiles/rebuild_cache.dir

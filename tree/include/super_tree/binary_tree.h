@@ -22,27 +22,27 @@ typedef struct {
     BinaryTreeNodePtr root;
 }BinaryTree, *BinaryTreePtr;
 
-BinaryTreePtr createBinaryTree_fixedCapacity(int capacity);
+BinaryTreePtr newBinaryTree_fixedCapacity(int capacity);
 
-BinaryTreePtr createBinaryTree();
+BinaryTreePtr newBinaryTree();
 
-void deleteBinaryTree(BinaryTreePtr tree);
+void BT_destroy(BinaryTreePtr tree);
 
-BinaryTreeNodePtr createTreeNode_fc(BinaryTreePtr tree, DataType data);
+BinaryTreeNodePtr BT_newNode_fc(BinaryTreePtr tree, DataType data);
 
-BinaryTreeNodePtr createTreeNode(DataType data);
+BinaryTreeNodePtr BT_newNode(DataType data);
 
-void freeTreeNode(BinaryTreePtr tree, BinaryTreeNodePtr node);
+void BT_freeNode(BinaryTreePtr tree, BinaryTreeNodePtr node);
 
-void binaryTreeInsert_node(BinaryTreePtr tree, BinaryTreeNodePtr parent, BinaryTreeNodePtr node, int isRight);
+void BT_insertNode(BinaryTreePtr tree, BinaryTreeNodePtr parent, BinaryTreeNodePtr node, int isRight);
 
-void binaryTreeInsert_data(BinaryTreePtr tree, BinaryTreeNodePtr parent, DataType data, int isRight);
+void BT_insertData(BinaryTreePtr tree, BinaryTreeNodePtr parent, DataType data, int isRight);
 
-BinaryTreeNodePtr binaryTreeDelete(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
-    BinaryTreeNodePtr if2children(BinaryTreePtr _tree, BinaryTreeNodePtr _parent, int _isRight));
+BinaryTreeNodePtr BT_deleteNode(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
+                                BinaryTreeNodePtr if2children(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight));
 
-void binaryTreeDeleteAndFree(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
-    BinaryTreeNodePtr if2children(BinaryTreePtr _tree, BinaryTreeNodePtr _parent, int _isRight));
+void BT_deleteAndFree(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
+                      BinaryTreeNodePtr if2children(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight));
 
 //void PrintBinaryTree(BinaryTreePtr pTree);
 

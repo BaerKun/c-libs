@@ -1,34 +1,37 @@
 #include "matrix/graph.h"
 #include <stdlib.h>
 
-void initGraph(GraphPtr pGraph) {
-    for (VertexId source = 0; source < pGraph->vertexNum; source++) {
-        for (VertexId target = 0; target < pGraph->vertexNum; target++) {
-            pGraph->edges[source][target] = (source == target) ? INITIAL_SELF_POINTING_EDGE : NO_EDGE;
+void initGraph(GraphPtr graph) {
+    for (VertexId source = 0; source < graph->vertexNum; source++) {
+        for (VertexId target = 0; target < graph->vertexNum; target++) {
+            graph->edges[source][target] = (source == target) ? INITIAL_SELF_POINTING_EDGE : NO_EDGE;
         }
     }
 }
 
 GraphPtr createGraph(int capacity, int vertexNum) {
-    GraphPtr pGraph = (GraphPtr) malloc(sizeof(Graph));
-    pGraph->capacity = capacity;
-    pGraph->edgeNum = 0;
-    pGraph->vertexNum = vertexNum;
-    pGraph->vertices = (Vertex *) malloc(sizeof(Vertex) * capacity);
-    pGraph->edges = (Edge (*)[MAX_VERTEX]) malloc(sizeof(Edge) * capacity * MAX_VERTEX);
+    GraphPtr graph = (GraphPtr) malloc(sizeof(Graph));
+    if(graph == NULL)
+        return NULL;
 
-    initGraph(pGraph);
+    graph->capacity = capacity;
+    graph->edgeNum = 0;
+    graph->vertexNum = vertexNum;
+    graph->vertices = (Vertex *) malloc(sizeof(Vertex) * capacity);
+    graph->edges = (Edge (*)[MAX_VERTEX]) malloc(sizeof(Edge) * capacity * MAX_VERTEX);
 
-    return pGraph;
+    initGraph(graph);
+
+    return graph;
 }
 
-void deleteGraph(GraphPtr pGraph) {
-    free(pGraph->vertices);
-    free(pGraph->edges);
-    free(pGraph);
+void deleteGraph(GraphPtr graph) {
+    free(graph->vertices);
+    free(graph->edges);
+    free(graph);
 }
 
-void addEdge(GraphPtr pGraph, VertexId source, VertexId target, WeightType weight) {
-    pGraph->edges[source][target] = (Edge) {weight, target};
-    pGraph->edgeNum++;
+void addEdge(GraphPtr graph, VertexId source, VertexId target, WeightType weight) {
+    graph->edges[source][target] = (Edge) {weight, target};
+    graph->edgeNum++;
 }

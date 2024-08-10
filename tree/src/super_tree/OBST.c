@@ -1,5 +1,5 @@
 #include "super_tree//OBST.h"
-#include "utils/queue.h"
+#include "queue.h"
 #include <stdlib.h>
 
 BSTPtr optimalBST(const DataType data[], const WeightType weight[], int number) {
@@ -39,20 +39,20 @@ BSTPtr optimalBST(const DataType data[], const WeightType weight[], int number) 
 
     free(treeWeight);
 
-    BSTPtr tree = createBinaryTree_fixedCapacity(number);
-    QueuePtr pLeftQueue = CreateQueue(number);
-    QueuePtr pRightQueue = CreateQueue(number);
+    BSTPtr tree = newBinaryTree_fixedCapacity(number);
+    QueuePtr pLeftQueue = newQueue(number);
+    QueuePtr pRightQueue = newQueue(number);
     BinaryTreeNodePtr rootNode;
 
-    Enqueue(pLeftQueue, 0);
-    Enqueue(pRightQueue, number - 1);
+    enqueue(pLeftQueue, 0);
+    enqueue(pRightQueue, number - 1);
 
     tree->root = tree->memoryPool + treeRoot[0][number - 1];
     tree->nodeNum = number;
 
     while (pLeftQueue->front != pLeftQueue->rear) {
-        left = Dequeue(pLeftQueue);
-        right = Dequeue(pRightQueue);
+        left = dequeue(pLeftQueue);
+        right = dequeue(pRightQueue);
         root = treeRoot[left][right];
         rootNode = tree->memoryPool + root;
 
@@ -61,16 +61,16 @@ BSTPtr optimalBST(const DataType data[], const WeightType weight[], int number) 
         rootNode->next = NULL;
 
         if (root > left) {
-            Enqueue(pLeftQueue, left);
-            Enqueue(pRightQueue, root - 1);
+            enqueue(pLeftQueue, left);
+            enqueue(pRightQueue, root - 1);
             left = treeRoot[left][root - 1];
             rootNode->left = tree->memoryPool + left;
         }else
             rootNode->left = NULL;
 
         if (root < right) {
-            Enqueue(pLeftQueue, root + 1);
-            Enqueue(pRightQueue, right);
+            enqueue(pLeftQueue, root + 1);
+            enqueue(pRightQueue, right);
             right = treeRoot[root + 1][right];
             rootNode->right = tree->memoryPool + right;
         }else
@@ -80,8 +80,8 @@ BSTPtr optimalBST(const DataType data[], const WeightType weight[], int number) 
     tree->nodeNum = number;
 
     free(treeRoot);
-    DeleteQueue(pLeftQueue);
-    DeleteQueue(pRightQueue);
+    queue_destroy(pLeftQueue);
+    queue_destroy(pRightQueue);
 
     return  tree;
 }

@@ -5,12 +5,12 @@
 
 typedef struct VertexList VertexList, *VertexListPtr;
 struct VertexList {
-    VertexId vertexId;
+    VertexId vertex;
     VertexListPtr next;
 };
 
-void VertexListInsert(VertexListPtr pPreNode, VertexId vertex);
+void vertexList_insert(VertexListPtr pPreNode, VertexId vertex);
 
-void MakeListEmpty(VertexListPtr pHead);
+void vertexList_MakeEmpty(VertexListPtr pHead);
 
 #endif //GRAPH_VERTEX_LIST_H

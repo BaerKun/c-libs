@@ -18,14 +18,10 @@ struct Queue{
     QUEUE_ELEMENT_TYPE *elements;
 };
 
-static QueuePtr createQueue(int capacity){
+static QueuePtr newQueue(int capacity){
     QueuePtr queue = malloc(sizeof(struct Queue));
     *queue = (Queue){capacity, 0, 0, 0, malloc(capacity * sizeof(QUEUE_ELEMENT_TYPE))};
     return queue;
-}
-
-static int getSize(QueuePtr queue){
-    return queue->size;
 }
 
 static void enqueue(QueuePtr queue, QUEUE_ELEMENT_TYPE element){
@@ -39,6 +35,7 @@ static void enqueue(QueuePtr queue, QUEUE_ELEMENT_TYPE element){
         queue->rear = 0;
     queue->size++;
 }
+
 static QUEUE_ELEMENT_TYPE dequeue(QueuePtr queue){
     if(queue->size == 0) {
         fputs("Dequeue:Empty\n", stderr);
@@ -53,11 +50,11 @@ static QUEUE_ELEMENT_TYPE dequeue(QueuePtr queue){
     return front;
 }
 
-static void makeEmpty(QueuePtr queue){
+static void queue_makeEmpty(QueuePtr queue){
     queue->front = queue->rear = queue->size = 0;
 }
 
-static void deleteQueue(QueuePtr queue){
+static void queue_destroy(QueuePtr queue){
     free(queue->elements);
     free(queue);
 }

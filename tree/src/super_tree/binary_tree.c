@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-BinaryTreePtr createBinaryTree_fixedCapacity(int capacity) {
+BinaryTreePtr newBinaryTree_fixedCapacity(int capacity) {
     BinaryTreePtr tree = malloc(sizeof(BinaryTree));
     tree->capacity = capacity;
     tree->nodeNum = 0;
@@ -20,7 +20,7 @@ BinaryTreePtr createBinaryTree_fixedCapacity(int capacity) {
     return tree;
 }
 
-BinaryTreePtr createBinaryTree() {
+BinaryTreePtr newBinaryTree() {
     BinaryTreePtr tree = malloc(sizeof(BinaryTree));
     tree->capacity = MOST_TREE_NODES;
     tree->nodeNum = 0;
@@ -37,7 +37,7 @@ static void deleteTreeNodeRecursively(BinaryTreeNodePtr root) {
     free(root);
 }
 
-void deleteBinaryTree(BinaryTreePtr tree) {
+void BT_destroy(BinaryTreePtr tree) {
     if(tree->memoryPool != NULL)
         free(tree->memoryPool);
     else if(tree->root != NULL)
@@ -45,7 +45,7 @@ void deleteBinaryTree(BinaryTreePtr tree) {
     free(tree);
 }
 
-BinaryTreeNodePtr createTreeNode(DataType data) {
+BinaryTreeNodePtr BT_newNode(DataType data) {
     BinaryTreeNodePtr node = malloc(sizeof(BinaryTreeNode));
     node->data = data;
     node->left = node->right = node->next = node->nextEmpty = NULL;
@@ -54,14 +54,12 @@ BinaryTreeNodePtr createTreeNode(DataType data) {
     return node;
 }
 
-static BinaryTreeNodePtr _createTreeNode_fc(BinaryTreePtr tree, DataType data) {
+static BinaryTreeNodePtr newNodeHelper_fc(BinaryTreePtr tree, DataType data) {
     if(tree->memoryPool->nextEmpty == NULL && !tree->memoryPool->isEmpty) {
         fputs("fixed tree is full!\n", stderr);
-        for(int i=0;i<tree->capacity;++i)
-            printf("%d ", tree->memoryPool[i].data);
-        exit(1);
         return NULL;
     }
+
     BinaryTreeNodePtr node;
     do {
         node = tree->memoryPool->nextEmpty;
@@ -73,12 +71,12 @@ static BinaryTreeNodePtr _createTreeNode_fc(BinaryTreePtr tree, DataType data) {
     return node;
 }
 
-BinaryTreeNodePtr createTreeNode_fc(BinaryTreePtr tree, DataType data) {
+BinaryTreeNodePtr BT_newNode_fc(BinaryTreePtr tree, DataType data) {
     tree->nodeNum++;
-    return _createTreeNode_fc(tree, data);
+    return newNodeHelper_fc(tree, data);
 }
 
-void freeTreeNode(BinaryTreePtr tree, BinaryTreeNodePtr node) {
+void BT_freeNode(BinaryTreePtr tree, BinaryTreeNodePtr node) {
     if(tree->memoryPool == NULL) {
         free(node);
         return;
@@ -88,8 +86,8 @@ void freeTreeNode(BinaryTreePtr tree, BinaryTreeNodePtr node) {
     tree->memoryPool->nextEmpty = node;
 }
 
-BinaryTreeNodePtr binaryTreeDelete(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
-    BinaryTreeNodePtr if2childrenCallback(BinaryTreePtr, BinaryTreeNodePtr, int)) {
+BinaryTreeNodePtr BT_deleteNode(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
+                                BinaryTreeNodePtr if2children(BinaryTreePtr, BinaryTreeNodePtr, int)) {
     BinaryTreeNodePtr node, *ptr;
     if(parent == NULL) {
         node = tree->root;
@@ -116,23 +114,23 @@ BinaryTreeNodePtr binaryTreeDelete(BinaryTreePtr tree, BinaryTreeNodePtr parent,
         *ptr = node->right;
     else if(node->right == NULL)
         *ptr = node->left;
-    else if(if2childrenCallback == NULL)
+    else if(if2children == NULL)
         return  NULL;
     else
-        return  if2childrenCallback(tree, parent, isRight);
+        return  if2children(tree, parent, isRight);
 
     tree->nodeNum--;
     return node;
 }
 
-void binaryTreeDeleteAndFree(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
-    BinaryTreeNodePtr if2childrenCallback(BinaryTreePtr, BinaryTreeNodePtr, int)) {
-    BinaryTreeNodePtr node = binaryTreeDelete(tree, parent, isRight, if2childrenCallback);
+void BT_deleteAndFree(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
+                      BinaryTreeNodePtr if2children(BinaryTreePtr, BinaryTreeNodePtr, int)) {
+    BinaryTreeNodePtr node = BT_deleteNode(tree, parent, isRight, if2children);
     if(node != NULL)
-        freeTreeNode(tree, node);
+        BT_freeNode(tree, node);
 }
 
-void binaryTreeInsert_node(BinaryTreePtr tree, BinaryTreeNodePtr parent, BinaryTreeNodePtr node, int isRight) {
+void BT_insertNode(BinaryTreePtr tree, BinaryTreeNodePtr parent, BinaryTreeNodePtr node, int isRight) {
     BinaryTreeNodePtr _node, *ptr;
     if(parent == NULL) {
         _node = tree->root;
@@ -156,9 +154,9 @@ void binaryTreeInsert_node(BinaryTreePtr tree, BinaryTreeNodePtr parent, BinaryT
     tree->nodeNum++;
 }
 
-void binaryTreeInsert_data(BinaryTreePtr tree, BinaryTreeNodePtr parent, DataType data, int isRight) {
+void BT_insertData(BinaryTreePtr tree, BinaryTreeNodePtr parent, DataType data, int isRight) {
     BinaryTreeNodePtr node = tree->memoryPool == NULL ?
-        createTreeNode(data) : _createTreeNode_fc(tree, data);
+                             BT_newNode(data) : newNodeHelper_fc(tree, data);
     if(node != NULL)
-        binaryTreeInsert_node(tree, parent, node, isRight);
+        BT_insertNode(tree, parent, node, isRight);
 }

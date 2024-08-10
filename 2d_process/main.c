@@ -44,7 +44,7 @@ float cross(Vector2f vec1, Vector2f vec2) {
     return vec1.x * vec2.y - vec1.y * vec2.x;
 }
 
-void _convexHull(StackPtr stack, Point2f point) {
+void convexHullHelper(StackPtr stack, Point2f point) {
     Vector2f vec1, vec2;
     while (stack->top > 1) {
         vec1.x = point.x - stack->elements[stack->top - 1].x;
@@ -53,9 +53,9 @@ void _convexHull(StackPtr stack, Point2f point) {
         vec2.y = point.y - stack->elements[stack->top - 2].y;
         if (cross(vec1, vec2) < 0.f)
             break;
-        stackPop(stack);
+        stack_pop(stack);
     }
-    stackPush(stack, point);
+    stack_push(stack, point);
 }
 
 void convexHull(Point2f points[], Point2f hullPoints[], int nPoints, int *nHullPoints) {
@@ -82,13 +82,13 @@ void convexHull(Point2f points[], Point2f hullPoints[], int nPoints, int *nHullP
     insertionSort(pTheta, nPoints);
 
     StackPtr stack = newStack(nPoints);
-    stackPush(stack, points[pTheta[0] - theta]);
-    stackPush(stack, points[pTheta[1] - theta]);
+    stack_push(stack, points[pTheta[0] - theta]);
+    stack_push(stack, points[pTheta[1] - theta]);
 
     for(i = 2; i < nPoints; ++i)
-        _convexHull(stack, points[i]);
+        convexHullHelper(stack, points[i]);
 
-    _convexHull(stack, origin);
+    convexHullHelper(stack, origin);
 
     *nHullPoints = stack->top - 1;
     memcpy(hullPoints, stack->elements, sizeof(Point2f) * *nHullPoints);
@@ -96,16 +96,16 @@ void convexHull(Point2f points[], Point2f hullPoints[], int nPoints, int *nHullP
 
 int main() {
     Point2f points[10] = {
-        {0, 0},
-        {0, 1},
-        {1, 1},
-        {1, 0},
-        {0.5, 0.5},
-        {0.5, 0.4},
-        {0.4, 0.5},
-        {0.4, 0.4},
-        {0.5, 0.5},
-        {0.5, 0.4},
+        {0.f, 0.f},
+        {0.f, 1.f},
+        {1.f, 1.f},
+        {1.f, 0.f},
+        {0.5f, 0.5f},
+        {0.5f, 0.4f},
+        {0.4f, 0.5f},
+        {0.4f, 0.4f},
+        {0.5f, 0.5f},
+        {0.5f, 0.4f},
     };
     Point2f hullPoints[10];
     int nHullPoints;

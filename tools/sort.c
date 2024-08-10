@@ -1,12 +1,12 @@
 #include "sort.h"
 #include <stdlib.h>
 
-void shellSort(SORT_ELEMENT_TYPE *array, int len) {
+void shellSort(SORT_ELEMENT_TYPE *array, int size) {
     int i, j, delta;
     SORT_ELEMENT_TYPE tmp;
-    for (delta = 1; delta < len; delta = delta << 1 | 1);
+    for (delta = 1; delta < size; delta = delta << 1 | 1);
     for (delta >>= 1; delta; delta >>= 1) {
-        for (i = delta; i < len; i++) {
+        for (i = delta; i < size; i++) {
             tmp = array[i];
             for (j = i; j >= delta && SORT_LESS_THAN(tmp, array[j - delta]); j -= delta)
                 array[j] = array[j - delta];
@@ -15,10 +15,10 @@ void shellSort(SORT_ELEMENT_TYPE *array, int len) {
     }
 }
 
-static void percDown(SORT_ELEMENT_TYPE *array, int father, int len) {
+static void percDown(SORT_ELEMENT_TYPE *array, int father, int size) {
     const SORT_ELEMENT_TYPE theTop = array[father];
-    for (int child; (child = father << 1) < len; father = child) {
-        if (child + 1 != len && SORT_LESS_THAN(array[child + 1], array[child]))
+    for (int child; (child = father << 1) < size; father = child) {
+        if (child + 1 != size && SORT_LESS_THAN(array[child + 1], array[child]))
             child++;
         if (SORT_LESS_THAN(theTop, array[child]))
             array[father] = array[child];
@@ -28,13 +28,15 @@ static void percDown(SORT_ELEMENT_TYPE *array, int father, int len) {
     array[father] = theTop;
 }
 
-void heapSort(SORT_ELEMENT_TYPE *array, int len) {
+void heapSort(SORT_ELEMENT_TYPE *array, int size) {
     int i;
     array--;
-    len++;
-    for (i = len >> 1; i; i--)
-        percDown(array, i, len);
-    for (i = len - 1; i; i--) {
+    size++;
+
+    for (i = size >> 1; i; i--)
+        percDown(array, i, size);
+
+    for (i = size - 1; i; i--) {
         swap(array + i, array + 1);
         percDown(array, 1, i);
     }
@@ -44,6 +46,7 @@ static void merge(SORT_ELEMENT_TYPE *array, SORT_ELEMENT_TYPE *tmpArray, int Lpo
     int Lend, tmpPos, Lstart;
     Lend = Rpos - 1;
     tmpPos = Lstart = Lpos;
+
     while (1) {
         if (SORT_LESS_THAN(array[Lpos], array[Rpos])) {
             tmpArray[tmpPos++] = array[Lpos++];
@@ -55,6 +58,7 @@ static void merge(SORT_ELEMENT_TYPE *array, SORT_ELEMENT_TYPE *tmpArray, int Lpo
                 break;
         }
     }
+
     while (Lpos <= Lend)
         tmpArray[tmpPos++] = array[Lpos++];
     while (Rpos <= Rend)
@@ -63,19 +67,19 @@ static void merge(SORT_ELEMENT_TYPE *array, SORT_ELEMENT_TYPE *tmpArray, int Lpo
         array[Lpos] = tmpArray[Lpos];
 }
 
-static void _mergeSort(SORT_ELEMENT_TYPE *array, int *tmpArray, int left, int right) {
+static void mergeSortHelper(SORT_ELEMENT_TYPE *array, int *tmpArray, int left, int right) {
     if (left < right) {
         int center = (left + right) >> 1;
-        _mergeSort(array, tmpArray, left, center);
-        _mergeSort(array, tmpArray, ++center, right);
+        mergeSortHelper(array, tmpArray, left, center);
+        mergeSortHelper(array, tmpArray, ++center, right);
         merge(array, tmpArray, left, center, right);
     }
 }
 
-void mergeSort(SORT_ELEMENT_TYPE *array, int len) {
-    SORT_ELEMENT_TYPE *tmpArray = malloc(len * sizeof(SORT_ELEMENT_TYPE));
+void mergeSort(SORT_ELEMENT_TYPE *array, int size) {
+    SORT_ELEMENT_TYPE *tmpArray = malloc(size * sizeof(SORT_ELEMENT_TYPE));
     if (tmpArray) {
-        _mergeSort(array, tmpArray, 0, len - 1);
+        mergeSortHelper(array, tmpArray, 0, size - 1);
         free(tmpArray);
     }
 }
@@ -112,41 +116,42 @@ static int quickBody(SORT_ELEMENT_TYPE *array, int left, int right) {
     return i;
 }
 
-static void _quickSort(SORT_ELEMENT_TYPE *array, int left, int right) {
+static void quickSortHelper(SORT_ELEMENT_TYPE *array, int left, int right) {
     if (left + 10 < right) {
         int i = quickBody(array, left, right);
-        _quickSort(array, left, i - 1);
-        _quickSort(array, i + 1, right);
+        quickSortHelper(array, left, i - 1);
+        quickSortHelper(array, i + 1, right);
     } else
         insertionSort(array + left, right - left + 1);
 }
 
-void quickSort(SORT_ELEMENT_TYPE *array, int len) {
-    _quickSort(array, 0, len - 1);
+void quickSort(SORT_ELEMENT_TYPE *array, int size) {
+    quickSortHelper(array, 0, size - 1);
 }
 
-void _quickSelect(SORT_ELEMENT_TYPE *array, int left, int right, int number) {
+void quickSelectHelper(SORT_ELEMENT_TYPE *array, int left, int right, int number) {
     if (left + 10 < right) {
         int i = quickBody(array, left, right);
         if(number < i)
-            _quickSelect(array, left, i - 1, number);
+            quickSelectHelper(array, left, i - 1, number);
         else if(number > i)
-            _quickSelect(array, i + 1, right, number);
+            quickSelectHelper(array, i + 1, right, number);
     } else
         insertionSort(array + left, right - left + 1);
 }
 
-void quickSelect(SORT_ELEMENT_TYPE *array, int len, int number) {
-    _quickSelect(array, 0, len - 1, number - 1);
+void quickSelect(SORT_ELEMENT_TYPE *array, int size, int number) {
+    quickSelectHelper(array, 0, size - 1, number - 1);
 }
 
-static void _bucketSort(SORT_ELEMENT_TYPE *iArray, SORT_ELEMENT_TYPE *oArray, int len, int *buckets, int time) {
+static void bucketSortHelper(SORT_ELEMENT_TYPE *iArray, SORT_ELEMENT_TYPE *oArray, int size, int *buckets, int time) {
     int i, shift;
     SORT_ELEMENT_TYPE tmp1, tmp2;
     shift = time << 2;
+
     for (i = 0; i < 16; i++)
         buckets[i] = 0;
-    for (i = 0; i < len; i++)
+    for (i = 0; i < size; i++)
         buckets[iArray[i] >> shift & 15]++;
 
     tmp1 = buckets[0];
@@ -156,25 +161,28 @@ static void _bucketSort(SORT_ELEMENT_TYPE *iArray, SORT_ELEMENT_TYPE *oArray, in
         buckets[i] = tmp1 + buckets[i - 1];
         tmp1 = tmp2;
     }
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < size; i++) {
         oArray[buckets[iArray[i] >> shift & 15]++] = iArray[i];
     }
 }
 
-void bucketSort(SORT_ELEMENT_TYPE *array, int len) {
-    int i, time, buckets[16];
-    SORT_ELEMENT_TYPE *tmpArray = malloc(len * sizeof(SORT_ELEMENT_TYPE));
-    time = 0;
+void bucketSort(SORT_ELEMENT_TYPE *array, int size) {
+    int i, time=0, buckets[16];
+    SORT_ELEMENT_TYPE *tmpArray = malloc(size * sizeof(SORT_ELEMENT_TYPE));
+    if (!tmpArray)
+        return;
+
     do {
-        _bucketSort(array, tmpArray, len, buckets, time);
-        if (buckets[1] == len) {
-            for (i = 0; i < len; i++)
+        bucketSortHelper(array, tmpArray, size, buckets, time);
+        if (buckets[1] == size) {
+            for (i = 0; i < size; i++)
                 array[i] = tmpArray[i];
             break;
         }
         time++;
-        _bucketSort(tmpArray, array, len, buckets, time);
+        bucketSortHelper(tmpArray, array, size, buckets, time);
         time++;
-    } while (buckets[1] != len);
+    } while (buckets[1] != size);
+
     free(tmpArray);
 }

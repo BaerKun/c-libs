@@ -1279,7 +1279,7 @@
 	on the next buffer attach to this surface.
 
 	A maximized surface typically fills the entire output it is
-	bound to, except for desktop elements such as panels. This is
+	bound to, except for desktop prev such as panels. This is
 	the main difference between a maximized shell surface and a
 	fullscreen shell surface.
 
@@ -1294,7 +1294,7 @@
 	Set a short title for the surface.
 
 	This string may be used to identify the surface in a task bar,
-	window list, or other user interface elements provided by the
+	window list, or other user interface prev provided by the
 	compositor.
 
 	The string must be encoded in UTF-8.

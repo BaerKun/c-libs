@@ -5,7 +5,7 @@ typedef int DisjSet[];
 typedef int ClassId;
 typedef int ElementType;
 
-static ClassId Find(ElementType set[], ElementType element) {
+static ClassId disjSet_find(ElementType set[], ElementType element) {
     ClassId root;
 
     for (root = element; set[root] >= 0; root = set[root]);
@@ -15,7 +15,7 @@ static ClassId Find(ElementType set[], ElementType element) {
     return root;
 }
 
-static void Union(ElementType set[], ClassId root1, ClassId root2) {
+static void disjSet_union(ElementType set[], ClassId root1, ClassId root2) {
     if (set[root1] > set[root2])
         set[root1] = root2;
     else {

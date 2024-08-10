@@ -3,6 +3,6 @@
 
 #include "graph.h"
 
-void FindArticulation(GraphPtr pGraph, VertexId outputArray[]);
+void graphFindArticulation(GraphPtr graph, VertexId outputArray[]);
 
 #endif //GRAPH_FIND_ARTICULATION_H

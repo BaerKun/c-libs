@@ -1,8 +1,7 @@
 #ifndef HEAP_H
 #define HEAP_H
-#define MINUS_INFINITY 0x80000000
 
-# ifndef  HEAP_ELEMENT_TYPE;
+# ifndef HEAP_ELEMENT_TYPE
 # define HEAP_ELEMENT_TYPE int
 # endif
 
@@ -19,65 +18,79 @@ typedef struct Heap Heap, *HeapPtr;
 struct Heap{
     int capacity;
     int size;
-    HEAP_ELEMENT_TYPE  *elements;
+    int needFreeElements;
+    HEAP_ELEMENT_TYPE  *prev; // 指向堆顶的前一个
 };
 
-static void PercolateDown(HEAP_ELEMENT_TYPE *array, int father, int len){
-    int child, theTop;
-    theTop = array[father];
+static void heap_percolateDown(HEAP_ELEMENT_TYPE *prev, int father, int end){
+    int child;
+    HEAP_ELEMENT_TYPE theTop;
+    theTop = prev[father];
 
-    for( ; (child = father << 1) < len; father = child){
-        if(child + 1 != len && HEAP_LESS_THAN(array[child + 1], array[child]))
+    for( ; (child = father << 1) <= end; father = child){
+        if(child + 1 <= end && HEAP_LESS_THAN(prev[child + 1], prev[child]))
             child++;
-        if(HEAP_LESS_THAN(array[child], theTop))
-            array[father] = array[child];
+        if(HEAP_LESS_THAN(prev[child], theTop))
+            prev[father] = prev[child];
         else
             break;
     }
-    array[father] = theTop;
+    prev[father] = theTop;
 }
 
-static HeapPtr CreateHeap(int capacity){
+static HeapPtr newHeap(int capacity){
     HeapPtr heap = malloc(sizeof(struct Heap));
     heap->capacity = capacity;
     heap->size = 0;
-    heap->elements = malloc((capacity + 1) * sizeof(HEAP_ELEMENT_TYPE));
-    heap->elements[0] = MINUS_INFINITY;
+    heap->needFreeElements = 1;
+    heap->prev = malloc(capacity * sizeof(HEAP_ELEMENT_TYPE));
+    heap->prev--;
+
     return heap;
 }
 
-static void HeapInsert(HeapPtr heap, HEAP_ELEMENT_TYPE element){
+static void heap_insert(HeapPtr heap, HEAP_ELEMENT_TYPE element){
     int i, child;
     if(heap->capacity == heap->size){
         fputs("HeapInsert:Full\n", stderr);
         return;
     }
-    for(i = ++heap->size; HEAP_LESS_THAN(element, heap->elements[child = i >> 1]); i = child)
-        heap->elements[i] = heap->elements[child];
-    heap->elements[i] = element;
+
+    for(i = ++heap->size; i && HEAP_LESS_THAN(element, heap->prev[child = i >> 1]); i = child)
+        heap->prev[i] = heap->prev[child];
+
+    heap->prev[i] = element;
 }
 
-static HEAP_ELEMENT_TYPE DeleteMin(HeapPtr heap){
+static HEAP_ELEMENT_TYPE heap_deleteMin(HeapPtr heap){
     if(heap->size == 0){
         fputs("DeleteMin:Empty\n", stderr);
-        return MINUS_INFINITY;
+        exit(1);
     }
 
-    HEAP_ELEMENT_TYPE theMin = heap->elements[1];
-    heap->elements[1] = heap->elements[heap->size];
-    PercolateDown(heap->elements, 1, heap->size--);
+    HEAP_ELEMENT_TYPE theMin = heap->prev[1];
+    heap->prev[1] = heap->prev[heap->size];
+    heap_percolateDown(heap->prev, 1, --heap->size);
+
     return theMin;
 }
 
-static void DeleteHeap(HeapPtr heap){
-    free(heap->elements);
+static void heap_destroy(HeapPtr heap){
+    if(heap->needFreeElements)
+        free(heap->prev + 1);
     free(heap);
 }
 
-static void BuildHeap(HEAP_ELEMENT_TYPE *array, int len){
-    for(int i = len >> 1; i; i--){
-        PercolateDown(array, i, len);
-    }
+static HeapPtr buildHeap(HEAP_ELEMENT_TYPE *prev, int end){
+    for(int i = end >> 1; i; i--)
+        heap_percolateDown(prev, i, end);
+
+    HeapPtr heap = malloc(sizeof(Heap));
+    heap->capacity = heap->size = end;
+    heap->prev = prev;
+    heap->needFreeElements = 0;
+
+    return heap;
 }
 
 #endif //HEAP_H

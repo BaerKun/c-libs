@@ -15,7 +15,7 @@ typedef struct EdgeData EdgeData;
 typedef struct VertexData VertexData;
 struct Vertex {
     VertexData data;
-    EdgePtr pOutEdge;
+    EdgePtr outEdges;
 };
 struct Edge {
     VertexId target;
@@ -30,16 +30,16 @@ struct Graph {
     int *indegree;
 };
 
-GraphPtr CreateGraph(int capacity, int vertexNum);
+GraphPtr newGraph(int capacity, int vertexNum);
 
-void DeleteGraph(GraphPtr pGraph);
+void graphDestroy(GraphPtr graph);
 
-void AddEdge(GraphPtr pGraph, VertexId source, VertexId target, EdgeData data);
+void graphAddEdge(GraphPtr graph, VertexId source, VertexId target, EdgeData data);
 
-int HasPath(const VertexId *parent, int vertexNum, VertexId source, VertexId target);
+int graphHasPath(const VertexId *parent, int vertexNum, VertexId source, VertexId target);
 
-void UseIndegree(GraphPtr pGraph);
+void UseIndegree(GraphPtr graph);
 
-void UseParent(GraphPtr pGraph);
+void UseParent(GraphPtr graph);
 
 #endif //GRAPH_GRAPH_H

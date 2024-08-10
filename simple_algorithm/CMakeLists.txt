@@ -8,6 +8,4 @@ file(GLOB SOURCES "*.c")
 
 add_library(algorithm STATIC ${SOURCES})
 
-add_executable(alg_test tests/test1.c)
-
-target_link_libraries(alg_test PRIVATE algorithm)
+add_executable(tests tests/test_macro.c)

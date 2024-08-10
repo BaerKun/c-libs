@@ -15,10 +15,10 @@ static void swap(SORT_ELEMENT_TYPE *x, SORT_ELEMENT_TYPE *y) {
     *y = z;
 }
 
-static void insertionSort(SORT_ELEMENT_TYPE *array, int len) {
+static void insertionSort(SORT_ELEMENT_TYPE *array, int size) {
     int i, j;
     SORT_ELEMENT_TYPE tmp;
-    for (i = 1; i < len; i++) {
+    for (i = 1; i < size; i++) {
         tmp = array[i];
         for (j = i; j && SORT_LESS_THAN(tmp, array[j - 1]); j--)
             array[j] = array[j - 1];
@@ -26,14 +26,14 @@ static void insertionSort(SORT_ELEMENT_TYPE *array, int len) {
     }
 }
 
-void HeapSort(SORT_ELEMENT_TYPE *array, int len);
+void heapSort(SORT_ELEMENT_TYPE *array, int size);
 
-void ShellSort(SORT_ELEMENT_TYPE *array, int len);
+void shellSort(SORT_ELEMENT_TYPE *array, int size);
 
-void MergeSort(SORT_ELEMENT_TYPE *array, int len);
+void mergeSort(SORT_ELEMENT_TYPE *array, int size);
 
-void QuickSort(SORT_ELEMENT_TYPE *array, int len);
+void quickSort(SORT_ELEMENT_TYPE *array, int size);
 
-void BucketSort(SORT_ELEMENT_TYPE *array, int len);
+void bucketSort(SORT_ELEMENT_TYPE *array, int size);
 
 #endif //SORT_H

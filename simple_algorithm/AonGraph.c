@@ -1,6 +1,7 @@
 #include "AonGraph.h"
 #include <stdlib.h>
 #include <stdio.h>
+
 #define InitHeap(heap, capacity) \
     NodePtr elements[capacity];  \
     heap.size = 0;                  \

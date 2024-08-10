@@ -2,65 +2,66 @@
 #include <stdio.h>
 
 typedef struct {
-    GraphPtr pGraph;
-    EdgePtr *pNextEdge;
+    GraphPtr graph;
+    EdgePtr *nextEdge;
     VertexId target;
 } Package;
 
-static EdgePtr GetNextEdge(VertexPtr pThisVertex, EdgePtr *ppNextEdge, VertexId lastVertex) {
-    if (!*ppNextEdge)
+static EdgePtr getEdge(VertexPtr thisVertex, EdgePtr *nextEdges, VertexId lastVertex) {
+    if (!*nextEdges)
         return NULL;
 
-    if ((*ppNextEdge)->target == lastVertex)
-        return *ppNextEdge = (*ppNextEdge)->next;
+    if ((*nextEdges)->target == lastVertex)
+        return *nextEdges = (*nextEdges)->next;
 
 
-    EdgePtr pEdge, pNextEdge;
-    for (pEdge = *ppNextEdge; (pNextEdge = pEdge->next) && pNextEdge->target != lastVertex; pEdge = pNextEdge);
+    EdgePtr this, next;
+    for (this = *nextEdges; (next = this->next) && next->target != lastVertex; this = next);
 
-    if (pNextEdge) {
-        pEdge->next = pNextEdge->next;
-        pNextEdge->next = pThisVertex->pOutEdge;
-        pThisVertex->pOutEdge = pNextEdge;
+    if (next) {
+        this->next = next->next;
+        next->next = thisVertex->outEdges;
+        thisVertex->outEdges = next;
     }
 
-    return *ppNextEdge;
+    return *nextEdges;
 }
 
-static int eulerCircuit(Package *pPackage, VertexListPtr path, VertexId thisVertex, VertexId lastVertex) {
-    EdgePtr pThisEdge;
-    pThisEdge = GetNextEdge(pPackage->pGraph->vertices + thisVertex, pPackage->pNextEdge + thisVertex, lastVertex);
+static int EulerCircuitHelper(Package *package, VertexListPtr path, VertexId thisVertex, VertexId lastVertex) {
+    EdgePtr thisEdge;
+    thisEdge = getEdge(package->graph->vertices + thisVertex, package->nextEdge + thisVertex, lastVertex);
 
-    for (; pThisEdge; pThisEdge = pPackage->pNextEdge[thisVertex]) {
+    for (; thisEdge; thisEdge = package->nextEdge[thisVertex]) {
 
-        pPackage->pNextEdge[thisVertex] = pThisEdge->next;
+        package->nextEdge[thisVertex] = thisEdge->next;
 
-        VertexListInsert(path, pThisEdge->target);
+        vertexList_insert(path, thisEdge->target);
 
-        if(eulerCircuit(pPackage, path->next, pThisEdge->target, thisVertex))
+        if(EulerCircuitHelper(package, path->next, thisEdge->target, thisVertex))
             return 1;
 
-        if (pThisEdge->target == pPackage->target)
-            pPackage->target = thisVertex;
+        if (thisEdge->target == package->target)
+            package->target = thisVertex;
     }
 
-    if(thisVertex != pPackage->target) {
+    if(thisVertex != package->target) {
         fputs("EulerCircuit: No Circuit\n", stderr);
         return 1;
     }
     return 0;
 }
 
-void EulerPath(GraphPtr pGraph, VertexListPtr pPathHead, VertexId source, VertexId target) {
-    EdgePtr pNextEdge[pGraph->vertexNum];
+void EulerPath(GraphPtr graph, VertexListPtr path, VertexId source, VertexId target) {
+    EdgePtr nextEdge[graph->vertexNum];
 
-    for (VertexId vertex = 0; vertex < pGraph->vertexNum; vertex++)
-        pNextEdge[vertex] = pGraph->vertices[vertex].pOutEdge;
-    pPathHead->vertexId = source;
-    pPathHead->next = NULL;
-    Package package = {pGraph, pNextEdge, target};
+    for (VertexId vertex = 0; vertex < graph->vertexNum; vertex++)
+        nextEdge[vertex] = graph->vertices[vertex].outEdges;
 
-    eulerCircuit(&package, pPathHead, source, INFINITY);
+    path->vertex = source;
+    path->next = NULL;
+    Package package = {graph, nextEdge, target};
+
+    EulerCircuitHelper(&package, path, source, INFINITY);
 }
 
 void EulerCircuit(GraphPtr pGraph, VertexListPtr pPathHead, VertexId source) {

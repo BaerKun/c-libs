@@ -413,7 +413,7 @@
       implementations that provide a desktop-style user interface.
 
       It provides a base set of functionality required to construct user
-      interface elements requiring management by the compositor, such as
+      interface prev requiring management by the compositor, such as
       toplevel windows, menus, etc. The types of functionality are split into
       xdg_surface roles.
 
@@ -685,7 +685,7 @@
 	Set a short title for the surface.
 
 	This string may be used to identify the surface in a task bar,
-	window list, or other user interface elements provided by the
+	window list, or other user interface prev provided by the
 	compositor.
 
 	The string must be encoded in UTF-8.
@@ -1171,7 +1171,7 @@
       <description summary="compositor capabilities">
 	This event advertises the capabilities supported by the compositor. If
 	a capability isn't supported, clients should hide or disable the UI
-	elements that expose this functionality. For instance, if the
+	prev that expose this functionality. For instance, if the
 	compositor doesn't advertise support for minimized toplevels, a button
 	triggering the set_minimized request should not be displayed.
 

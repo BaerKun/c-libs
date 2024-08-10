@@ -24,22 +24,22 @@ static StackPtr newStack(int capacity){
     return stack;
 }
 
-static void stackPush(StackPtr stack, STACK_ELEMENT_TYPE element){
+static void stack_push(StackPtr stack, STACK_ELEMENT_TYPE element){
     if(stack->top == stack->capacity)
-        fputs("stackPush: Stack is full!", stderr);
+        fputs("stack_push: Stack is full!", stderr);
     else
         stack->elements[stack->top++] = element;
 }
 
-static STACK_ELEMENT_TYPE stackPop(StackPtr stack){
+static STACK_ELEMENT_TYPE stack_pop(StackPtr stack){
     if(stack->top == 0){
-        fputs("stackPop: Stack is empty!", stderr);
-        return;
+        fputs("stack_pop: Stack is empty!", stderr);
+        exit(1);
     }
     return stack->elements[--stack->top];
 }
 
-static void deleteStack(StackPtr stack){
+static void stack_destroy(StackPtr stack){
     free(stack->elements);
     free(stack);
 }

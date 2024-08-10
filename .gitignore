@@ -5,6 +5,3 @@ cmake-build-debug
 *.idea
 */*.idea
 */build
-*/bin
-*/lib
-*/tests

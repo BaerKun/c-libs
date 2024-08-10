@@ -12,19 +12,19 @@ typedef float WeightType;
 
 typedef BinaryTree BST, *BSTPtr;
 
-BinaryTreeNodePtr bstFindMax(BSTPtr tree);
+BinaryTreeNodePtr BST_findMax(BSTPtr tree);
 
-BinaryTreeNodePtr bstDeleteMax(BSTPtr tree);
+BinaryTreeNodePtr BST_deleteMax(BSTPtr tree);
 
-BinaryTreeNodePtr bstFind(BSTPtr tree, DataType data);
+BinaryTreeNodePtr BST_find(BSTPtr tree, DataType data);
 
-void bstInsert_node(BSTPtr tree, BinaryTreeNodePtr node);
+void BST_insertNode(BSTPtr tree, BinaryTreeNodePtr node);
 
-void bstInsert_data(BSTPtr tree, DataType data);
+void BST_insertData(BSTPtr tree, DataType data);
 
-BinaryTreeNodePtr bstDelete_node(BSTPtr tree, BinaryTreeNodePtr node, int isRight);
+BinaryTreeNodePtr BST_deleteNode(BSTPtr tree, BinaryTreeNodePtr node, int isRight);
 
-BinaryTreeNodePtr bstDelete_data(BSTPtr tree, DataType data);
+BinaryTreeNodePtr BST_deleteData(BSTPtr tree, DataType data);
 
 BSTPtr buildBST(DataType data[], int len, int isFixed);
 

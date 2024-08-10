@@ -3,7 +3,7 @@
 #include <string.h>
 
 typedef struct {
-    EdgePtr *pEdges;
+    EdgePtr *edges;
     VertexId *parent;
     char *hasVisited;
     int *number;
@@ -12,81 +12,87 @@ typedef struct {
     VertexId root;
 }Package;
 
-EdgePtr *CopyEdges(GraphPtr pGraph) {
-    EdgePtr *pEdges = malloc(pGraph->vertexNum * sizeof(EdgePtr) + pGraph->edgeNum * sizeof(Edge));
-    EdgePtr edges = (EdgePtr)(pEdges + pGraph->vertexNum);
-    EdgePtr pOriginalEdge, pThisEdge;
+EdgePtr *CopyEdges(GraphPtr graph) {
+    EdgePtr *edges = malloc(graph->vertexNum * sizeof(EdgePtr) + graph->edgeNum * sizeof(Edge));
+    EdgePtr edgePool = (EdgePtr)(edges + graph->vertexNum);
+    EdgePtr prevEdge, thisEdge;
     int couter = 0;
-    for(VertexId vertex = 0; vertex < pGraph->vertexNum; vertex++) {
-        if(!(pOriginalEdge = pGraph->vertices[vertex].pOutEdge)) {
-            pEdges[vertex] = NULL;
+
+    for(VertexId vertex = 0; vertex < graph->vertexNum; vertex++) {
+        if(!(prevEdge = graph->vertices[vertex].outEdges)) {
+            edges[vertex] = NULL;
             continue;
         }
-        pThisEdge = pEdges[vertex] = edges + couter++;
-        pEdges[vertex]->target = pOriginalEdge->target;
-        pEdges[vertex]->data = pOriginalEdge->data;
-        for (pOriginalEdge = pOriginalEdge->next; pOriginalEdge != NULL; pOriginalEdge = pOriginalEdge->next) {
-            pThisEdge->next = edges + couter++;
-            pThisEdge = pThisEdge->next;
-            pThisEdge->target = pOriginalEdge->target;
-            pThisEdge->data = pOriginalEdge->data;
+
+        thisEdge = edges[vertex] = edgePool + couter++;
+        edges[vertex]->target = prevEdge->target;
+        edges[vertex]->data = prevEdge->data;
+
+        for (prevEdge = prevEdge->next; prevEdge != NULL; prevEdge = prevEdge->next) {
+            thisEdge->next = edgePool + couter++;
+            thisEdge = thisEdge->next;
+            thisEdge->target = prevEdge->target;
+            thisEdge->data = prevEdge->data;
         }
-        pThisEdge->next = NULL;
+        thisEdge->next = NULL;
     }
-    return pEdges;
+    return edges;
 }
 
-void DeleteEdges(EdgePtr *pEdges) {
-    free(pEdges);
-}
+void findSccGo(Package *package, VertexId thisVertex){
+    package->hasVisited[thisVertex] = 1;
+    EdgePtr nextEdge, thisEdge = package->edges[thisVertex];
+    package->edges[thisVertex] = NULL;
 
-void findSccGo(Package *pPackage, VertexId thisVertex){
-    pPackage->hasVisited[thisVertex] = 1;
-    EdgePtr pNextEdge, pEdge = pPackage->pEdges[thisVertex];
-    pPackage->pEdges[thisVertex] = NULL;
-    for(; pEdge; pEdge = pNextEdge){
-        if(!pPackage->hasVisited[pEdge->target])
-            findSccGo(pPackage, pEdge->target);
-        pNextEdge = pEdge->next;
-        pEdge->next = pPackage->pEdges[pEdge->target];
-        pPackage->pEdges[pEdge->target] = pEdge;
-        pEdge->target = thisVertex;
+    for(; thisEdge; thisEdge = nextEdge){
+        if(!package->hasVisited[thisEdge->target])
+            findSccGo(package, thisEdge->target);
+
+        nextEdge = thisEdge->next;
+        thisEdge->next = package->edges[thisEdge->target];
+        package->edges[thisEdge->target] = thisEdge;
+        thisEdge->target = thisVertex;
     }
-    pPackage->number[++pPackage->thisNumber] = thisVertex;
-    if(thisVertex == pPackage->root){
-        while(++pPackage->root < pPackage->vertexNum)
-            if(!pPackage->hasVisited[pPackage->root]) {
-                findSccGo(pPackage, pPackage->root);
+
+    package->number[++package->thisNumber] = thisVertex;
+    if(thisVertex == package->root){
+        while(++package->root < package->vertexNum)
+            if(!package->hasVisited[package->root]) {
+                findSccGo(package, package->root);
                 break;
             }
     }
 }
 
-void findSccBack(Package *pPackage, VertexId thisVertex){
-    pPackage->hasVisited[thisVertex] = 0;
-    for(EdgePtr pEdge = pPackage->pEdges[thisVertex]; pEdge; pEdge = pEdge->next){
-        if(!pPackage->hasVisited[pEdge->target])
+void findSccBack(Package *package, VertexId thisVertex){
+    package->hasVisited[thisVertex] = 0;
+    for(EdgePtr edge = package->edges[thisVertex]; edge; edge = edge->next){
+        if(!package->hasVisited[edge->target])
             continue;
-        pPackage->parent[pEdge->target] = thisVertex;
-        findSccBack(pPackage, pEdge->target);
+        package->parent[edge->target] = thisVertex;
+        findSccBack(package, edge->target);
     }
-    if(thisVertex == pPackage->root){
-        pPackage->parent[thisVertex] = thisVertex;
-        while(--pPackage->thisNumber >= 0)
-            if(pPackage->hasVisited[pPackage->number[pPackage->thisNumber]]) {
-                findSccBack(pPackage, pPackage->root = pPackage->number[pPackage->thisNumber]);
+
+    if(thisVertex == package->root){
+        package->parent[thisVertex] = thisVertex;
+        while(--package->thisNumber >= 0)
+            if(package->hasVisited[package->number[package->thisNumber]]) {
+                findSccBack(package, package->root = package->number[package->thisNumber]);
                 break;
             }
     }
 }
 
-void FindScc(GraphPtr pGraph, VertexId *parent) {
-    EdgePtr *pEdges = CopyEdges(pGraph);
-    int number[pGraph->vertexNum];
-    char hasVisited[pGraph->vertexNum];
-    memset(hasVisited, 0, pGraph->vertexNum);
-    Package package = {pEdges, parent, hasVisited, number, -1, pGraph->vertexNum, 0};
+void graphFindScc(GraphPtr graph, VertexId *parent) {
+    EdgePtr *edges = CopyEdges(graph);
+    int number[graph->vertexNum];
+    char hasVisited[graph->vertexNum];
+
+    memset(hasVisited, 0, graph->vertexNum);
+    Package package = {edges, parent, hasVisited, number, -1, graph->vertexNum, 0};
+
     findSccGo(&package, 0);
     findSccBack(&package, package.root = package.number[package.thisNumber]);
-    DeleteEdges(pEdges);
+
+    free(edges);
 }

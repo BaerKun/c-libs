@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-GraphPtr CreateGraph(int capacity, int vertexNum) {
+GraphPtr newGraph(int capacity, int vertexNum) {
     GraphPtr pGraph = malloc(sizeof(Graph));
     pGraph->capacity = capacity;
     pGraph->vertexNum = vertexNum;
@@ -12,49 +12,49 @@ GraphPtr CreateGraph(int capacity, int vertexNum) {
     return pGraph;
 }
 
-void DeleteGraph(GraphPtr pGraph) {
-    VertexId vertexId;
-    EdgePtr pEdge, pNextEdge;
+void graphDestroy(GraphPtr graph) {
+    VertexPtr vertex, end;
+    EdgePtr this, next;
 
-    for (vertexId = 0; vertexId < pGraph->vertexNum; vertexId++) {
-        for (pEdge = pGraph->vertices[vertexId].pOutEdge; pEdge; pEdge = pNextEdge) {
-            pNextEdge = pEdge->next;
-            free(pEdge);
+    for (vertex = graph->vertices, end = vertex + graph->vertexNum; vertex != end; vertex++) {
+        for (this = vertex->outEdges; this; this = next) {
+            next = this->next;
+            free(this);
         }
     }
 
-    free(pGraph->vertices);
+    free(graph->vertices);
 
-    if(pGraph->indegree)
-        free(pGraph->indegree);
+    if(graph->indegree)
+        free(graph->indegree);
 
-    free(pGraph);
+    free(graph);
 }
 
-void AddEdge(GraphPtr pGraph, VertexId source, VertexId target, EdgeData data) {
-    if (source < 0 || target < 0 || source >= pGraph->vertexNum || target >= pGraph->vertexNum) {
-        fputs("AddEdge:InvalidVertex\n", stderr);
+void graphAddEdge(GraphPtr graph, VertexId source, VertexId target, EdgeData data) {
+    if (source < 0 || target < 0 || source >= graph->vertexNum || target >= graph->vertexNum) {
+        fputs("graphAddEdge:InvalidVertex\n", stderr);
         return;
     }
 
     EdgePtr pEdge;
 
-    for (pEdge = pGraph->vertices[source].pOutEdge; pEdge && pEdge->target != target; pEdge = pEdge->next);
+    for (pEdge = graph->vertices[source].outEdges; pEdge && pEdge->target != target; pEdge = pEdge->next);
     if (pEdge)
         return;
 
     pEdge = malloc(sizeof(Edge));
     pEdge->target = target;
     pEdge->data = data;
-    pEdge->next = pGraph->vertices[source].pOutEdge;
-    pGraph->vertices[source].pOutEdge = pEdge;
-    pGraph->edgeNum++;
+    pEdge->next = graph->vertices[source].outEdges;
+    graph->vertices[source].outEdges = pEdge;
+    graph->edgeNum++;
 
-    if(pGraph->indegree)
-        pGraph->indegree[target]++;
+    if(graph->indegree)
+        graph->indegree[target]++;
 }
 
-int HasPath(const VertexId *parent, int vertexNum, VertexId source, VertexId target) {
+int graphHasPath(const VertexId *parent, int vertexNum, VertexId source, VertexId target) {
     if(source < 0 || source >= vertexNum)
         return 0;
 
@@ -67,7 +67,7 @@ int HasPath(const VertexId *parent, int vertexNum, VertexId source, VertexId tar
     return 1;
 }
 
-void UseIndegree(GraphPtr pGraph) {
-    if(!pGraph->indegree)
-        pGraph->indegree =  calloc(pGraph->capacity, sizeof(int));
+void UseIndegree(GraphPtr graph) {
+    if(!graph->indegree)
+        graph->indegree =  calloc(graph->capacity, sizeof(int));
 }

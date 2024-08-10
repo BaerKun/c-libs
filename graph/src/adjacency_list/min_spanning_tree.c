@@ -3,44 +3,45 @@
 #include <stdio.h>
 
 typedef struct{
-    GraphPtr pGraph;
+    GraphPtr graph;
     VertexId *parent;
 }Package;
 
-static void printTree(Package *pPackage, VertexId root, int deepth){
+static void printTreeHelper(Package *package, VertexId root, int deepth){
     for(int i = 0; i < deepth; i++)
         printf("\t");
     printf("|-%d\n", root);
 
-    EdgePtr pEdge;
-
-    for(pEdge = pPackage->pGraph->vertices[root].pOutEdge; pEdge; pEdge = pEdge->next)
-        if(pPackage->parent[pEdge->target] == root)
-            printTree(pPackage, pEdge->target, deepth + 1);
+    for(EdgePtr edge = package->graph->vertices[root].outEdges; edge; edge = edge->next)
+        if(package->parent[edge->target] == root)
+            printTreeHelper(package, edge->target, deepth + 1);
 }
 
-void PrimMinSpanningTree(GraphPtr pGraph, VertexId root, VertexId *parent) {
+void PrimMinSpanningTree(GraphPtr graph, VertexId root, VertexId *parent) {
     VertexId vertex, adjacentVertex;
-    EdgePtr pEdge;
-    char hasKnown[pGraph->vertexNum];
-    int minWeight[pGraph->vertexNum];
+    EdgePtr thisEdge;
+    char hasKnown[graph->vertexNum];
+    int minWeight[graph->vertexNum];
     Heap heap;
 
     parent[root] = root;
-    for(vertex = 0; vertex < pGraph->vertexNum; vertex++){
+    for(vertex = 0; vertex < graph->vertexNum; vertex++){
         hasKnown[vertex] = 0;
         minWeight[vertex] = INFINITY;
     }
-    InitHeap(heap, pGraph->vertexNum);
+
+    InitHeap(heap, graph->vertexNum);
     G_HeapInsert(&heap, minWeight + root);
 
     while (heap.size) {
         vertex = (VertexId) (G_DeleteMin(&heap) - minWeight);
         hasKnown[vertex] = 1;
-        for (pEdge = pGraph->vertices[vertex].pOutEdge; pEdge; pEdge = pEdge->next) {
-            adjacentVertex = pEdge->target;
-            if (!hasKnown[adjacentVertex] && minWeight[adjacentVertex] > pEdge->data.weight){
-                minWeight[adjacentVertex] = pEdge->data.weight;
+
+        for (thisEdge = graph->vertices[vertex].outEdges; thisEdge; thisEdge = thisEdge->next) {
+            adjacentVertex = thisEdge->target;
+
+            if (!hasKnown[adjacentVertex] && minWeight[adjacentVertex] > thisEdge->data.weight){
+                minWeight[adjacentVertex] = thisEdge->data.weight;
                 parent[adjacentVertex] = vertex;
                 G_HeapInsert(&heap, minWeight + adjacentVertex);
             }
@@ -48,11 +49,11 @@ void PrimMinSpanningTree(GraphPtr pGraph, VertexId root, VertexId *parent) {
     }
 }
 
-void PrintTree(GraphPtr pGraph, VertexId *parent, VertexId root) {
-    if (root < 0 || root >= pGraph->vertexNum || parent[root] != root) {
-        fputs("PrintTree: Invalid root vertex!\n", stderr);
+void printTree(GraphPtr graph, VertexId *parent, VertexId root) {
+    if (root < 0 || root >= graph->vertexNum || parent[root] != root) {
+        fputs("printTree: Invalid root vertex!\n", stderr);
         return;
     }
-    Package package = {pGraph, parent};
-    printTree(&package, root, 0);
+    Package package = {graph, parent};
+    printTreeHelper(&package, root, 0);
 }

@@ -14,7 +14,7 @@ void InitIndegree(GraphPtr pGraph, int *indegree, QueuePtr pQueue) {
 
     memset(indegree, 0, pGraph->vertexNum * sizeof(int));
     for(vertex = 0; vertex < pGraph->vertexNum; vertex++) {
-        for (EdgePtr pEdge = pGraph->vertices[vertex].pOutEdge; pEdge; pEdge = pEdge->next)
+        for (EdgePtr pEdge = pGraph->vertices[vertex].outEdges; pEdge; pEdge = pEdge->next)
             indegree[pEdge->target]++;
     }
 
