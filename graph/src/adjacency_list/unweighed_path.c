@@ -1,19 +1,18 @@
 #include "adjacency_list/unweighed_path.h"
-#include "utils/queue.h"
+#include "queue.h"
 
 void buildUnweightedPath(GraphPtr graph, VertexId *parent, VertexId source, VertexId target) {
     VertexId thisVertex, adjacentVertex;
     EdgePtr edge;
-    Queue queue;
+    QueuePtr queue = newQueue(graph->vertexNum);
 
     for(thisVertex = 0; thisVertex < graph->vertexNum; thisVertex++)
         parent[thisVertex] = INFINITY;
 
-    InitQueue(queue, graph->vertexNum);
-    Enqueue(queue, source);
+    enqueue(queue, source);
 
-    while (queue.front != queue.rear) {
-        thisVertex = Dequeue(queue);
+    while (queue->front != queue->rear) {
+        thisVertex = dequeue(queue);
 
         for (edge = graph->vertices[thisVertex].outEdges; edge; edge = edge->next) {
             adjacentVertex = edge->target;
@@ -23,8 +22,10 @@ void buildUnweightedPath(GraphPtr graph, VertexId *parent, VertexId source, Vert
                 if (adjacentVertex == target)
                     return;
 
-                Enqueue(queue, adjacentVertex);
+                enqueue(queue, adjacentVertex);
             }
         }
     }
+
+    queue_destroy(queue);
 }

@@ -1,53 +1,60 @@
 #include "adjacency_list/find_articulation.h"
-#include <string.h>
+#include <stdlib.h>
 
 typedef struct {
     char *hasVisited;
     GraphPtr graph;
     VertexId *parent;
-    int *preNumber;
-    int *lowNumber;
+    int *preorder; // dfs中第一次访问节点的序数
+    int *lowest; // 子树所那到达的最低节点的序数
     int counter;
     VertexId *outputArray;
-}Package;
+} Package;
 
 static void findArticulationHelper(Package *package, VertexId vertex) {
     VertexId adjacentVertex;
 
     package->hasVisited[vertex] = 1;
-    package->lowNumber[vertex] = package->preNumber[vertex] = package->counter++;
-    for(EdgePtr pEdge = package->graph->vertices[vertex].outEdges; pEdge; pEdge = pEdge->next){
-        adjacentVertex = pEdge->target;
-        if(!package->hasVisited[adjacentVertex]){
+    package->lowest[vertex] = package->preorder[vertex] = package->counter++;
+    for (EdgePtr edge = package->graph->vertices[vertex].outEdges; edge; edge = edge->next) {
+        adjacentVertex = edge->target;
+
+        if (!package->hasVisited[adjacentVertex]) {
             package->parent[adjacentVertex] = vertex;
             findArticulationHelper(package, adjacentVertex);
-            if(package->lowNumber[adjacentVertex] >= package->preNumber[vertex]){
+
+            if (package->lowest[adjacentVertex] >= package->preorder[vertex]) {
                 *package->outputArray = vertex;
                 package->outputArray++;
             }
-            if(package->lowNumber[adjacentVertex] < package->lowNumber[vertex])
-                package->lowNumber[vertex] = package->lowNumber[adjacentVertex];
-        }else if(package->parent[vertex] != adjacentVertex && package->preNumber[adjacentVertex] < package->lowNumber[vertex]){
-            package->lowNumber[vertex] = package->preNumber[adjacentVertex];
+
+            if (package->lowest[adjacentVertex] < package->lowest[vertex])
+                package->lowest[vertex] = package->lowest[adjacentVertex];
+
+        } else if (package->parent[vertex] != adjacentVertex &&
+                   package->preorder[adjacentVertex] < package->lowest[vertex]) {
+            package->lowest[vertex] = package->preorder[adjacentVertex];
         }
     }
 }
 
 void graphFindArticulation(GraphPtr graph, VertexId outputArray[]) {
-    int preNumber[graph->vertexNum];
-    int lowNumber[graph->vertexNum];
-    char hasVisited[graph->vertexNum];
-    VertexId parent[graph->vertexNum];
+    int *pool = malloc(graph->vertexNum * 3 * sizeof(int));
+    char *hasVisited = calloc(graph->vertexNum, sizeof(char));
 
-    memset(hasVisited, 0, graph->vertexNum);
-    Package package = {hasVisited, graph, parent, preNumber, lowNumber, 0, outputArray};
+    Package package = {hasVisited, graph, pool, pool + graph->vertexNum,
+                       pool + 2 * graph->vertexNum, 0, outputArray};
     findArticulationHelper(&package, 0);
 
     int counter = 0;
-    for(EdgePtr edge = graph->vertices[0].outEdges; edge; edge = edge->next){
-        if(!parent[edge->target] && counter++)
+    for (EdgePtr edge = graph->vertices[0].outEdges; edge; edge = edge->next) {
+        if (!pool[edge->target] && counter++) // pool == parent
             break;
     }
-    if(counter == 1)
+
+    if (counter == 1)
         package.outputArray[-1] = INFINITY;
+
+    free(pool);
+    free(hasVisited);
 }

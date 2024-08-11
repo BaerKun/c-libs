@@ -116,7 +116,7 @@ void BuildCriticalPath(AonGraphPtr pAonGraph) {
     QueuePtr queue;
     int inDegree[nodeNum];
 
-    queue = createQueue(nodeNum);
+    queue = newQueue(nodeNum);
     InitIndegree(pAonGraph, inDegree);
     for (NodeId nodeId = 0; nodeId < nodeNum; nodeId++) {
         if (!inDegree[nodeId])

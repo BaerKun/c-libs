@@ -1,27 +1,27 @@
 #include "utils/init_indegree.h"
 #include <string.h>
 
-void InitIndegree(GraphPtr pGraph, int *indegree, QueuePtr pQueue) {
+void InitIndegree(GraphPtr graph, int *indegree, QueuePtr queue) {
     VertexId vertex;
 
-    if(pGraph->indegree){
-        for(vertex = 0; vertex < pGraph->vertexNum; vertex++) {
-            if(!(indegree[vertex] = pGraph->indegree[vertex]) && pQueue)
-                Enqueue(*pQueue, vertex);
+    if(graph->indegree){
+        for(vertex = 0; vertex < graph->vertexNum; vertex++) {
+            if(!(indegree[vertex] = graph->indegree[vertex]) && queue)
+                enqueue(queue, vertex);
         }
         return;
     }
 
-    memset(indegree, 0, pGraph->vertexNum * sizeof(int));
-    for(vertex = 0; vertex < pGraph->vertexNum; vertex++) {
-        for (EdgePtr pEdge = pGraph->vertices[vertex].outEdges; pEdge; pEdge = pEdge->next)
+    memset(indegree, 0, graph->vertexNum * sizeof(int));
+    for(vertex = 0; vertex < graph->vertexNum; vertex++) {
+        for (EdgePtr pEdge = graph->vertices[vertex].outEdges; pEdge; pEdge = pEdge->next)
             indegree[pEdge->target]++;
     }
 
-    if(pQueue){
-        for(vertex = 0; vertex < pGraph->vertexNum; vertex++) {
+    if(queue){
+        for(vertex = 0; vertex < graph->vertexNum; vertex++) {
             if(!indegree[vertex])
-                Enqueue(*pQueue, vertex);
+                enqueue(queue, vertex);
         }
     }
 }

@@ -25,17 +25,20 @@ static StackPtr newStack(int capacity){
 }
 
 static void stack_push(StackPtr stack, STACK_ELEMENT_TYPE element){
-    if(stack->top == stack->capacity)
-        fputs("stack_push: Stack is full!", stderr);
-    else
-        stack->elements[stack->top++] = element;
+//    if(stack->top == stack->capacity) {
+//        fputs("stack_push: Stack is full!", stderr);
+//        return;
+//    }
+
+    stack->elements[stack->top++] = element;
 }
 
 static STACK_ELEMENT_TYPE stack_pop(StackPtr stack){
-    if(stack->top == 0){
-        fputs("stack_pop: Stack is empty!", stderr);
-        exit(1);
-    }
+//    if(stack->top == 0){
+//        fputs("stack_pop: Stack is empty!", stderr);
+//        exit(1);
+//    }
+
     return stack->elements[--stack->top];
 }
 

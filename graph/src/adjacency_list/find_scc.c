@@ -39,14 +39,14 @@ EdgePtr *CopyEdges(GraphPtr graph) {
     return edges;
 }
 
-void findSccGo(Package *package, VertexId thisVertex){
+void findSccForward(Package *package, VertexId thisVertex){
     package->hasVisited[thisVertex] = 1;
     EdgePtr nextEdge, thisEdge = package->edges[thisVertex];
     package->edges[thisVertex] = NULL;
 
     for(; thisEdge; thisEdge = nextEdge){
         if(!package->hasVisited[thisEdge->target])
-            findSccGo(package, thisEdge->target);
+            findSccForward(package, thisEdge->target);
 
         nextEdge = thisEdge->next;
         thisEdge->next = package->edges[thisEdge->target];
@@ -58,26 +58,26 @@ void findSccGo(Package *package, VertexId thisVertex){
     if(thisVertex == package->root){
         while(++package->root < package->vertexNum)
             if(!package->hasVisited[package->root]) {
-                findSccGo(package, package->root);
+                findSccForward(package, package->root);
                 break;
             }
     }
 }
 
-void findSccBack(Package *package, VertexId thisVertex){
+void findSccBackward(Package *package, VertexId thisVertex){
     package->hasVisited[thisVertex] = 0;
     for(EdgePtr edge = package->edges[thisVertex]; edge; edge = edge->next){
         if(!package->hasVisited[edge->target])
             continue;
         package->parent[edge->target] = thisVertex;
-        findSccBack(package, edge->target);
+        findSccBackward(package, edge->target);
     }
 
     if(thisVertex == package->root){
         package->parent[thisVertex] = thisVertex;
         while(--package->thisNumber >= 0)
             if(package->hasVisited[package->number[package->thisNumber]]) {
-                findSccBack(package, package->root = package->number[package->thisNumber]);
+                findSccBackward(package, package->root = package->number[package->thisNumber]);
                 break;
             }
     }
@@ -85,14 +85,15 @@ void findSccBack(Package *package, VertexId thisVertex){
 
 void graphFindScc(GraphPtr graph, VertexId *parent) {
     EdgePtr *edges = CopyEdges(graph);
-    int number[graph->vertexNum];
-    char hasVisited[graph->vertexNum];
+    int *number = malloc(graph->vertexNum * sizeof(int));
+    char *hasVisited = calloc(graph->vertexNum, sizeof(char));
 
-    memset(hasVisited, 0, graph->vertexNum);
     Package package = {edges, parent, hasVisited, number, -1, graph->vertexNum, 0};
 
-    findSccGo(&package, 0);
-    findSccBack(&package, package.root = package.number[package.thisNumber]);
+    findSccForward(&package, 0);
+    findSccBackward(&package, package.root = package.number[package.thisNumber]);
 
     free(edges);
+    free(number);
+    free(hasVisited);
 }

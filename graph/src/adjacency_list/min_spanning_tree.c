@@ -1,6 +1,9 @@
 #include "adjacency_list/min_spanning_tree.h"
-#include "utils/heap.h"
 #include <stdio.h>
+#include <stdlib.h>
+#define HEAP_ELEMENT_TYPE int *
+#define HEAP_LESS_THAN(a, b) (*a < *b)
+#include "heap.h"
 
 typedef struct{
     GraphPtr graph;
@@ -20,9 +23,9 @@ static void printTreeHelper(Package *package, VertexId root, int deepth){
 void PrimMinSpanningTree(GraphPtr graph, VertexId root, VertexId *parent) {
     VertexId vertex, adjacentVertex;
     EdgePtr thisEdge;
-    char hasKnown[graph->vertexNum];
-    int minWeight[graph->vertexNum];
-    Heap heap;
+    char *hasKnown = malloc(graph->vertexNum);
+    int *minWeight = malloc(graph->vertexNum * sizeof(int));
+    HeapPtr heap = newHeap(graph->vertexNum);
 
     parent[root] = root;
     for(vertex = 0; vertex < graph->vertexNum; vertex++){
@@ -30,11 +33,10 @@ void PrimMinSpanningTree(GraphPtr graph, VertexId root, VertexId *parent) {
         minWeight[vertex] = INFINITY;
     }
 
-    InitHeap(heap, graph->vertexNum);
-    G_HeapInsert(&heap, minWeight + root);
+    heap_insert(heap, minWeight + root);
 
-    while (heap.size) {
-        vertex = (VertexId) (G_DeleteMin(&heap) - minWeight);
+    while (heap->size) {
+        vertex = (VertexId) (heap_deleteMin(heap) - minWeight);
         hasKnown[vertex] = 1;
 
         for (thisEdge = graph->vertices[vertex].outEdges; thisEdge; thisEdge = thisEdge->next) {
@@ -43,10 +45,14 @@ void PrimMinSpanningTree(GraphPtr graph, VertexId root, VertexId *parent) {
             if (!hasKnown[adjacentVertex] && minWeight[adjacentVertex] > thisEdge->data.weight){
                 minWeight[adjacentVertex] = thisEdge->data.weight;
                 parent[adjacentVertex] = vertex;
-                G_HeapInsert(&heap, minWeight + adjacentVertex);
+                heap_insert(heap, minWeight + adjacentVertex);
             }
         }
     }
+
+    free(hasKnown);
+    free(minWeight);
+    heap_destroy(heap);
 }
 
 void printTree(GraphPtr graph, VertexId *parent, VertexId root) {

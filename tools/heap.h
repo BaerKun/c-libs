@@ -50,12 +50,12 @@ static HeapPtr newHeap(int capacity){
 }
 
 static void heap_insert(HeapPtr heap, HEAP_ELEMENT_TYPE element){
-    int i, child;
-    if(heap->capacity == heap->size){
-        fputs("HeapInsert:Full\n", stderr);
-        return;
-    }
+//    if(heap->capacity == heap->size){
+//        fputs("HeapInsert:Full\n", stderr);
+//        return;
+//    }
 
+    int i, child;
     for(i = ++heap->size; i && HEAP_LESS_THAN(element, heap->prev[child = i >> 1]); i = child)
         heap->prev[i] = heap->prev[child];
 
@@ -63,10 +63,10 @@ static void heap_insert(HeapPtr heap, HEAP_ELEMENT_TYPE element){
 }
 
 static HEAP_ELEMENT_TYPE heap_deleteMin(HeapPtr heap){
-    if(heap->size == 0){
-        fputs("DeleteMin:Empty\n", stderr);
-        exit(1);
-    }
+//    if(heap->size == 0){
+//        fputs("DeleteMin:Empty\n", stderr);
+//        exit(1);
+//    }
 
     HEAP_ELEMENT_TYPE theMin = heap->prev[1];
     heap->prev[1] = heap->prev[heap->size];

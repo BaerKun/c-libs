@@ -2,8 +2,10 @@
 #define GRAPH_EULER_PATH_H
 
 #include "graph.h"
-#include "utils/vertex_list.h"
+#include "list.h"
 
-void EulerCircuit(GraphPtr pGraph, VertexListPtr path, VertexId source);
+void EulerCircuit(GraphPtr graph, ListPtr path, VertexId source);
+
+void EulerPath(GraphPtr graph, ListPtr path, VertexId source, VertexId target);
 
 #endif //GRAPH_EULER_PATH_H

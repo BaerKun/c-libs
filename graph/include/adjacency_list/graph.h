@@ -13,15 +13,18 @@ typedef struct Edge Edge, *EdgePtr;
 typedef struct Graph Graph, *GraphPtr;
 typedef struct EdgeData EdgeData;
 typedef struct VertexData VertexData;
+
 struct Vertex {
     VertexData data;
     EdgePtr outEdges;
 };
+
 struct Edge {
     VertexId target;
     EdgeData data;
     EdgePtr next;
 };
+
 struct Graph {
     int capacity;
     int vertexNum;

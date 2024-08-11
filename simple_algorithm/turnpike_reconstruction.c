@@ -17,14 +17,14 @@ int RT_Delete(BSTPtr tree, DistanceType points[], DistanceType point, int left, 
         node = BST_deleteData(tree, point - points[i]);
         if (node == NULL)
             return i;
-        stack_push(stack, node - tree->memoryPool);
+        stack_push(stack, (int) (node - tree->memoryPool));
     }
 
     for (i = right + 1; i < end; i++) {
         node = BST_deleteData(tree, points[i] - point);
         if (node == NULL)
             return i;
-        stack_push(stack, node - tree->memoryPool);
+        stack_push(stack, (int) (node - tree->memoryPool));
     }
 
     return end;
@@ -48,7 +48,7 @@ int reconstructTurnpikeBody(Package *package, int left, int right) {
     DistanceType max, isSuccessful = 0;
     int end;
 
-    if(left > right)
+    if (left > right)
         return 1;
 
     max = BST_findMax(package->tree)->data;
@@ -63,13 +63,13 @@ int reconstructTurnpikeBody(Package *package, int left, int right) {
         RT_Insert(package->tree, left, right, end, package->stack);
 
         if (package->npoints ==
-            (end = RT_Delete(package->tree, package->points, max=package->points[package->npoints - 1] - max,
-                             left, right, package->npoints, package->stack))){
+            (end = RT_Delete(package->tree, package->points, max = package->points[package->npoints - 1] - max,
+                             left, right, package->npoints, package->stack))) {
             package->points[left] = max;
             isSuccessful = reconstructTurnpikeBody(package, left + 1, right);
         }
 
-        if(!isSuccessful) {
+        if (!isSuccessful) {
             RT_Insert(package->tree, left, right, end, package->stack);
         }
     }

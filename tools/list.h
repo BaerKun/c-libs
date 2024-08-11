@@ -8,35 +8,35 @@
 #endif
 
 // 包含头节点
-typedef struct Node *Node;
-typedef struct Node *List;
+typedef struct Node Node, *NodePtr;
+typedef struct Node List, *ListPtr;
 
 struct Node{
     LIST_ELEMENT_TYPE element;
-    Node next;
+    NodePtr next;
 };
 
-static List newList() {
-    List list = malloc(sizeof(struct Node));
+static ListPtr newList() {
+    ListPtr list = malloc(sizeof(struct Node));
     list->next = NULL;
     return list;
 }
 
-static void list_makeEmpty(List list) {
-    for (Node next = list->next; next; next = list->next) {
+static void list_makeEmpty(ListPtr list) {
+    for (NodePtr next = list->next; next; next = list->next) {
         list->next = next->next;
         free(next);
     }
 }
 
-static Node list_find(List list, LIST_ELEMENT_TYPE element) {
-    Node node;
+static NodePtr list_find(ListPtr list, LIST_ELEMENT_TYPE element) {
+    NodePtr node;
     for (node = list->next; node && node->element != element; node = node->next);
     return node;
 }
 
-static Node list_findPrev(List list, LIST_ELEMENT_TYPE element) {
-    Node prev, next;
+static NodePtr list_findPrev(ListPtr list, LIST_ELEMENT_TYPE element) {
+    NodePtr prev, next;
     for (prev = list, next = prev->next;
          next && next->element != element; next = next->next)
         prev = next;
@@ -45,33 +45,33 @@ static Node list_findPrev(List list, LIST_ELEMENT_TYPE element) {
     return NULL;
 }
 
-static Node list_deleteNode(List list, LIST_ELEMENT_TYPE element) {
-    Node prev = list_findPrev(list, element);
+static NodePtr list_deleteNode(ListPtr list, LIST_ELEMENT_TYPE element) {
+    NodePtr prev = list_findPrev(list, element);
     if (prev) {
-        Node next = prev->next;
+        NodePtr next = prev->next;
         prev->next = next->next;
         return next;
     }
     return NULL;
 }
 
-static void list_insertNode(List list, Node node) {
+static void list_insertNode(ListPtr list, NodePtr node) {
     node->next = list->next;
     list->next = node;
 }
 
-static void list_insertData(List list, LIST_ELEMENT_TYPE element) {
-    Node _new = malloc(sizeof(struct Node));
-    _new->element = element;
-    list_insertNode(list, _new);
+static void list_insertData(ListPtr list, LIST_ELEMENT_TYPE element) {
+    NodePtr newNode = malloc(sizeof(struct Node));
+    newNode->element = element;
+    list_insertNode(list, newNode);
 }
 
-static void list_deleteAndFree(List list, LIST_ELEMENT_TYPE element) {
-    Node node = list_deleteNode(list, element);
+static void list_deleteAndFree(ListPtr list, LIST_ELEMENT_TYPE element) {
+    NodePtr node = list_deleteNode(list, element);
     free(node);
 }
 
-static void list_destroy(List list) {
+static void list_destroy(ListPtr list) {
     list_makeEmpty(list);
     free(list);
 }
