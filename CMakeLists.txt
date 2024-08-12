@@ -12,6 +12,8 @@ add_subdirectory(graph)
 
 add_subdirectory(simple_algorithm)
 
+add_subdirectory(some_useful)
+
 add_subdirectory(2d_process)
 
 target_include_directories(algorithm PRIVATE tree/include graph/include)

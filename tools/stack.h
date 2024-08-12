@@ -17,9 +17,11 @@ struct Stack{
 };
 
 static StackPtr newStack(int capacity){
-    StackPtr stack = malloc(sizeof(Stack));
+    StackPtr stack = (StackPtr)malloc(sizeof(Stack));
 
-    *stack = (Stack){malloc(sizeof(STACK_ELEMENT_TYPE) * capacity), capacity, 0};
+    stack->capacity = capacity;
+    stack->top = 0;
+    stack->elements = (STACK_ELEMENT_TYPE *)malloc(sizeof(STACK_ELEMENT_TYPE) * capacity);
 
     return stack;
 }

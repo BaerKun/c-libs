@@ -22,6 +22,13 @@ static ListPtr newList() {
     return list;
 }
 
+static NodePtr newNode(LIST_ELEMENT_TYPE element) {
+    NodePtr node = malloc(sizeof(struct Node));
+    node->element = element;
+
+    return node;
+}
+
 static void list_makeEmpty(ListPtr list) {
     for (NodePtr next = list->next; next; next = list->next) {
         list->next = next->next;

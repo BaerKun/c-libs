@@ -1,0 +1,1 @@
+add_executable(some_useful KMP.c)
