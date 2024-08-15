@@ -1,5 +1,5 @@
 #include "turnpike_reconstruction.h"
-#include "super_tree/binary_search_tree.h"
+#include "tree/binary_search_tree.h"
 #include <stdio.h>
 #include "stack.h"
 

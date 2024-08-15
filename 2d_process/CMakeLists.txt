@@ -9,7 +9,7 @@ target_link_directories(graphical_debug PUBLIC ${OpenCV_DIRS})
 
 target_link_libraries(graphical_debug PRIVATE ${OpenCV_LIBS})
 
-add_executable(discrete_alg main.cpp)
+add_executable(discrete_alg main.c)
 
 # math.h
 target_link_libraries(discrete_alg PRIVATE m)

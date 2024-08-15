@@ -7,7 +7,7 @@ typedef unsigned Window;
 
 Window getNewWindow(const char *name, int width, int height);
 
-void fillWindow(const Window window, unsigned char r, unsigned char g, unsigned char b);
+void fillWindow(Window window, unsigned char r, unsigned char g, unsigned char b);
 
 void drawPoly(Window window, const Point2f *points, int nponts, int thickness);
 

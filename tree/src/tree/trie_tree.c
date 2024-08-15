@@ -1,12 +1,13 @@
-#include "super_tree/trie_tree.h"
+#include "tree/trie_tree.h"
 #include <stdio.h>
 
 typedef struct HeapElement {
     int key;
     int value;
 } HeapElement;
+
 #define HEAP_ELEMENT_TYPE HeapElement
-#define HEAP_LESS_THAN(a, b) (a.key < b.key)
+#define HEAP_LESS_THAN(a, b) (a.value < b.value)
 #include "heap.h"
 
 TrieTreePtr HuffmanCode(DataType *data, const int *cost, int number) {
@@ -40,7 +41,9 @@ TrieTreePtr HuffmanCode(DataType *data, const int *cost, int number) {
         heap->prev[1].key = (int) (tree->memoryPool - rootNode);
         heap_percolateDown(heap->prev, 1, heap->size);
     }
+
     tree->root = rootNode;
 
+    heap_destroy(heap);
     return tree;
 }

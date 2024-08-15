@@ -1,18 +1,21 @@
+#include "graphical_debug.h"
 #include <math.h>
 #include "2d_proc.h"
-#include "graphical_debug.h"
+#include <string.h>
+#include <time.h>
+
 #define SORT_ELEMENT_TYPE float*
 #define SORT_LESS_THAN(p, q) (*p < *q)
 #include "sort.h"
+
 #define STACK_ELEMENT_TYPE Point2f
 #include "stack.h"
-#include "string.h"
-#include <time.h>
+
 
 float randFloat(float a, float b){
     static unsigned count = 0;
     ++count;
-    return (a + b + (b - a) * sin((float)((time(NULL) & 0xffff) + count * count))) / 2.f;
+    return (a + b + (b - a) * sinf((float)((time(NULL) & 0xffff) + count * count))) / 2.f;
 }
 
 float distance2f(Point2f p1, Point2f p2) {
@@ -105,21 +108,21 @@ void convexHull(Point2f points[], Point2f hullPoints[], int nPoints, int *nHullP
 }
 
 int main() {
-    Point2f points[50];
-    Point2f hullPoints[50];
+    Point2f points[20];
+    Point2f hullPoints[20];
     int nHullPoints;
     Window window = getNewWindow("Convex Hull", 1000, 800);
 
     for(int j = 0; j < 10; ++j){
-        for (int i = 0; i < 50; ++i) {
+        for (int i = 0; i < 20; ++i) {
             points[i].x = randFloat(-450.f, 450.f);
             points[i].y = randFloat(-350.f, 350.f);
         }
-        convexHull(points, hullPoints, 50, &nHullPoints);
+        convexHull(points, hullPoints, 20, &nHullPoints);
 
         hullPoints[nHullPoints] = hullPoints[0];
 
-        drawCircle(window, points, 50, 2, -1);
+        drawCircle(window, points, 20, 2, -1);
         drawPoly(window, hullPoints, nHullPoints + 1, 1);
 
         showWindow(window);

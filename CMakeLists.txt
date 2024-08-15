@@ -18,4 +18,4 @@ add_subdirectory(2d_process)
 
 target_include_directories(algorithm PRIVATE tree/include graph/include)
 
-target_link_libraries(algorithm PRIVATE adjacency_list_graph super_tree)
+target_link_libraries(algorithm PRIVATE adjacency_list_graph tree)

@@ -9,4 +9,4 @@ add_subdirectory(src)
 
 add_executable(test test/test.c)
 
-target_link_libraries(test super_tree)
+target_link_libraries(test tree)

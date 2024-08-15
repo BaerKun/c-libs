@@ -1,9 +1,12 @@
 #include "opencv2/opencv.hpp"
-#include "graphical_debug.h"
+#include "2d_proc.h"
+
+typedef unsigned Window;
 
 cv::Mat windows[8];
 const char *windowNames[8];
 
+extern "C" {
 unsigned getNewWindow(const char *name, int width, int height) {
     static unsigned windowCount = 0;
     windows[windowCount] = cv::Mat(height, width, CV_8UC3, cv::Scalar(255, 255, 255));
@@ -36,7 +39,7 @@ void drawCircle(const Window window, const Point2f *points, int nponts, int radi
         cv::circle(img, cv::Point(halfWidth + (int) points[i].x, halfHeight - (int) points[i].y), radius,
                    cv::Scalar(0, 0, 0), thickness);
 
-    img.at<cv::Vec3b>(0, 0) = cv::Vec3b (0, 0, 0);
+    img.at<cv::Vec3b>(0, 0) = cv::Vec3b(0, 0, 0);
 }
 
 void showWindow(const Window window) {
@@ -46,4 +49,5 @@ void showWindow(const Window window) {
 
 void destroyWindow(const Window window) {
     cv::destroyWindow(windowNames[window]);
+}
 }

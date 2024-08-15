@@ -1,3 +1,3 @@
-file(GLOB SOURCES "super_tree/*.c" )
+file(GLOB SOURCES "tree/*.c" )
 
-add_library(super_tree STATIC ${SOURCES})
+add_library(tree STATIC ${SOURCES})
