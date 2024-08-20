@@ -3,15 +3,16 @@ project(2d_process C)
 
 find_package(OpenCV)
 
-add_library(graphical_debug STATIC graphical_debug.cpp)
+include_directories(include)
 
+add_library(graphical_debug STATIC src/graphical_debug.cpp)
 target_link_directories(graphical_debug PUBLIC ${OpenCV_DIRS})
-
 target_link_libraries(graphical_debug PRIVATE ${OpenCV_LIBS})
 
-add_executable(discrete_alg main.c)
+add_library(other STATIC src/convex_hull.c)
 
+add_executable(discrete_alg main.c src/tools.c)
 # math.h
 target_link_libraries(discrete_alg PRIVATE m)
-
 target_link_libraries(discrete_alg PRIVATE graphical_debug)
+target_link_libraries(discrete_alg PRIVATE other)

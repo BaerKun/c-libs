@@ -9,7 +9,7 @@
 #define SORT_LESS_THAN(x, y) ((x) < (y))
 #endif
 
-static void swap(SORT_ELEMENT_TYPE *x, SORT_ELEMENT_TYPE *y) {
+static inline void swap(SORT_ELEMENT_TYPE *x, SORT_ELEMENT_TYPE *y) {
     SORT_ELEMENT_TYPE z = *x;
     *x = *y;
     *y = z;

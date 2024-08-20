@@ -129,7 +129,7 @@ void quickSort(SORT_ELEMENT_TYPE *array, int size) {
     quickSortHelper(array, 0, size - 1);
 }
 
-void quickSelectHelper(SORT_ELEMENT_TYPE *array, int left, int right, int number) {
+static void quickSelectHelper(SORT_ELEMENT_TYPE *array, int left, int right, int number) {
     if (left + 10 < right) {
         int i = quickBody(array, left, right);
         if(number < i)
