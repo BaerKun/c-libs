@@ -1,19 +1,5 @@
-#include "../include/tools.h"
-#include <time.h>
+#include "tools.h"
 #include <math.h>
-
-unsigned randSeed = 0;
-
-static unsigned getRandSeed(){
-    if(randSeed == 0)
-        randSeed = (unsigned)time(NULL) & 0xffff;
-    return ++randSeed;
-}
-
-float randFloat(float a, float b) {
-    unsigned seed = getRandSeed();
-    return (a + b + (b - a) * sinf((float)(seed * seed))) * 0.5f;
-}
 
 void cartesian2polar_pt(Point2f inpoints[], Point2f outpoints[], int nPoints, Point2f origin) {
     float dx, dy;

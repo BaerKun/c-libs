@@ -1,20 +1,20 @@
 #include <stdio.h>
-#include "super_tree/OBST.h"
-#include "super_tree/trie_tree.h"
+#include "tree/OBST.h"
+#include "tree/trie_tree.h"
 
 void print(BinaryTreeNodePtr node) {
-    if(node->left)
+    if (node->left)
         print(node->left);
     printf("%d\n", node->data);
-    if(node->right)
+    if (node->right)
         print(node->right);
 }
 
 int main() {
     int data[26];
     float weight[26];
-    for(int i=0; i < 26;++i) {
-        weight[i] = (i*i%100);
+    for (int i = 0; i < 26; ++i) {
+        weight[i] = (i * i % 100);
         data[i] = i;
     }
     // BSTPtr tree = optimalBST(data, weight, 26);

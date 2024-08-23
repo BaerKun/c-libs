@@ -1,3 +1,1 @@
-cmake_minimum_required(VERSION 3.27)
-
-project(tool_test C)
+add_executable(tool_test test.c)

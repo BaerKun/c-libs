@@ -15,7 +15,7 @@ static inline void swap(SORT_ELEMENT_TYPE *x, SORT_ELEMENT_TYPE *y) {
     *y = z;
 }
 
-static void insertionSort(SORT_ELEMENT_TYPE *array, int size) {
+static void insertSort(SORT_ELEMENT_TYPE *array, int size) {
     int i, j;
     SORT_ELEMENT_TYPE tmp;
     for (i = 1; i < size; i++) {
@@ -26,14 +26,52 @@ static void insertionSort(SORT_ELEMENT_TYPE *array, int size) {
     }
 }
 
-void heapSort(SORT_ELEMENT_TYPE *array, int size);
+static SORT_ELEMENT_TYPE median(SORT_ELEMENT_TYPE *array, int left, int right) {
+    const int center = (left + right) >> 1;
 
-void shellSort(SORT_ELEMENT_TYPE *array, int size);
+    if (SORT_LESS_THAN(array[center], array[left]))
+        swap(array + left, array + center);
+    if (SORT_LESS_THAN(array[right], array[left]))
+        swap(array + left, array + right);
+    if (SORT_LESS_THAN(array[right], array[center]))
+        swap(array + center, array + right);
 
-void mergeSort(SORT_ELEMENT_TYPE *array, int size);
+    swap(array + center, array + right - 1);
 
-void quickSort(SORT_ELEMENT_TYPE *array, int size);
+    return array[right - 1];
+}
 
-void bucketSort(SORT_ELEMENT_TYPE *array, int size);
+static int quickBody(SORT_ELEMENT_TYPE *array, int left, int right) {
+    const SORT_ELEMENT_TYPE pivot = median(array, left, right);
+    int i = left, j = right - 1;
+
+    while (1) {
+        while (SORT_LESS_THAN(array[++i], pivot));
+        while (SORT_LESS_THAN(pivot, array[--j]));
+        if (i < j)
+            swap(array + i, array + j);
+        else
+            break;
+    }
+    swap(array + i, array + right - 1);
+
+    return i;
+}
+
+static void quickSortHelper(SORT_ELEMENT_TYPE *array, int left, int right) {
+    if (left + 10 < right) {
+        int i = quickBody(array, left, right);
+        quickSortHelper(array, left, i - 1);
+        quickSortHelper(array, i + 1, right);
+    } else
+        insertSort(array + left, right - left + 1);
+}
+
+static void sort(SORT_ELEMENT_TYPE *array, int size){
+    quickSortHelper(array, 0, size - 1);
+}
+
+
+
 
 #endif //SORT_H

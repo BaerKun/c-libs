@@ -11,7 +11,7 @@ target_link_libraries(graphical_debug PRIVATE ${OpenCV_LIBS})
 
 add_library(other STATIC src/convex_hull.c)
 
-add_executable(discrete_alg main.c src/tools.c)
+add_executable(discrete_alg main.c src/tools.c tests/tests.c)
 # math.h
 target_link_libraries(discrete_alg PRIVATE m)
 target_link_libraries(discrete_alg PRIVATE graphical_debug)

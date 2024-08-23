@@ -1,11 +1,11 @@
 #include "random_primality_test.h"
 #include "random.h"
 
-long primalityTestBody(long base, long exponent, long n){
+unsigned long primalityTestBody(unsigned base, unsigned exponent, unsigned n){
     if(exponent == 0)
         return 1;
 
-    long long x, y;
+    unsigned long x, y;
 
     // 递归计算 base ^ exponent % n
     x = primalityTestBody(base, exponent / 2, n);
@@ -24,15 +24,15 @@ long primalityTestBody(long base, long exponent, long n){
     return y;
 }
 
-int primalityTest(long n, unsigned testTimes){
+int primalityTest(unsigned n, unsigned testTimes){
     if(n < 2)
         return 0;
 
     if(n < 4)
         return 1;
 
-    for(int time = 0; time < testTimes; time++) {
-        if (primalityTestBody(randInt(2, n - 2), n - 1, n) != 1)
+    for(unsigned time = 0; time < testTimes; time++) {
+        if (primalityTestBody(randuint(2, n - 1), n - 1, n) != 1)
             return 0;
     }
 

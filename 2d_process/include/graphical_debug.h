@@ -3,15 +3,17 @@
 
 #include "2d_proc.h"
 
-typedef unsigned Window;
+typedef int Window;
 
-Window getNewWindow(const char *name, int width, int height);
+Window getNewWindow(char *name, int width, int height);
 
 void fillWindow(Window window, unsigned char r, unsigned char g, unsigned char b);
 
-void drawPoly(Window window, const Point2f *points, int nponts, int thickness);
+void drawLine(int window, Point2f p1, Point2f p2, int rgb, int thickness);
 
-void drawCircle(Window window, const Point2f *points, int nponts, int radius, int thickness);
+void drawPoly(Window window, const Point2f *points, int nponts, int rgb, int thickness, int connect);
+
+void drawCircle(Window window, const Point2f *points, int nponts, int rgb, int radius, int thickness);
 
 void showWindow(Window window);
 
