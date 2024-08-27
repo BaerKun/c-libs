@@ -53,7 +53,7 @@ void graphFindArticulation(GraphPtr graph, VertexId outputArray[]) {
     }
 
     if (counter == 1)
-        package.outputArray[-1] = INFINITY;
+        package.outputArray[-1] = -1;
 
     free(pool);
     free(hasVisited);

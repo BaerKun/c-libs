@@ -2,69 +2,148 @@
 #include <stdio.h>
 
 typedef struct {
-    GraphPtr graph;
-    EdgePtr *nextEdge;
-    VertexId target;
+    EdgePtr *availableEdge;
+    ListPtr path;
+    VertexId source;
+    VertexId previous;
+} Argument;
+#define STACK_ELEMENT_TYPE Argument
+#include "stack.h"
+
+typedef struct {
+    EdgePtr *availableEdges;
+    VertexId tmpdst;
 } Package;
 
-static EdgePtr getEdge(VertexPtr thisVertex, EdgePtr *nextEdges, VertexId prevVertex) {
-    if (!*nextEdges)
-        return NULL;
+// availableEdges[v] 顶点v的可用边链表，充当递归时的“全局变量”
+static EdgePtr *getAvailableEdges(GraphPtr graph) {
+    EdgePtr *availableEdges = malloc(graph->vertexNum * sizeof(EdgePtr));
+    VertexPtr end = graph->vertices + graph->vertexNum;
+    EdgePtr *pedge = availableEdges;
 
-    if ((*nextEdges)->target == prevVertex)
-        return *nextEdges = (*nextEdges)->next;
-
-    EdgePtr this, next;
-    for (this = *nextEdges; (next = this->next) && next->target != prevVertex; this = next);
-
-    if (next) {
-        this->next = next->next;
-        next->next = thisVertex->outEdges;
-        thisVertex->outEdges = next;
+    for (VertexPtr vertex = graph->vertices; vertex != end; ++vertex) {
+        *pedge = vertex->outEdges;
+        ++pedge;
     }
 
-    return *nextEdges;
+    return availableEdges;
 }
 
-static int EulerCircuitHelper(Package *package, ListPtr path, VertexId thisVertex, VertexId prevVertex) {
-    EdgePtr thisEdge;
-    thisEdge = getEdge(package->graph->vertices + thisVertex, package->nextEdge + thisVertex, prevVertex);
+// 获取下一条可用边，并用previous更新availableEdge
+static EdgePtr getEdge(EdgePtr *availableEdge, VertexId previous) {
+    EdgePtr nextEdge = *availableEdge;
+    if (nextEdge == NULL)
+        return NULL;
 
-    for (; thisEdge; thisEdge = package->nextEdge[thisVertex]) {
+    *availableEdge = nextEdge->next;
+    if (nextEdge->target == previous) {
+        nextEdge = *availableEdge;
+        if (nextEdge != NULL)
+            *availableEdge = nextEdge->next;
+        return nextEdge;
+    }
 
-        package->nextEdge[thisVertex] = thisEdge->next;
+    EdgePtr this, next;
+    for (this = nextEdge; (next = this->next) && next->target != previous; this = next);
 
-        list_insertData(path, thisEdge->target);
+    if (next) {
+        if (this == nextEdge)
+            *availableEdge = next->next;
+        else {
+            this->next = next->next;
+            next->next = *availableEdge;
+            nextEdge->next = next;
+        }
+    }
 
-        if(EulerCircuitHelper(package, path->next, thisEdge->target, thisVertex))
+    return nextEdge;
+}
+
+static VertexId getTarget(StackPtr stack) {
+    Argument argument = stack_peek(stack);
+    EdgePtr nextEdge = getEdge(argument.availableEdge, argument.previous);
+    if(nextEdge == NULL){
+        stack_pop(stack);
+        return -1;
+    }
+    return nextEdge->target;
+}
+
+static int EulerCircuitHelper(Package *package, ListPtr path, VertexId source, VertexId previous) {
+    EdgePtr edge;
+    while (1) {
+        edge = getEdge(package->availableEdges + source, previous);
+        if (edge == NULL)
+            break;
+
+        list_insertData(path, edge->target);
+
+        if (EulerCircuitHelper(package, path->next, edge->target, source))
             return 1;
-
-        if (thisEdge->target == package->target)
-            package->target = thisVertex;
     }
 
-    if(thisVertex != package->target) {
-        fputs("EulerCircuit: No Circuit\n", stderr);
+    if (source != package->tmpdst)
         return 1;
-    }
+
+    package->tmpdst = previous;
     return 0;
 }
 
-void EulerPath(GraphPtr graph, ListPtr path, VertexId source, VertexId target) {
-    EdgePtr *nextEdge = malloc(graph->vertexNum * sizeof(EdgePtr));
+static void EulerPath_stack(GraphPtr graph, ListPtr path, VertexId src, VertexId dst) {
+    StackPtr stack = newStack(graph->edgeNum);
+    EdgePtr *availableEdges = getAvailableEdges(graph);
+    VertexId previous, target, tmpdst = dst;
+    Argument arg;
 
-    for (VertexId vertex = 0; vertex < graph->vertexNum; vertex++)
-        nextEdge[vertex] = graph->vertices[vertex].outEdges;
-
-    path->element = source;
+    path->element = src;
     path->next = NULL;
-    Package package = {graph, nextEdge, target};
+    stack_push(stack, (Argument){availableEdges + src, path, src, -1});
+    do {
+        target = getTarget(stack);
+        if (target == -1) {
+            if (src != tmpdst) {
+                puts("EulerCircuit: No Circuit\n");
+                break;
+            }
+            tmpdst = previous;
 
-    EulerCircuitHelper(&package, path, source, INFINITY);
+            // 模拟函数返回
+            arg = stack_peek(stack);
+            path = arg.path;
+            src = arg.source;
+            previous = arg.previous;
+            continue;
+        }
+        list_insertData(path, target);
 
-    free(nextEdge);
+        // 模拟函数调用
+        path = path->next;
+        previous = src;
+        src = target;
+        stack_push(stack, (Argument){availableEdges + target, path, src, previous});
+    } while (stack->top != 0);
+
+    free(availableEdges);
+    stack_destroy(stack);
 }
 
-void EulerCircuit(GraphPtr pGraph, ListPtr path, VertexId source) {
-    EulerPath(pGraph, path, source, source);
+static void EulerPath_recursive(GraphPtr graph, ListPtr path, VertexId src, VertexId dst) {
+    EdgePtr *availableEdges = getAvailableEdges(graph);
+
+    path->element = src;
+    path->next = NULL;
+    Package package = {availableEdges, dst};
+
+    if (EulerCircuitHelper(&package, path, src, -1))
+        puts("EulerCircuit: No Circuit\n");
+
+    free(availableEdges);
+}
+
+inline void EulerPath(GraphPtr graph, ListPtr path, VertexId src, VertexId dst) {
+    EulerPath_recursive(graph, path, src, dst);
+}
+
+inline void EulerCircuit(GraphPtr graph, ListPtr path, VertexId source) {
+    EulerPath(graph, path, source, source);
 }

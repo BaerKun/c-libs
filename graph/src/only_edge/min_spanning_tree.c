@@ -1,34 +1,39 @@
 #include "only_edge/min_spanning_tree.h"
-#include "utils/heap.h"
-#include <stddef.h>
-#include "utils/disjiont_set.h"
+#include "disjSet.h"
+
+#define HEAP_ELEMENT_TYPE EdgePtr
+#define HEAP_LESS_THAN(a, b) ((a)->weight < (b)->weight)
+#include "heap.h"
+
 
 void KruskalMinSpanningTree(GraphPtr graph, EdgeId outputArray[]) {
     int counter = 0;
-    EdgeId edgeId;
-    EdgePtr edge;
-    Heap heap;
+    HeapPtr heap = newHeap(graph->edgeNum);
     VertexId disjSet[graph->vertexNum];
     ClassId root1, root2;
-    int offset = offsetof(Edge, weight);
+    EdgePtr edge = graph->edges + graph->edgeNum - 1;
 
-    InitHeap(heap, graph->edgeNum);
-    for(edgeId = 0; edgeId < graph->edgeNum; edgeId++)
-        heap.elements[edgeId] = &graph->edges[edgeId].weight;
+    for(EdgePtr *heapElement = heap->prev + 1; edge >= graph->edges; --edge, ++heapElement)
+        *heapElement = edge;
 
-    G_BuildHeap(&heap, graph->edgeNum);
+    buildHeap(heap, graph->edgeNum);
 
     for(VertexId vertex = 0; vertex < graph->vertexNum; vertex++)
         disjSet[vertex] = -1;
 
-    while(counter < graph->vertexNum - 1){
-        edge = (void *)G_DeleteMin(&heap) - offset;
-        root1 = Find(disjSet, edge->vertex1);
-        root2 = Find(disjSet, edge->vertex2);
+    while (heap->size != 0){
+        edge = heap_deleteMin(heap);
+        root1 = disjSet_find(disjSet, edge->vertex1);
+        root2 = disjSet_find(disjSet, edge->vertex2);
 
         if(root1 != root2){
             outputArray[counter++] = (EdgeId)(edge - graph->edges);
-            Union(disjSet, root1, root2);
+            disjSet_union(disjSet, root1, root2);
         }
     }
+    if(counter + 1 != graph->vertexNum)
+        printf("No spanning tree!\n");
+
+    outputArray[counter] = -1;
+    heap_destroy(heap);
 }

@@ -33,7 +33,7 @@ typedef struct Graph {
 
 GraphPtr newGraph(int edgeCapacity, int vertexNum);
 
-void addEdge(GraphPtr pGraph, VertexId vertex1, VertexId vertex2, int weight);
+void graphAddEdge(GraphPtr graph, VertexId vertex1, VertexId vertex2, int weight);
 
 void graphDestroy(GraphPtr graph);
 

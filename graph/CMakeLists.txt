@@ -11,4 +11,4 @@ add_subdirectory(example)
 
 add_executable(graph_tests tests/test.c)
 
-target_link_libraries(graph_tests PRIVATE adjacency_list_graph)
+target_link_libraries(graph_tests PRIVATE only_edge_graph)

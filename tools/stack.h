@@ -16,7 +16,7 @@ struct Stack{
     int top;
 };
 
-static StackPtr newStack(int capacity){
+static inline StackPtr newStack(int capacity){
     StackPtr stack = (StackPtr)malloc(sizeof(Stack));
 
     stack->capacity = capacity;
@@ -26,7 +26,7 @@ static StackPtr newStack(int capacity){
     return stack;
 }
 
-static void stack_push(StackPtr stack, STACK_ELEMENT_TYPE element){
+static inline void stack_push(StackPtr stack, STACK_ELEMENT_TYPE element){
 //    if(stack->top == stack->capacity) {
 //        fputs("stack_push: Stack is full!", stderr);
 //        return;
@@ -35,7 +35,7 @@ static void stack_push(StackPtr stack, STACK_ELEMENT_TYPE element){
     stack->elements[stack->top++] = element;
 }
 
-static STACK_ELEMENT_TYPE stack_pop(StackPtr stack){
+static inline STACK_ELEMENT_TYPE stack_pop(StackPtr stack){
 //    if(stack->top == 0){
 //        fputs("stack_pop: Stack is empty!", stderr);
 //        exit(1);
@@ -44,7 +44,11 @@ static STACK_ELEMENT_TYPE stack_pop(StackPtr stack){
     return stack->elements[--stack->top];
 }
 
-static void stack_destroy(StackPtr stack){
+static inline STACK_ELEMENT_TYPE stack_peek(StackPtr stack){
+    return stack->elements[stack->top - 1];
+}
+
+static inline void stack_destroy(StackPtr stack){
     free(stack->elements);
     free(stack);
 }

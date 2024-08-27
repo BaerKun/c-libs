@@ -6,9 +6,8 @@
 # endif
 
 #ifndef HEAP_LESS_THAN
-#define HEAP_LESS_THAN(a, b) (a < b)
+#define HEAP_LESS_THAN(a, b) ((a) < (b))
 #endif
-
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -18,7 +17,6 @@ typedef struct Heap Heap, *HeapPtr;
 struct Heap{
     int capacity;
     int size;
-    int needFreeElements;
     HEAP_ELEMENT_TYPE  *prev; // 指向堆顶的前一个
 };
 
@@ -28,7 +26,7 @@ static void heap_percolateDown(HEAP_ELEMENT_TYPE *prev, int father, int end){
     theTop = prev[father];
 
     for( ; (child = father << 1) <= end; father = child){
-        if(child + 1 <= end && HEAP_LESS_THAN(prev[child + 1], prev[child]))
+        if(child != end && HEAP_LESS_THAN(prev[child + 1], prev[child]))
             child++;
         if(HEAP_LESS_THAN(prev[child], theTop))
             prev[father] = prev[child];
@@ -42,7 +40,6 @@ static HeapPtr newHeap(int capacity){
     HeapPtr heap = malloc(sizeof(struct Heap));
     heap->capacity = capacity;
     heap->size = 0;
-    heap->needFreeElements = 1;
     heap->prev = malloc(capacity * sizeof(HEAP_ELEMENT_TYPE));
     heap->prev--;
 
@@ -76,21 +73,14 @@ static HEAP_ELEMENT_TYPE heap_deleteMin(HeapPtr heap){
 }
 
 static void heap_destroy(HeapPtr heap){
-    if(heap->needFreeElements)
-        free(heap->prev + 1);
+    free(heap->prev + 1);
     free(heap);
 }
 
-static HeapPtr buildHeap(HEAP_ELEMENT_TYPE *prev, int end){
+static void buildHeap(HeapPtr heap, int end){
     for(int i = end >> 1; i; i--)
-        heap_percolateDown(prev, i, end);
-
-    HeapPtr heap = malloc(sizeof(Heap));
-    heap->capacity = heap->size = end;
-    heap->prev = prev;
-    heap->needFreeElements = 0;
-
-    return heap;
+        heap_percolateDown(heap->prev, i, end);
+    heap->size = end;
 }
 
 #endif //HEAP_H

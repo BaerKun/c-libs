@@ -3,6 +3,6 @@
 
 #include "matrix/graph.h"
 
-void allPairsWeightedPath(GraphPtr pGraph);
+void allPairsWeightedPath(GraphPtr graph);
 
 #endif //GRAPH_ALL_PAIRS_WEIGHTED_PATH_H

@@ -37,17 +37,16 @@ void graphAddEdge(GraphPtr graph, VertexId source, VertexId target, EdgeData dat
         return;
     }
 
-    EdgePtr pEdge;
-
-    for (pEdge = graph->vertices[source].outEdges; pEdge && pEdge->target != target; pEdge = pEdge->next);
-    if (pEdge)
+    EdgePtr edge;
+    for (edge = graph->vertices[source].outEdges; edge && edge->target != target; edge = edge->next);
+    if (edge)
         return;
 
-    pEdge = malloc(sizeof(Edge));
-    pEdge->target = target;
-    pEdge->data = data;
-    pEdge->next = graph->vertices[source].outEdges;
-    graph->vertices[source].outEdges = pEdge;
+    edge = malloc(sizeof(Edge));
+    edge->target = target;
+    edge->data = data;
+    edge->next = graph->vertices[source].outEdges;
+    graph->vertices[source].outEdges = edge;
     graph->edgeNum++;
 
     if(graph->indegree)

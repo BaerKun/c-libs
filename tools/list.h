@@ -12,17 +12,17 @@ typedef struct Node Node, *NodePtr;
 typedef struct Node List, *ListPtr;
 
 struct Node{
-    LIST_ELEMENT_TYPE element;
     NodePtr next;
+    LIST_ELEMENT_TYPE element;
 };
 
-static ListPtr newList() {
+static inline ListPtr newList() {
     ListPtr list = malloc(sizeof(struct Node));
     list->next = NULL;
     return list;
 }
 
-static NodePtr newNode(LIST_ELEMENT_TYPE element) {
+static inline NodePtr newNode(LIST_ELEMENT_TYPE element) {
     NodePtr node = malloc(sizeof(struct Node));
     node->element = element;
 
@@ -52,7 +52,7 @@ static NodePtr list_findPrev(ListPtr list, LIST_ELEMENT_TYPE element) {
     return NULL;
 }
 
-static NodePtr list_deleteNode(ListPtr list, LIST_ELEMENT_TYPE element) {
+static inline NodePtr list_deleteNode(ListPtr list, LIST_ELEMENT_TYPE element) {
     NodePtr prev = list_findPrev(list, element);
     if (prev) {
         NodePtr next = prev->next;
@@ -62,23 +62,23 @@ static NodePtr list_deleteNode(ListPtr list, LIST_ELEMENT_TYPE element) {
     return NULL;
 }
 
-static void list_insertNode(ListPtr list, NodePtr node) {
+static inline void list_insertNode(ListPtr list, NodePtr node) {
     node->next = list->next;
     list->next = node;
 }
 
-static void list_insertData(ListPtr list, LIST_ELEMENT_TYPE element) {
+static inline void list_insertData(ListPtr list, LIST_ELEMENT_TYPE element) {
     NodePtr newNode = malloc(sizeof(struct Node));
     newNode->element = element;
     list_insertNode(list, newNode);
 }
 
-static void list_deleteAndFree(ListPtr list, LIST_ELEMENT_TYPE element) {
+static inline void list_deleteAndFree(ListPtr list, LIST_ELEMENT_TYPE element) {
     NodePtr node = list_deleteNode(list, element);
     free(node);
 }
 
-static void list_destroy(ListPtr list) {
+static inline void list_destroy(ListPtr list) {
     list_makeEmpty(list);
     free(list);
 }

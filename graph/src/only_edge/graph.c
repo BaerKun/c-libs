@@ -3,27 +3,27 @@
 #include <stdio.h>
 
 GraphPtr newGraph(int edgeCapacity, int vertexNum) {
-    GraphPtr pGraph = malloc(sizeof(Graph));
+    GraphPtr graph = malloc(sizeof(Graph));
 
-    for (pGraph->edgeCapacity = INITIAL_VERTICES_NUMBER; edgeCapacity > pGraph->edgeCapacity; pGraph->edgeCapacity *= 2);
+    for (graph->edgeCapacity = INITIAL_VERTICES_NUMBER; edgeCapacity > graph->edgeCapacity; graph->edgeCapacity *= 2);
 
-    pGraph->edges = malloc(sizeof(Edge) * pGraph->edgeCapacity);
-    pGraph->edgeNum = 0;
-    pGraph->vertexNum = vertexNum;
+    graph->edges = malloc(sizeof(Edge) * graph->edgeCapacity);
+    graph->edgeNum = 0;
+    graph->vertexNum = vertexNum;
 
-    return pGraph;
+    return graph;
 }
 
-void graphDestroy(GraphPtr pGraph) {
-    free(pGraph->edges);
-    free(pGraph);
+void graphDestroy(GraphPtr graph) {
+    free(graph->edges);
+    free(graph);
 }
 
-void addEdge(GraphPtr pGraph, VertexId vertex1, VertexId vertex2, int weight) {
-    if(pGraph->edgeNum == pGraph->edgeCapacity){
+void graphAddEdge(GraphPtr graph, VertexId vertex1, VertexId vertex2, int weight) {
+    if(graph->edgeNum == graph->edgeCapacity){
         fputs("graphAddEdge:Graph is full\n", stderr);
         return;
     }
 
-    pGraph->edges[pGraph->edgeNum++] = (Edge){vertex1, vertex2, weight};
+    graph->edges[graph->edgeNum++] = (Edge){vertex1, vertex2, weight};
 }

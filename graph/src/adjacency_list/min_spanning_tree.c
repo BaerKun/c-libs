@@ -49,7 +49,6 @@ void PrimMinSpanningTree(GraphPtr graph, VertexId root, VertexId *parent) {
             }
         }
     }
-
     free(hasKnown);
     free(minWeight);
     heap_destroy(heap);

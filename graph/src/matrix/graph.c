@@ -1,7 +1,7 @@
 #include "matrix/graph.h"
 #include <stdlib.h>
 
-void initGraph(GraphPtr graph) {
+static void initGraph(GraphPtr graph) {
     for (VertexId source = 0; source < graph->vertexNum; source++) {
         for (VertexId target = 0; target < graph->vertexNum; target++) {
             graph->edges[source][target] = (source == target) ? INITIAL_SELF_POINTING_EDGE : NO_EDGE;
