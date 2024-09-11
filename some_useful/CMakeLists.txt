@@ -1,6 +1,3 @@
-add_executable(useful compress.c)
+add_executable(useful long_long_int.c)
 
-target_include_directories(useful PRIVATE ../tree/include)
-
-target_link_libraries(useful PRIVATE tree)
 

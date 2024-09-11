@@ -59,7 +59,7 @@ void float2fraction_precise0(float x, int *numerator, int *denominator, const in
         _nume >>= -exponent - 8;
         _deno = 0x7fffffff;
     } else {
-        _deno = 1 << 23 - exponent;
+        _deno = 1 << (23 - exponent);
     }
 
     if (x < 0.f) {
@@ -122,7 +122,7 @@ void float2fraction_precise(float x, int *numerator, int *denominator, const int
         }
         deno = 0x7fffffff;
     } else {
-        deno = 1 << 23 - exponent;
+        deno = 1 << (23 - exponent);
     }
 
     if (x < 0.f) {
