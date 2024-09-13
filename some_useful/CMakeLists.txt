@@ -1,4 +1,4 @@
-add_executable(useful high_prec_calc.c)
+add_executable(useful long_long_int.c)
 
 target_link_libraries(useful PUBLIC m)
 
