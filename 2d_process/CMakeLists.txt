@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.28)
 project(2d_process C)
 
+if(WIN32)
+    set(OpenCV_DIR "C:\\_myLibs\\opencv-4.10\\build")
+endif()
+
 find_package(OpenCV)
 
 include_directories(include)
