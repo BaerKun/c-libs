@@ -10,6 +10,8 @@ add_subdirectory(tree)
 
 add_subdirectory(graph)
 
+add_subdirectory(arithmetic)
+
 add_subdirectory(simple_algorithm)
 
 add_subdirectory(some_useful)

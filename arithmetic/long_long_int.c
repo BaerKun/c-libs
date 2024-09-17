@@ -40,6 +40,21 @@ void lldAdd(uint8_t *output, const uint8_t *input1, const uint8_t *input2, uint3
     } while (++outptr != end);
 }
 
+void lldAdd32(uint8_t *output, const uint8_t *input1, uint32_t input2, uint32_t size) {
+    uint64_t buffer = input2;
+    uint8_t *outptr = output;
+    const uint8_t *inptr = input1,
+        *end = output + size;
+
+    while (outptr != end && buffer != 0) {
+        buffer += *inptr;
+        *outptr = buffer;
+        buffer >>= 8;
+        ++inptr;
+        ++outptr;
+    }
+}
+
 void lldComplement(uint8_t *out, const uint8_t *in, uint32_t size) {
     const uint8_t *inptr = in, *end = in + size;
     uint8_t *outptr = out;
@@ -230,27 +245,30 @@ void lldPrint10(uint8_t *a, uint32_t size) {
     free(stack_buffer);
 }
 
-void lldInput(uint8_t *a, uint8_t size) {
+void lldInput10(uint8_t *a, uint8_t size) {
     char c;
+    uint8_t d;
     lldSet(a, 0, size);
     while (1){
         c = getchar();
         if(c < '0' || c > '9')
             break;
         lldMul32(a, a, 10, size);
-        *a += c - '0';
+        lldAdd32(a, a, c - '0', size);
     }
 }
 
 int main() {
-    uint8_t a[16], b[16], c[16];
-    lldInput(a, 16);
-    lldInput(b, 16);
-    lldMul(c, a, b, 16);
+    uint8_t a[16], b[16], c[16], d[16];
+    lldInput10(a, 16);
+    lldInput10(b, 16);
+    lldDiv(c, a, b, d, 16);
     lldPrint10(a, 16);
-    printf(" * ");
-    lldPrint10(b, 16);
     printf(" = ");
+    lldPrint10(b, 16);
+    printf(" * ");
     lldPrint10(c, 16);
+    printf(" + ");
+    lldPrint10(d, 16);
     return 0;
 }
