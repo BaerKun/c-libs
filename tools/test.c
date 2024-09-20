@@ -1,11 +1,17 @@
+#include "timer.h"
 #include "random.h"
-#include <stdio.h>
-
+#include "sort.h"
 
 int main(){
-    unsigned i;
-    for(i = 0; i < 100; ++i){
-        printf("%lf ", randfloat(-100, 100));
+    int a[10000];
+    for(int i = 0; i < 10000; i++){
+        a[i] = randint(0, 10000);
+    }
+
+    TEST_TIME(sort(a, 10000));
+
+    for(int i = 0; i < 10000; i++){
+        printf("%d ", a[i]);
     }
 
     return 0;

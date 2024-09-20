@@ -30,14 +30,14 @@ static inline  Complex complexFromArgAndMod(double argument, double modulus) {
     return (Complex) {modulus * cos(argument), modulus * sin(argument)};
 }
 
-int Horner(int polynomial[], int x, int size);
+int Horner(const int polynomial[], int x, int size);
 
-int CooleyTukey(int polynomial[], int x, int size);
+int CooleyTukey(const int polynomial[], int x, int size);
 
-void dft(double time[], Complex frequency[], int size);
+void dft(const double time[], Complex frequency[], int size);
 
-void idft(Complex frequency[], double time[], int size);
+void idft(const Complex frequency[], double time[], int size);
 
-void dftConv(double a[], double b[], double c[], int size_a, int size_b);
+void dftConv(const double a[], const double b[], double c[], int size_a, int size_b);
 
 #endif //COMPLEX_H

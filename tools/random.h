@@ -48,9 +48,7 @@ static inline double randdouble(double a, double b) {
 }
 
 static void shuffleArray(int *array, int len) {
-    unsigned i, j;
-    int c;
-    for (i = 2; i <= len; i++) {
+    for (int i = 2, j, c; i <= len; ++i) {
         j = randuint(0, i);
         c = array[i];
         array[i] = array[j];

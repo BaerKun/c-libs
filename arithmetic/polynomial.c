@@ -18,7 +18,7 @@ static int CooleyTukeyHelper(const int polynomial[], const int x, const int star
            CooleyTukeyHelper(polynomial, x * x, start + step, end, step << 1) * x;
 };
 
-int CooleyTukey(int polynomial[], const int x, const int size) {
+int CooleyTukey(const int polynomial[], const int x, const int size) {
     return CooleyTukeyHelper(polynomial, x, 0, size, 1);
 }
 
