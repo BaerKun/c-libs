@@ -6,7 +6,7 @@
 
 #ifdef WEIGHT_FOR_WEIGHTED_PATH
 
-void DijkstraWeightedPath(GraphPtr graph, VertexId source, VertexId target, VertexId *parent) {
+void DijkstraWeightedPath(const GraphPtr graph, VertexId *parent, const VertexId source, const VertexId target) {
     VertexId vertex, adjacentVertex;
     EdgePtr edge;
     char *hasKnown = malloc(graph->vertexNum);
@@ -42,7 +42,7 @@ void DijkstraWeightedPath(GraphPtr graph, VertexId source, VertexId target, Vert
 }
 
 // 无负值圈
-void weightedPath(GraphPtr graph, VertexId source, VertexId *parent) {
+void weightedPath(const GraphPtr graph, VertexId *parent, const VertexId source) {
     VertexId vertex, adjacentVertex;
     EdgePtr edge;
     char *isInQueue = malloc(graph->vertexNum);

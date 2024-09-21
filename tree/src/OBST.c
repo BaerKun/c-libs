@@ -1,5 +1,5 @@
-#include "tree/OBST.h"
-#include "queue.h"
+#include "../include/tree/OBST.h"
+#include "../../tools/queue.h"
 #include <stdlib.h>
 
 BSTPtr optimalBST(const DataType data[], const WeightType weight[], int number) {

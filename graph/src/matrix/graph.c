@@ -31,7 +31,7 @@ void deleteGraph(GraphPtr graph) {
     free(graph);
 }
 
-void addEdge(GraphPtr graph, VertexId source, VertexId target, WeightType weight) {
+void addEdge(GraphPtr graph, const VertexId source, const VertexId target, const WeightType weight) {
     graph->edges[source][target] = (Edge) {weight, target};
     graph->edgeNum++;
 }

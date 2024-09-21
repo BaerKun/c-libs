@@ -3,8 +3,8 @@
 
 #include "graph.h"
 
-void DijkstraWeightedPath(GraphPtr graph, VertexId source, VertexId target, VertexId *parent);
+void DijkstraWeightedPath(GraphPtr graph, VertexId *parent, VertexId source, VertexId target);
 
-void weightedPath(GraphPtr graph, VertexId source, VertexId *parent);
+void weightedPath(GraphPtr graph, VertexId *parent, VertexId source);
 
 #endif //GRAPH_WEIGHT_PATH_H

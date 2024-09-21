@@ -1,22 +1,8 @@
 #include "NetworkFlow.h"
 #include <stdlib.h>
 #include <string.h>
+#include "queue.h"
 
-#define InitQueue(queue, capacity) \
-    VertexId elements[capacity];    \
-    queue.front = queue.rear = 0;   \
-    queue.elements = elements
-
-#define Enqueue(queue, element) \
-    queue.elements[queue.rear++] = element
-
-#define Dequeue(queue) queue.elements[queue.front++]
-
-typedef struct {
-    int front;
-    int rear;
-    Vertex *elements;
-} Queue;
 
 NetworkPtr CreateNetwork(int vertexNum) {
     NetworkPtr pNetwork = malloc(sizeof(Network));
@@ -54,21 +40,21 @@ NetworkPtr CopyNetwork(NetworkPtr pNetwork) {
 }
 
 static int
-BFS(NetworkPtr pNetwork, Queue queue, Vertex source, Vertex target, Vertex path[], FlowType *singlrPathFlow) {
+BFS(NetworkPtr pNetwork, QueuePtr queue, Vertex source, Vertex target, Vertex path[], FlowType *singlrPathFlow) {
     int vertexNum;
     Vertex thisVertex, outgoingVertex;
     Edge **edges;
 
     edges = pNetwork->edges;
     vertexNum = pNetwork->vertexNum;
-    Enqueue(queue, source);
+    enqueue(queue, source);
 
     for (thisVertex = 0; thisVertex < vertexNum; thisVertex++)
         path[thisVertex] = INFINITY;
     path[source] = source;
 
-    while (queue.front != queue.rear) {
-        thisVertex = Dequeue(queue);
+    while (queue->front != queue->rear) {
+        thisVertex = dequeue(queue);
         for (outgoingVertex = 0; outgoingVertex < vertexNum; outgoingVertex++) {
             if (edges[thisVertex][outgoingVertex].capacity && path[outgoingVertex] == INFINITY) {
                 path[outgoingVertex] = thisVertex;
@@ -80,7 +66,7 @@ BFS(NetworkPtr pNetwork, Queue queue, Vertex source, Vertex target, Vertex path[
                     *singlrPathFlow = edges[thisVertex][outgoingVertex].flow;
                     return 1;
                 }
-                Enqueue(queue, outgoingVertex);
+                enqueue(queue, outgoingVertex);
             }
         }
     }
@@ -98,7 +84,7 @@ FlowType EdmondKarpMaxFlow(NetworkPtr pNetwork, Vertex source, Vertex sink) {
     queue.elements = vertices;
     pResidualNetwork->edges[source][source].flow = INFINITY;
 
-    while (BFS(pResidualNetwork, queue, source, sink, path, &singlrPathFlow)) {
+    while (BFS(pResidualNetwork, &queue, source, sink, path, &singlrPathFlow)) {
         pNetwork->edges[sink][sink].flow += singlrPathFlow;
         for (thisVertex = sink; thisVertex != source; thisVertex = path[thisVertex]) {
             incomingVertex = path[thisVertex];
@@ -111,6 +97,7 @@ FlowType EdmondKarpMaxFlow(NetworkPtr pNetwork, Vertex source, Vertex sink) {
             pResidualNetwork->edges[thisVertex][incomingVertex].capacity += singlrPathFlow;
         }
     }
+
     DeleteNetwork(pResidualNetwork);
     return pNetwork->edges[sink][sink].flow;
 }

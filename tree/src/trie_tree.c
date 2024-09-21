@@ -1,4 +1,4 @@
-#include "tree/trie_tree.h"
+#include "../include/tree/trie_tree.h"
 #include <stdio.h>
 
 typedef struct HeapElement {
@@ -8,7 +8,7 @@ typedef struct HeapElement {
 
 #define HEAP_ELEMENT_TYPE HeapElement
 #define HEAP_LESS_THAN(a, b) (a.value < b.value)
-#include "heap.h"
+#include "../../tools/heap.h"
 
 TrieTreePtr HuffmanCode(DataType *data, const int *cost, int number) {
     HeapElement minCost, array[number];

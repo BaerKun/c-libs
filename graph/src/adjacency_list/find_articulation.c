@@ -3,12 +3,12 @@
 
 typedef struct {
     char *hasVisited;
-    GraphPtr graph;
+    Vertex *vertices;
     VertexId *parent;
     int *preorder; // dfs中第一次访问节点的序数
     int *lowest; // 子树所那到达的最低节点的序数
     int counter;
-    VertexId *outputArray;
+    VertexId *outptr;
 } Package;
 
 static void findArticulationHelper(Package *package, VertexId vertex) {
@@ -16,7 +16,7 @@ static void findArticulationHelper(Package *package, VertexId vertex) {
 
     package->hasVisited[vertex] = 1;
     package->lowest[vertex] = package->preorder[vertex] = package->counter++;
-    for (EdgePtr edge = package->graph->vertices[vertex].outEdges; edge; edge = edge->next) {
+    for (EdgePtr edge = package->vertices[vertex].outEdges; edge; edge = edge->next) {
         adjacentVertex = edge->target;
 
         if (!package->hasVisited[adjacentVertex]) {
@@ -24,8 +24,8 @@ static void findArticulationHelper(Package *package, VertexId vertex) {
             findArticulationHelper(package, adjacentVertex);
 
             if (package->lowest[adjacentVertex] >= package->preorder[vertex]) {
-                *package->outputArray = vertex;
-                package->outputArray++;
+                *package->outptr = vertex;
+                package->outptr++;
             }
 
             if (package->lowest[adjacentVertex] < package->lowest[vertex])
@@ -39,22 +39,22 @@ static void findArticulationHelper(Package *package, VertexId vertex) {
 }
 
 void graphFindArticulation(GraphPtr graph, VertexId outputArray[]) {
-    int *pool = malloc(graph->vertexNum * 3 * sizeof(int));
+    int *memory = malloc(graph->vertexNum * 3 * sizeof(int));
     char *hasVisited = calloc(graph->vertexNum, sizeof(char));
 
-    Package package = {hasVisited, graph, pool, pool + graph->vertexNum,
-                       pool + 2 * graph->vertexNum, 0, outputArray};
+    Package package = {hasVisited, graph->vertices, memory, memory + graph->vertexNum,
+                       memory + 2 * graph->vertexNum, 0, outputArray};
     findArticulationHelper(&package, 0);
 
     int counter = 0;
     for (EdgePtr edge = graph->vertices[0].outEdges; edge; edge = edge->next) {
-        if (!pool[edge->target] && counter++) // pool == parent
+        if (!memory[edge->target] && counter++) // memory == parent
             break;
     }
 
     if (counter == 1)
-        package.outputArray[-1] = -1;
+        *(package.outptr - 1) = -1;
 
-    free(pool);
+    free(memory);
     free(hasVisited);
 }

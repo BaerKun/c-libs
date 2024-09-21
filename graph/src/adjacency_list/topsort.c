@@ -8,7 +8,7 @@ void buildTopPath(GraphPtr graph, VertexId *parent) {
     EdgePtr thisEdge;
     int counter = 0;
     int *inDegree = malloc(graph->vertexNum * sizeof(int));
-    QueuePtr queue = newQueue(graph->vertexNum);
+    const QueuePtr queue = newQueue(graph->vertexNum);
 
     InitIndegree(graph, inDegree, queue);
     for (thisVertex = 0; thisVertex < graph->vertexNum; thisVertex++)
@@ -35,21 +35,21 @@ void buildTopPath(GraphPtr graph, VertexId *parent) {
 }
 
 void topSort(GraphPtr graph, VertexId *sortArray) {
-    VertexId thisVertex;
-    EdgePtr pEdge;
+    VertexId vertex;
+    EdgePtr edge;
     int counter = 0;
     int *inDegree = malloc(graph->vertexNum * sizeof(int));
-    QueuePtr queue = newQueue(graph->vertexNum);
+    const QueuePtr queue = newQueue(graph->vertexNum);
 
     InitIndegree(graph, inDegree, queue);
 
     while (queue->front != queue->rear) {
-        thisVertex = dequeue(queue);
-        sortArray[counter++] = thisVertex;
+        vertex = dequeue(queue);
+        sortArray[counter++] = vertex;
 
-        for (pEdge = graph->vertices[thisVertex].outEdges; pEdge; pEdge = pEdge->next) {
-            if (!--inDegree[pEdge->target])
-                enqueue(queue, pEdge->target);
+        for (edge = graph->vertices[vertex].outEdges; edge; edge = edge->next) {
+            if (!--inDegree[edge->target])
+                enqueue(queue, edge->target);
         }
     }
 

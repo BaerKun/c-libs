@@ -2,7 +2,6 @@
 #define QUEUE_H
 
 #include <stdlib.h>
-#include <stdio.h>
 
 #ifndef QUEUE_ELEMENT_TYPE
 #define QUEUE_ELEMENT_TYPE int
@@ -25,11 +24,6 @@ static QueuePtr newQueue(int capacity){
 }
 
 static void enqueue(QueuePtr queue, QUEUE_ELEMENT_TYPE element){
-//    if(queue->size == queue->capacity) {
-//        fputs("Enqueue:Full\n", stderr);
-//        return;
-//    }
-
     queue->elements[queue->rear] = element;
     if(++queue->rear == queue->capacity)
         queue->rear = 0;
@@ -37,11 +31,6 @@ static void enqueue(QueuePtr queue, QUEUE_ELEMENT_TYPE element){
 }
 
 static QUEUE_ELEMENT_TYPE dequeue(QueuePtr queue){
-//    if(queue->size == 0) {
-//        fputs("Dequeue:Empty\n", stderr);
-//        return -1;
-//    }
-
     QUEUE_ELEMENT_TYPE front = queue->elements[queue->front];
     if(++queue->front == queue->capacity)
         queue->front = 0;

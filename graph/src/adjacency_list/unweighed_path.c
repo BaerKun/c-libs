@@ -1,10 +1,10 @@
 #include "adjacency_list/unweighed_path.h"
 #include "queue.h"
 
-void buildUnweightedPath(GraphPtr graph, VertexId *parent, VertexId source, VertexId target) {
+void buildUnweightedPath(const GraphPtr graph, VertexId *parent, const VertexId source, const VertexId target) {
     VertexId thisVertex, adjacentVertex;
     EdgePtr edge;
-    QueuePtr queue = newQueue(graph->vertexNum);
+    const QueuePtr queue = newQueue(graph->vertexNum);
 
     for(thisVertex = 0; thisVertex < graph->vertexNum; thisVertex++)
         parent[thisVertex] = INFINITY;

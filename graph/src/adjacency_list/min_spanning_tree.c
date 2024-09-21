@@ -5,19 +5,15 @@
 #define HEAP_LESS_THAN(a, b) (*a < *b)
 #include "heap.h"
 
-typedef struct{
-    GraphPtr graph;
-    VertexId *parent;
-}Package;
 
-static void printTreeHelper(Package *package, VertexId root, int deepth){
+static void printTreeHelper(VertexPtr vertices, VertexId *parent, VertexId root, int deepth){
     for(int i = 0; i < deepth; i++)
         printf("\t");
     printf("|-%d\n", root);
 
-    for(EdgePtr edge = package->graph->vertices[root].outEdges; edge; edge = edge->next)
-        if(package->parent[edge->target] == root)
-            printTreeHelper(package, edge->target, deepth + 1);
+    for(EdgePtr edge = vertices[root].outEdges; edge; edge = edge->next)
+        if(parent[edge->target] == root)
+            printTreeHelper(vertices, parent, edge->target, deepth + 1);
 }
 
 void PrimMinSpanningTree(GraphPtr graph, VertexId root, VertexId *parent) {
@@ -59,6 +55,5 @@ void printTree(GraphPtr graph, VertexId *parent, VertexId root) {
         fputs("printTree: Invalid root vertex!\n", stderr);
         return;
     }
-    Package package = {graph, parent};
-    printTreeHelper(&package, root, 0);
+    printTreeHelper(graph->vertices, parent, root, 0);
 }

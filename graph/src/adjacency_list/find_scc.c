@@ -1,6 +1,5 @@
 #include "adjacency_list/find_scc.h"
 #include <stdlib.h>
-#include <string.h>
 
 typedef struct {
     EdgePtr *edges;
@@ -19,7 +18,8 @@ EdgePtr *CopyEdges(GraphPtr graph) {
     int couter = 0;
 
     for(VertexId vertex = 0; vertex < graph->vertexNum; vertex++) {
-        if(!(prevEdge = graph->vertices[vertex].outEdges)) {
+        prevEdge = graph->vertices[vertex].outEdges;
+        if(prevEdge == NULL) {
             edges[vertex] = NULL;
             continue;
         }

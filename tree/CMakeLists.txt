@@ -4,7 +4,9 @@ set(CMAKE_C_STANDARD 11)
 
 include_directories(include)
 
-add_subdirectory(src)
+file(GLOB SOURCES "src/*.c" )
+
+add_library(tree STATIC ${SOURCES})
 
 add_executable(tree_test test/test.c)
 

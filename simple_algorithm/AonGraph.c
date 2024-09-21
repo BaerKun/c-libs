@@ -1,27 +1,8 @@
 #include "AonGraph.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "queue.h"
 
-#define InitHeap(heap, capacity) \
-    NodePtr elements[capacity];  \
-    heap.size = 0;                  \
-    heap.elements = elements
-
-#define InitQueue(queue, capacity) \
-    NodeId elements[capacity];    \
-    queue.front = queue.rear = 0;   \
-    queue.elements = elements
-
-#define Enqueue(queue, element) \
-    queue.elements[queue.rear++] = element
-
-#define Dequeue(queue) queue.elements[queue.front++]
-
-typedef struct {
-    int front;
-    int rear;
-    NodeId *elements;
-}Queue, *QueuePtr;
 
 static void InitIndegree(AonGraphPtr pAonGraph, int inDegree[]) {
     NodeId nodeId;
@@ -30,14 +11,14 @@ static void InitIndegree(AonGraphPtr pAonGraph, int inDegree[]) {
         inDegree[nodeId] = pAonGraph->nodes[nodeId].inDegree;
 }
 
-static void buildCriticalPath(AonGraphPtr pAonGraph, Queue queue, int inDegree[]) {
+static void buildCriticalPath(AonGraphPtr pAonGraph, const QueuePtr queue, int inDegree[]) {
     NodeId nodeId, successorId;
     AdjacencyListPtr pAdjacencyList;
-    ActivityNodePtr nodes, pThisNode, pSuccessor;
-    nodes = pAonGraph->nodes;
+    ActivityNodePtr pThisNode, pSuccessor;
+    const ActivityNodePtr nodes = pAonGraph->nodes;
 
-    while (queue.front != queue.rear) {
-        nodeId = Dequeue(queue);
+    while (queue->front != queue->rear) {
+        nodeId = dequeue(queue);
         pThisNode = nodes + nodeId;
         for (pAdjacencyList = pThisNode->pSuccessorList; pAdjacencyList; pAdjacencyList = pAdjacencyList->next) {
             successorId = pAdjacencyList->id;
@@ -45,14 +26,14 @@ static void buildCriticalPath(AonGraphPtr pAonGraph, Queue queue, int inDegree[]
             if (pSuccessor->earlyStart < pThisNode->earlyStart + pThisNode->duration)
                 pSuccessor->earlyStart = pThisNode->earlyStart + pThisNode->duration;
             if (--inDegree[successorId] == 0)
-                Enqueue(queue, successorId);
+                enqueue(queue, successorId);
         }
     }
 
     pThisNode->lateStart = pThisNode->earlyStart;
     pThisNode->slack = 0;
 
-    NodeId *topSort = queue.elements;
+    const NodeId *topSort = queue->elements;
 
     for(int i = pAonGraph->nodeNum - 1; i >= 0; i--) {
         nodeId = topSort[i];
@@ -104,7 +85,7 @@ void DeleteAonGraph(AonGraphPtr pAonGraph) {
 void AddActivityNode(AonGraphPtr pAonGraph, TimeType duration) {
     if (pAonGraph->nodeNum == pAonGraph->capacity) {
         pAonGraph->capacity *= 2;
-        if (!realloc(pAonGraph->nodes, sizeof(ActivityNode) * pAonGraph->capacity)) {
+        if (NULL == realloc(pAonGraph->nodes, sizeof(ActivityNode) * pAonGraph->capacity)) {
             fputs("AddActivityNode: realloc failed\n", stderr);
             return;
         }
@@ -133,16 +114,15 @@ void EstablishDependency(AonGraphPtr pAonGraph, NodeId start, NodeId end) {
 
 void BuildCriticalPath(AonGraphPtr pAonGraph) {
     int nodeNum = pAonGraph->nodeNum;
-    Queue queue;
+    QueuePtr queue = newQueue(nodeNum);
     int inDegree[nodeNum];
 
-    InitQueue(queue, nodeNum);
     InitIndegree(pAonGraph, inDegree);
     for (NodeId nodeId = 0; nodeId < nodeNum; nodeId++) {
         if (!inDegree[nodeId])
-            Enqueue(queue, nodeId);
+            enqueue(queue, nodeId);
     }
-    if (queue.rear == 0) {
+    if (queue->rear == 0) {
         fputs("BuildCriticalPath:HasCycle\n", stderr);
         return;
     }

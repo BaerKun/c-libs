@@ -1,4 +1,4 @@
-#include "tree/binary_search_tree.h"
+#include "../include/tree/binary_search_tree.h"
 #include <stdio.h>
 
 BinaryTreeNodePtr BST_findMax(BSTPtr tree) {

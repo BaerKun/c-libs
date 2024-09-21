@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-GraphPtr newGraph(int edgeCapacity, int vertexNum) {
-    GraphPtr graph = malloc(sizeof(Graph));
+GraphPtr newGraph(const int edgeCapacity, const int vertexNum) {
+    const GraphPtr graph = malloc(sizeof(Graph));
 
     for (graph->edgeCapacity = INITIAL_VERTICES_NUMBER; edgeCapacity > graph->edgeCapacity; graph->edgeCapacity *= 2);
 
@@ -19,7 +19,7 @@ void graphDestroy(GraphPtr graph) {
     free(graph);
 }
 
-void graphAddEdge(GraphPtr graph, VertexId vertex1, VertexId vertex2, int weight) {
+void graphAddEdge(GraphPtr graph, const VertexId vertex1, const VertexId vertex2, const int weight) {
     if(graph->edgeNum == graph->edgeCapacity){
         fputs("graphAddEdge:Graph is full\n", stderr);
         return;

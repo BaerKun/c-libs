@@ -8,7 +8,7 @@
 
 void KruskalMinSpanningTree(GraphPtr graph, EdgeId outputArray[]) {
     int counter = 0;
-    HeapPtr heap = newHeap(graph->edgeNum);
+    const HeapPtr heap = newHeap(graph->edgeNum);
     VertexId disjSet[graph->vertexNum];
     ClassId root1, root2;
     EdgePtr edge = graph->edges + graph->edgeNum - 1;
