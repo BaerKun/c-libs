@@ -5,6 +5,7 @@
 #define VERTEX_DATA
 
 struct VertexData {
+    int data;
 };
 
 #endif
