@@ -1,6 +1,7 @@
 #include "matrix/graph.h"
 #include <stdlib.h>
 
+#define INIT_EDGE (Edge){0x7fffffff, 0}
 
 GraphPtr createGraph(const int capacity, const int vertexNum) {
     const GraphPtr graph = (GraphPtr) malloc(sizeof(Graph));
@@ -31,7 +32,7 @@ void deleteGraph(const GraphPtr graph) {
     free(graph);
 }
 
-void addEdge(const GraphPtr graph, const VertexId source, const VertexId target, const WeightType weight) {
-    graph->edges[source][target] = (Edge){weight, target};
+void addEdge(const GraphPtr graph, const VertexId source, const VertexId target, const EdgeData data) {
+    graph->edges[source][target] = (Edge){data, target};
     graph->edgeNum++;
 }

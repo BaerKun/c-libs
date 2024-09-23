@@ -8,7 +8,7 @@ struct VertexData {
     int data;
 };
 
-#define NO_VERTEX_DATA (VertexData){0x7fffffff}
+#define NO_VERTEX_DATA (VertexData){0}
 #endif
 
 #ifndef EDGE_DATA
@@ -22,13 +22,13 @@ struct EdgeData {
 
 #define NO_EDGE_DATA (EdgeData){0}
 
-typedef struct VertexData VertexData;
-typedef struct EdgeData EdgeData;
-
 #ifndef WEIGHT_FOR_WEIGHTED_PATH
 #define WEIGHT_FOR_WEIGHTED_PATH weight
 #endif
 
 #endif
+
+typedef struct VertexData VertexData;
+typedef struct EdgeData EdgeData;
 
 #endif //GRAPH_VERTEX_EDGE_H
