@@ -1,99 +1,87 @@
 #include "adjacency_list/find_scc.h"
-#include <stdlib.h>
+
+typedef struct VertexArg {
+    char visitedOnce;
+    int *number;
+    EdgePtr outEdge;
+} VertexArg;
+
+#define STACK_ELEMENT_TYPE VertexArg *
+#include <stack.h>
 
 typedef struct {
-    EdgePtr *edges;
-    VertexId *parent;
-    char *hasVisited;
-    int *number;
-    int thisNumber;
-    int vertexNum;
-    VertexId root;
-}Package;
+    VertexArg *vertices;
+    StackPtr stack;
+    int counter;
+} Package;
 
-EdgePtr *CopyEdges(GraphPtr graph) {
-    EdgePtr *edges = malloc(graph->vertexNum * sizeof(EdgePtr) + graph->edgeNum * sizeof(Edge));
-    EdgePtr edgePool = (EdgePtr)(edges + graph->vertexNum);
-    EdgePtr prevEdge, thisEdge;
-    int couter = 0;
+static void findSccForward(Package *package, VertexArg *vertex) {
+    // 拷贝，清空，以便之后加入反向边
+    EdgePtr edge = vertex->outEdge;
+    vertex->outEdge = NULL;
 
-    for(VertexId vertex = 0; vertex < graph->vertexNum; vertex++) {
-        prevEdge = graph->vertices[vertex].outEdges;
-        if(prevEdge == NULL) {
-            edges[vertex] = NULL;
-            continue;
-        }
+    vertex->visitedOnce = 1;
+    for (EdgePtr nextEdge; edge; edge = nextEdge) {
+        VertexArg *adjacentVertex = package->vertices + edge->target;
+        if (!adjacentVertex->visitedOnce)
+            findSccForward(package, adjacentVertex);
 
-        thisEdge = edges[vertex] = edgePool + couter++;
-        edges[vertex]->target = prevEdge->target;
-        edges[vertex]->data = prevEdge->data;
-
-        for (prevEdge = prevEdge->next; prevEdge != NULL; prevEdge = prevEdge->next) {
-            thisEdge->next = edgePool + couter++;
-            thisEdge = thisEdge->next;
-            thisEdge->target = prevEdge->target;
-            thisEdge->data = prevEdge->data;
-        }
-        thisEdge->next = NULL;
+        // 边转向，加入thisEdge->outEdges链表
+        nextEdge = edge->next;
+        edge->next = adjacentVertex->outEdge;
+        adjacentVertex->outEdge = edge;
+        edge->target = vertex - package->vertices;
     }
-    return edges;
+
+    stack_push(package->stack, vertex);
 }
 
-void findSccForward(Package *package, VertexId thisVertex){
-    package->hasVisited[thisVertex] = 1;
-    EdgePtr nextEdge, thisEdge = package->edges[thisVertex];
-    package->edges[thisVertex] = NULL;
+static void findSccBackward(Package *package, VertexArg *vertex) {
+    EdgePtr edge = vertex->outEdge;
+    vertex->outEdge = NULL;
 
-    for(; thisEdge; thisEdge = nextEdge){
-        if(!package->hasVisited[thisEdge->target])
-            findSccForward(package, thisEdge->target);
+    *vertex->number = package->counter;
+    vertex->visitedOnce = 0;
+    for (EdgePtr nextEdge; edge; edge = nextEdge) {
+        VertexArg *adjacentVertex = package->vertices + edge->target;
 
-        nextEdge = thisEdge->next;
-        thisEdge->next = package->edges[thisEdge->target];
-        package->edges[thisEdge->target] = thisEdge;
-        thisEdge->target = thisVertex;
-    }
+        if (adjacentVertex->visitedOnce)
+            findSccBackward(package, adjacentVertex);
 
-    package->number[++package->thisNumber] = thisVertex;
-    if(thisVertex == package->root){
-        while(++package->root < package->vertexNum)
-            if(!package->hasVisited[package->root]) {
-                findSccForward(package, package->root);
-                break;
-            }
+        // 转回来
+        nextEdge = edge->next;
+        edge->next = adjacentVertex->outEdge;
+        adjacentVertex->outEdge = edge;
+        edge->target = vertex - package->vertices;
     }
 }
 
-void findSccBackward(Package *package, VertexId thisVertex){
-    package->hasVisited[thisVertex] = 0;
-    for(EdgePtr edge = package->edges[thisVertex]; edge; edge = edge->next){
-        if(!package->hasVisited[edge->target])
-            continue;
-        package->parent[edge->target] = thisVertex;
-        findSccBackward(package, edge->target);
+void graphFindScc(const GraphPtr graph, int number[]) {
+    VertexArg *vertices = malloc(graph->vertexNum * sizeof(VertexArg));
+    const StackPtr stack = newStack(graph->vertexNum);
+    Package package = {vertices, stack, 0};
+
+    for (VertexId vertex = 0; vertex < graph->vertexNum; vertex++) {
+        vertices[vertex].visitedOnce = 0;
+        vertices[vertex].number = number + vertex;
+        number[vertex] = -1;
+        vertices[vertex].outEdge = graph->vertices[vertex].outEdges;
     }
 
-    if(thisVertex == package->root){
-        package->parent[thisVertex] = thisVertex;
-        while(--package->thisNumber >= 0)
-            if(package->hasVisited[package->number[package->thisNumber]]) {
-                findSccBackward(package, package->root = package->number[package->thisNumber]);
-                break;
-            }
+    // 正序
+    const VertexArg *end = vertices + graph->vertexNum;
+    for (VertexArg *vertex = vertices; vertex != end; vertex++) {
+        if (vertex->visitedOnce == 0)
+            findSccForward(&package, vertex);
     }
-}
 
-void graphFindScc(GraphPtr graph, VertexId *parent) {
-    EdgePtr *edges = CopyEdges(graph);
-    int *number = malloc(graph->vertexNum * sizeof(int));
-    char *hasVisited = calloc(graph->vertexNum, sizeof(char));
+    // 逆序
+    while (stack->top != 0) {
+        VertexArg *vertex = stack_pop(stack);
+        if (vertex->visitedOnce == 1)
+            findSccBackward(&package, vertex);
+        ++package.counter;
+    }
 
-    Package package = {edges, parent, hasVisited, number, -1, graph->vertexNum, 0};
-
-    findSccForward(&package, 0);
-    findSccBackward(&package, package.root = package.number[package.thisNumber]);
-
-    free(edges);
-    free(number);
-    free(hasVisited);
+    free(vertices);
 }

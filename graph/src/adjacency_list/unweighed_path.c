@@ -2,23 +2,21 @@
 #include "queue.h"
 
 void buildUnweightedPath(const GraphPtr graph, VertexId *parent, const VertexId source, const VertexId target) {
-    VertexId thisVertex, adjacentVertex;
-    EdgePtr edge;
+    VertexId vertex;
     const QueuePtr queue = newQueue(graph->vertexNum);
 
-    for(thisVertex = 0; thisVertex < graph->vertexNum; thisVertex++)
-        parent[thisVertex] = INFINITY;
+    for(vertex = 0; vertex < graph->vertexNum; vertex++)
+        parent[vertex] = -1;
 
     enqueue(queue, source);
-
     while (queue->front != queue->rear) {
-        thisVertex = dequeue(queue);
+        vertex = dequeue(queue);
 
-        for (edge = graph->vertices[thisVertex].outEdges; edge; edge = edge->next) {
-            adjacentVertex = edge->target;
+        for (EdgePtr edge = graph->vertices[vertex].outEdges; edge; edge = edge->next) {
+            const VertexId adjacentVertex = edge->target;
 
-            if (parent[adjacentVertex] == INFINITY) {
-                parent[adjacentVertex] = thisVertex;
+            if (parent[adjacentVertex] == -1) {
+                parent[adjacentVertex] = vertex;
                 if (adjacentVertex == target)
                     return;
 

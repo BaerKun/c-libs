@@ -1,6 +1,6 @@
 file(GLOB SOURCES "utils/*.c")
 
-add_library(utils SHARED ${SOURCES})
+add_library(utils STATIC ${SOURCES})
 
 file(GLOB SOURCES "adjacency_list/*.c")
 

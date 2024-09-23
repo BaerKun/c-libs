@@ -1,17 +1,10 @@
 #include "matrix/graph.h"
 #include <stdlib.h>
 
-static void initGraph(GraphPtr graph) {
-    for (VertexId source = 0; source < graph->vertexNum; source++) {
-        for (VertexId target = 0; target < graph->vertexNum; target++) {
-            graph->edges[source][target] = (source == target) ? INITIAL_SELF_POINTING_EDGE : NO_EDGE;
-        }
-    }
-}
 
-GraphPtr createGraph(int capacity, int vertexNum) {
-    GraphPtr graph = (GraphPtr) malloc(sizeof(Graph));
-    if(graph == NULL)
+GraphPtr createGraph(const int capacity, const int vertexNum) {
+    const GraphPtr graph = (GraphPtr) malloc(sizeof(Graph));
+    if (graph == NULL)
         return NULL;
 
     graph->capacity = capacity;
@@ -20,18 +13,25 @@ GraphPtr createGraph(int capacity, int vertexNum) {
     graph->vertices = (Vertex *) malloc(sizeof(Vertex) * capacity);
     graph->edges = (Edge (*)[MAX_VERTEX]) malloc(sizeof(Edge) * capacity * MAX_VERTEX);
 
-    initGraph(graph);
+    if (graph->edges == NULL) {
+        free(graph);
+        return NULL;
+    }
+
+    for (VertexId source = 0; source < graph->vertexNum; source++)
+        for (VertexId target = 0; target < graph->vertexNum; target++)
+            graph->edges[source][target] = INIT_EDGE;
 
     return graph;
 }
 
-void deleteGraph(GraphPtr graph) {
+void deleteGraph(const GraphPtr graph) {
     free(graph->vertices);
     free(graph->edges);
     free(graph);
 }
 
-void addEdge(GraphPtr graph, const VertexId source, const VertexId target, const WeightType weight) {
-    graph->edges[source][target] = (Edge) {weight, target};
+void addEdge(const GraphPtr graph, const VertexId source, const VertexId target, const WeightType weight) {
+    graph->edges[source][target] = (Edge){weight, target};
     graph->edgeNum++;
 }

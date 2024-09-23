@@ -5,17 +5,20 @@
 
 
 NetworkPtr CreateNetwork(int vertexNum) {
-    NetworkPtr pNetwork = malloc(sizeof(Network));
+    const NetworkPtr network = malloc(sizeof(Network));
 
-    for (pNetwork->capacity = INITIAL_VERTICES_NUMBER; pNetwork->capacity < vertexNum; pNetwork->capacity *= 2);
-    pNetwork->vertexNum = vertexNum;
-    pNetwork->edges = malloc(pNetwork->capacity * 8);
-    *pNetwork->edges = malloc(pNetwork->capacity * pNetwork->capacity * sizeof(Edge));
-    for (int i = 1; i < pNetwork->capacity; i++)
-        pNetwork->edges[i] = pNetwork->edges[i - 1] + pNetwork->capacity;
-    memset(*pNetwork->edges, 0, pNetwork->capacity * pNetwork->capacity * sizeof(Edge));
+    for (network->capacity = INITIAL_VERTICES_NUMBER; network->capacity < vertexNum; network->capacity *= 2);
 
-    return pNetwork;
+    network->vertexNum = vertexNum;
+    network->edges = malloc(network->capacity * 8);
+    *network->edges = malloc(network->capacity * network->capacity * sizeof(Edge));
+
+    for (int i = 1; i < network->capacity; i++)
+        network->edges[i] = network->edges[i - 1] + network->capacity;
+
+    memset(*network->edges, 0, network->capacity * network->capacity * sizeof(Edge));
+
+    return network;
 }
 
 void DeleteNetwork(NetworkPtr pNetwork) {
@@ -23,49 +26,51 @@ void DeleteNetwork(NetworkPtr pNetwork) {
     free(pNetwork);
 }
 
-void AddEdge(NetworkPtr pNetwork, Vertex source, Vertex target, FlowType capacity) {
-    pNetwork->edges[source][target].capacity = capacity;
+void AddEdge(NetworkPtr network, Vertex source, Vertex target, FlowType capacity) {
+    network->edges[source][target].capacity = capacity;
 }
 
-NetworkPtr CopyNetwork(NetworkPtr pNetwork) {
-    NetworkPtr pCopyNetwork = malloc(sizeof(Network));
-    memcpy(pCopyNetwork, pNetwork, sizeof(Network));
-    pCopyNetwork->edges = malloc(pNetwork->capacity * 8);
-    *pCopyNetwork->edges = malloc(pNetwork->capacity * pNetwork->capacity * sizeof(Edge));
-    for (int i = 1; i < pNetwork->capacity; i++)
-        pCopyNetwork->edges[i] = pCopyNetwork->edges[i - 1] + pNetwork->capacity;
-    memcpy(*pCopyNetwork->edges, *pNetwork->edges, pCopyNetwork->capacity * pCopyNetwork->capacity * sizeof(Edge));
+NetworkPtr CopyNetwork(NetworkPtr network) {
+    const NetworkPtr copyNetwork = malloc(sizeof(Network));
+    memcpy(copyNetwork, network, sizeof(Network));
 
-    return pCopyNetwork;
+    copyNetwork->edges = malloc(network->capacity * sizeof(EdgePtr));
+    *copyNetwork->edges = malloc(network->capacity * network->capacity * sizeof(Edge));
+
+    for (int i = 1; i < network->capacity; i++)
+        copyNetwork->edges[i] = copyNetwork->edges[i - 1] + network->capacity;
+    memcpy(*copyNetwork->edges, *network->edges, copyNetwork->capacity * copyNetwork->capacity * sizeof(Edge));
+
+    return copyNetwork;
 }
 
 static int
-BFS(NetworkPtr pNetwork, QueuePtr queue, Vertex source, Vertex target, Vertex path[], FlowType *singlrPathFlow) {
-    int vertexNum;
-    Vertex thisVertex, outgoingVertex;
-    Edge **edges;
+BFS(NetworkPtr network, QueuePtr queue, Vertex source, Vertex target, Vertex path[], FlowType *singlrPathFlow) {
+    const EdgePtr *edges = network->edges;
+    const int vertexNum = network->vertexNum;
 
-    edges = pNetwork->edges;
-    vertexNum = pNetwork->vertexNum;
-    enqueue(queue, source);
-
-    for (thisVertex = 0; thisVertex < vertexNum; thisVertex++)
+    for (Vertex thisVertex = 0; thisVertex < vertexNum; thisVertex++)
         path[thisVertex] = INFINITY;
-    path[source] = source;
 
+    path[source] = source;
+    enqueue(queue, source);
     while (queue->front != queue->rear) {
-        thisVertex = dequeue(queue);
-        for (outgoingVertex = 0; outgoingVertex < vertexNum; outgoingVertex++) {
+        const Vertex thisVertex = dequeue(queue);
+
+        for (Vertex outgoingVertex = 0; outgoingVertex < vertexNum; outgoingVertex++) {
             if (edges[thisVertex][outgoingVertex].capacity && path[outgoingVertex] == INFINITY) {
                 path[outgoingVertex] = thisVertex;
+
                 if (edges[thisVertex][outgoingVertex].capacity < edges[path[thisVertex]][thisVertex].flow)
                     edges[thisVertex][outgoingVertex].flow = edges[thisVertex][outgoingVertex].capacity;
                 else
                     edges[thisVertex][outgoingVertex].flow = edges[path[thisVertex]][thisVertex].flow;
+
                 if (outgoingVertex == target) {
                     *singlrPathFlow = edges[thisVertex][outgoingVertex].flow;
                     return 1;
                 }
+
                 enqueue(queue, outgoingVertex);
             }
         }
@@ -73,31 +78,33 @@ BFS(NetworkPtr pNetwork, QueuePtr queue, Vertex source, Vertex target, Vertex pa
     return 0;
 }
 
-FlowType EdmondKarpMaxFlow(NetworkPtr pNetwork, Vertex source, Vertex sink) {
+FlowType EdmondKarpMaxFlow(NetworkPtr network, Vertex source, Vertex sink) {
     FlowType singlrPathFlow;
-    Vertex thisVertex, incomingVertex, path[pNetwork->vertexNum], vertices[pNetwork->vertexNum];
+    Vertex path[network->vertexNum], vertices[network->vertexNum];
     Queue queue;
-    NetworkPtr pResidualNetwork;
 
-    pResidualNetwork = CopyNetwork(pNetwork);
+
+    const NetworkPtr residualNetwork = CopyNetwork(network);
     queue.front = queue.rear = 0;
     queue.elements = vertices;
-    pResidualNetwork->edges[source][source].flow = INFINITY;
+    residualNetwork->edges[source][source].flow = INFINITY;
 
-    while (BFS(pResidualNetwork, &queue, source, sink, path, &singlrPathFlow)) {
-        pNetwork->edges[sink][sink].flow += singlrPathFlow;
-        for (thisVertex = sink; thisVertex != source; thisVertex = path[thisVertex]) {
-            incomingVertex = path[thisVertex];
-            if (pNetwork->edges[incomingVertex][thisVertex].capacity)
-                pNetwork->edges[incomingVertex][thisVertex].flow += singlrPathFlow;
+    while (BFS(residualNetwork, &queue, source, sink, path, &singlrPathFlow)) {
+        network->edges[sink][sink].flow += singlrPathFlow;
+        for (Vertex thisVertex = sink; thisVertex != source; thisVertex = path[thisVertex]) {
+            const Vertex incomingVertex = path[thisVertex];
+
+            if (network->edges[incomingVertex][thisVertex].capacity)
+                network->edges[incomingVertex][thisVertex].flow += singlrPathFlow;
             else
-                pNetwork->edges[incomingVertex][thisVertex].flow -= singlrPathFlow;
-            pResidualNetwork->edges[incomingVertex][thisVertex].flow = 0;
-            pResidualNetwork->edges[incomingVertex][thisVertex].capacity -= singlrPathFlow;
-            pResidualNetwork->edges[thisVertex][incomingVertex].capacity += singlrPathFlow;
+                network->edges[incomingVertex][thisVertex].flow -= singlrPathFlow;
+
+            residualNetwork->edges[incomingVertex][thisVertex].flow = 0;
+            residualNetwork->edges[incomingVertex][thisVertex].capacity -= singlrPathFlow;
+            residualNetwork->edges[thisVertex][incomingVertex].capacity += singlrPathFlow;
         }
     }
 
-    DeleteNetwork(pResidualNetwork);
-    return pNetwork->edges[sink][sink].flow;
+    DeleteNetwork(residualNetwork);
+    return network->edges[sink][sink].flow;
 }

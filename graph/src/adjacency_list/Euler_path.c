@@ -7,6 +7,7 @@ typedef struct {
     VertexId source;
     VertexId previous;
 } Argument;
+
 #define STACK_ELEMENT_TYPE Argument
 #include "stack.h"
 
@@ -16,9 +17,9 @@ typedef struct {
 } Package;
 
 // availableEdges[v] 顶点v的可用边链表，充当递归时的“全局变量”
-static EdgePtr *getAvailableEdges(GraphPtr graph) {
+static EdgePtr *getAvailableEdges(const GraphPtr graph) {
     EdgePtr *availableEdges = malloc(graph->vertexNum * sizeof(EdgePtr));
-    VertexPtr end = graph->vertices + graph->vertexNum;
+    const VertexPtr end = graph->vertices + graph->vertexNum;
     EdgePtr *pedge = availableEdges;
 
     for (VertexPtr vertex = graph->vertices; vertex != end; ++vertex) {
@@ -30,7 +31,7 @@ static EdgePtr *getAvailableEdges(GraphPtr graph) {
 }
 
 // 获取下一条可用边，并用previous更新availableEdge
-static EdgePtr getEdge(EdgePtr *availableEdge, VertexId previous) {
+static EdgePtr getEdge(EdgePtr *availableEdge, const VertexId previous) {
     EdgePtr nextEdge = *availableEdge;
     if (nextEdge == NULL)
         return NULL;
@@ -44,7 +45,7 @@ static EdgePtr getEdge(EdgePtr *availableEdge, VertexId previous) {
     }
 
     EdgePtr this, next;
-    for (this = nextEdge; (next = this->next) && next->target != previous; this = next);
+    for (this = nextEdge; (next = this->next) != NULL && next->target != previous; this = next);
 
     if (next) {
         if (this == nextEdge)
@@ -59,9 +60,9 @@ static EdgePtr getEdge(EdgePtr *availableEdge, VertexId previous) {
     return nextEdge;
 }
 
-static VertexId getTarget(StackPtr stack) {
-    Argument argument = stack_peek(stack);
-    EdgePtr nextEdge = getEdge(argument.availableEdge, argument.previous);
+static VertexId getTarget(const StackPtr stack) {
+    const Argument argument = stack_peek(stack);
+    const EdgePtr nextEdge = getEdge(argument.availableEdge, argument.previous);
     if(nextEdge == NULL){
         stack_pop(stack);
         return -1;
@@ -69,10 +70,9 @@ static VertexId getTarget(StackPtr stack) {
     return nextEdge->target;
 }
 
-static int EulerCircuitHelper(Package *package, ListPtr path, VertexId source, VertexId previous) {
-    EdgePtr edge;
+static int EulerCircuitHelper(Package *package, const ListPtr path, const VertexId source, const VertexId previous) {
     while (1) {
-        edge = getEdge(package->availableEdges + source, previous);
+        const EdgePtr edge = getEdge(package->availableEdges + source, previous);
         if (edge == NULL)
             break;
 
@@ -89,26 +89,25 @@ static int EulerCircuitHelper(Package *package, ListPtr path, VertexId source, V
     return 0;
 }
 
-static void EulerPath_stack(GraphPtr graph, ListPtr path, VertexId src, VertexId dst) {
-    StackPtr stack = newStack(graph->edgeNum);
+static void EulerPath_stack(const GraphPtr graph, ListPtr path, VertexId src, VertexId dst) {
+    const StackPtr stack = newStack(graph->edgeNum);
     EdgePtr *availableEdges = getAvailableEdges(graph);
-    VertexId previous, target, tmpdst = dst;
-    Argument arg;
+    VertexId previous = -1;
 
     path->element = src;
     path->next = NULL;
     stack_push(stack, (Argument){availableEdges + src, path, src, -1});
     do {
-        target = getTarget(stack);
+        const VertexId target = getTarget(stack);
         if (target == -1) {
-            if (src != tmpdst) {
+            if (src != dst) {
                 puts("EulerCircuit: No Circuit\n");
                 break;
             }
-            tmpdst = previous;
+            dst = previous;
 
             // 模拟函数返回
-            arg = stack_peek(stack);
+            const Argument arg = stack_peek(stack);
             path = arg.path;
             src = arg.source;
             previous = arg.previous;
@@ -127,7 +126,7 @@ static void EulerPath_stack(GraphPtr graph, ListPtr path, VertexId src, VertexId
     stack_destroy(stack);
 }
 
-static void EulerPath_recursive(GraphPtr graph, ListPtr path, VertexId src, VertexId dst) {
+static void EulerPath_recursive(const GraphPtr graph, const ListPtr path, const VertexId src, const VertexId dst) {
     EdgePtr *availableEdges = getAvailableEdges(graph);
 
     path->element = src;
@@ -140,10 +139,10 @@ static void EulerPath_recursive(GraphPtr graph, ListPtr path, VertexId src, Vert
     free(availableEdges);
 }
 
-inline void EulerPath(GraphPtr graph, ListPtr path, VertexId src, VertexId dst) {
+void EulerPath(const GraphPtr graph, const ListPtr path, const VertexId src, const VertexId dst) {
     EulerPath_recursive(graph, path, src, dst);
 }
 
-inline void EulerCircuit(GraphPtr graph, ListPtr path, VertexId source) {
+void EulerCircuit(const GraphPtr graph, const ListPtr path, const VertexId source) {
     EulerPath(graph, path, source, source);
 }

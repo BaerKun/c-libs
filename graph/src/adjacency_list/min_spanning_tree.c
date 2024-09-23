@@ -6,27 +6,26 @@
 #include "heap.h"
 
 
-static void printTreeHelper(VertexPtr vertices, VertexId *parent, VertexId root, int deepth){
-    for(int i = 0; i < deepth; i++)
+static void printTreeHelper(const VertexPtr vertices, VertexId parent[], const VertexId root, const int deepth) {
+    for (int i = 0; i < deepth; i++)
         printf("\t");
     printf("|-%d\n", root);
 
-    for(EdgePtr edge = vertices[root].outEdges; edge; edge = edge->next)
-        if(parent[edge->target] == root)
+    for (EdgePtr edge = vertices[root].outEdges; edge; edge = edge->next)
+        if (parent[edge->target] == root)
             printTreeHelper(vertices, parent, edge->target, deepth + 1);
 }
 
-void PrimMinSpanningTree(GraphPtr graph, VertexId root, VertexId *parent) {
-    VertexId vertex, adjacentVertex;
-    EdgePtr thisEdge;
+void PrimMinSpanningTree(const GraphPtr graph, VertexId parent[], const VertexId root) {
+    VertexId vertex;
     char *hasKnown = malloc(graph->vertexNum);
     int *minWeight = malloc(graph->vertexNum * sizeof(int));
-    HeapPtr heap = newHeap(graph->vertexNum);
-
+    const HeapPtr heap = newHeap(graph->vertexNum);
     parent[root] = root;
-    for(vertex = 0; vertex < graph->vertexNum; vertex++){
+
+    for (vertex = 0; vertex < graph->vertexNum; vertex++) {
         hasKnown[vertex] = 0;
-        minWeight[vertex] = INFINITY;
+        minWeight[vertex] = INT_MAX;
     }
 
     heap_insert(heap, minWeight + root);
@@ -35,25 +34,27 @@ void PrimMinSpanningTree(GraphPtr graph, VertexId root, VertexId *parent) {
         vertex = (VertexId) (heap_deleteMin(heap) - minWeight);
         hasKnown[vertex] = 1;
 
-        for (thisEdge = graph->vertices[vertex].outEdges; thisEdge; thisEdge = thisEdge->next) {
-            adjacentVertex = thisEdge->target;
+        for (EdgePtr thisEdge = graph->vertices[vertex].outEdges; thisEdge; thisEdge = thisEdge->next) {
+            const VertexId adjacentVertex = thisEdge->target;
 
-            if (!hasKnown[adjacentVertex] && minWeight[adjacentVertex] > thisEdge->data.weight){
+            if (!hasKnown[adjacentVertex] && minWeight[adjacentVertex] > thisEdge->data.weight) {
                 minWeight[adjacentVertex] = thisEdge->data.weight;
                 parent[adjacentVertex] = vertex;
                 heap_insert(heap, minWeight + adjacentVertex);
             }
         }
     }
+
     free(hasKnown);
     free(minWeight);
     heap_destroy(heap);
 }
 
-void printTree(GraphPtr graph, VertexId *parent, VertexId root) {
+void printTree(const GraphPtr graph, VertexId parent[], const VertexId root) {
     if (root < 0 || root >= graph->vertexNum || parent[root] != root) {
         fputs("printTree: Invalid root vertex!\n", stderr);
         return;
     }
+
     printTreeHelper(graph->vertices, parent, root, 0);
 }

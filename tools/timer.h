@@ -19,9 +19,10 @@ static inline void timerStop(Timer *timer) {
     timer->stop = clock();
 }
 
-static inline clock_t timerGetms(Timer *timer) {
+static inline clock_t timerGetms(const Timer *timer) {
     return (timer->stop - timer->start) / (CLOCKS_PER_SEC / 1000);
 }
+
 
 #define TEST_TIME(code) \
     __static_timer__.start = clock(); \

@@ -1,60 +1,67 @@
 #include "adjacency_list/find_articulation.h"
 #include <stdlib.h>
 
+typedef struct VertexArg {
+    char visited;
+    int preorder; // dfs中第一次访问节点的序数
+    int lowest; // 子树所那到达的最低节点的序数
+    struct VertexArg *parent;
+    EdgePtr outEdges;
+} VertexArg;
+
 typedef struct {
-    char *hasVisited;
-    Vertex *vertices;
-    VertexId *parent;
-    int *preorder; // dfs中第一次访问节点的序数
-    int *lowest; // 子树所那到达的最低节点的序数
+    VertexArg *vertices;
     int counter;
     VertexId *outptr;
 } Package;
 
-static void findArticulationHelper(Package *package, VertexId vertex) {
-    VertexId adjacentVertex;
+static void findArticulationHelper(Package *package, VertexArg *vertex) {
+    vertex->visited = 1;
+    vertex->lowest = vertex->preorder = package->counter++;
+    for (EdgePtr edge = vertex->outEdges; edge; edge = edge->next) {
+        VertexArg *adjacentVertex = package->vertices + edge->target;
 
-    package->hasVisited[vertex] = 1;
-    package->lowest[vertex] = package->preorder[vertex] = package->counter++;
-    for (EdgePtr edge = package->vertices[vertex].outEdges; edge; edge = edge->next) {
-        adjacentVertex = edge->target;
-
-        if (!package->hasVisited[adjacentVertex]) {
-            package->parent[adjacentVertex] = vertex;
+        if (!adjacentVertex->visited) {
+            adjacentVertex->parent = vertex;
             findArticulationHelper(package, adjacentVertex);
 
-            if (package->lowest[adjacentVertex] >= package->preorder[vertex]) {
-                *package->outptr = vertex;
+            if (adjacentVertex->lowest >= vertex->preorder) {
+                *package->outptr = vertex - package->vertices;
                 package->outptr++;
             }
 
-            if (package->lowest[adjacentVertex] < package->lowest[vertex])
-                package->lowest[vertex] = package->lowest[adjacentVertex];
+            if (adjacentVertex->lowest < vertex->lowest)
+                vertex->lowest = adjacentVertex->lowest;
 
-        } else if (package->parent[vertex] != adjacentVertex &&
-                   package->preorder[adjacentVertex] < package->lowest[vertex]) {
-            package->lowest[vertex] = package->preorder[adjacentVertex];
+        } else if (vertex->parent != adjacentVertex &&
+                   adjacentVertex->preorder < vertex->lowest) {
+            vertex->lowest = adjacentVertex->preorder;
         }
     }
 }
 
-void graphFindArticulation(GraphPtr graph, VertexId outputArray[]) {
-    int *memory = malloc(graph->vertexNum * 3 * sizeof(int));
-    char *hasVisited = calloc(graph->vertexNum, sizeof(char));
+void graphFindArticulation(const GraphPtr graph, VertexId outputArray[]) {
+    VertexArg *vertices = malloc(sizeof(VertexArg) * graph->vertexNum);
+    if (vertices == NULL)
+        return;
 
-    Package package = {hasVisited, graph->vertices, memory, memory + graph->vertexNum,
-                       memory + 2 * graph->vertexNum, 0, outputArray};
-    findArticulationHelper(&package, 0);
+    for (int i = 0; i < graph->vertexNum; i++) {
+        vertices[i].parent = NULL;
+        vertices[i].visited = 0;
+        vertices[i].outEdges = graph->vertices[i].outEdges;
+    }
+
+    Package package = {vertices, 0, outputArray};
+    findArticulationHelper(&package, vertices);
 
     int counter = 0;
-    for (EdgePtr edge = graph->vertices[0].outEdges; edge; edge = edge->next) {
-        if (!memory[edge->target] && counter++) // memory == parent
+    for (EdgePtr edge = vertices->outEdges; edge; edge = edge->next) {
+        if (vertices[edge->target].parent != NULL && counter++) // memory == parent
             break;
     }
 
     if (counter == 1)
         *(package.outptr - 1) = -1;
 
-    free(memory);
-    free(hasVisited);
+    free(vertices);
 }

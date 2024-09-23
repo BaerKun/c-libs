@@ -1,28 +1,27 @@
 #include "adjacency_list/topsort.h"
-#include "utils/init_indegree.h"
+#include "share/init_indegree.h"
 #include "queue.h"
 #include <stdio.h>
 
-void buildTopPath(GraphPtr graph, VertexId *parent) {
-    VertexId thisVertex, adjacentVertex;
-    EdgePtr thisEdge;
+void buildTopPath(const GraphPtr graph, VertexId parent[]) {
+    VertexId vertex;
     int counter = 0;
-    int *inDegree = malloc(graph->vertexNum * sizeof(int));
+    int *indegree = malloc(graph->vertexNum * sizeof(int));
     const QueuePtr queue = newQueue(graph->vertexNum);
 
-    InitIndegree(graph, inDegree, queue);
-    for (thisVertex = 0; thisVertex < graph->vertexNum; thisVertex++)
-        parent[thisVertex] = INFINITY;
+    InitIndegree(graph, indegree, queue);
+    for (vertex = 0; vertex < graph->vertexNum; vertex++)
+        parent[vertex] = -1;
 
     while (queue->front != queue->rear) {
         counter++;
-        thisVertex = dequeue(queue);
+        vertex = dequeue(queue);
 
-        for (thisEdge = graph->vertices[thisVertex].outEdges; thisEdge; thisEdge = thisEdge->next) {
-            adjacentVertex = thisEdge->target;
-            if (parent[adjacentVertex] == INFINITY)
-                parent[adjacentVertex] = thisVertex;
-            if (!--inDegree[adjacentVertex])
+        for (EdgePtr thisEdge = graph->vertices[vertex].outEdges; thisEdge; thisEdge = thisEdge->next) {
+            const VertexId adjacentVertex = thisEdge->target;
+            if (parent[adjacentVertex] == -1)
+                parent[adjacentVertex] = vertex;
+            if (!--indegree[adjacentVertex])
                 enqueue(queue, adjacentVertex);
         }
     }
@@ -30,25 +29,23 @@ void buildTopPath(GraphPtr graph, VertexId *parent) {
     if (counter != graph->vertexNum)
         fputs("buildTopPath: Has Cycle\n", stderr);
 
-    free(inDegree);
+    free(indegree);
     queue_destroy(queue);
 }
 
-void topSort(GraphPtr graph, VertexId *sortArray) {
-    VertexId vertex;
-    EdgePtr edge;
+void topSort(const GraphPtr graph, VertexId sortArray[]) {
     int counter = 0;
-    int *inDegree = malloc(graph->vertexNum * sizeof(int));
+    int *indegree = malloc(graph->vertexNum * sizeof(int));
     const QueuePtr queue = newQueue(graph->vertexNum);
 
-    InitIndegree(graph, inDegree, queue);
+    InitIndegree(graph, indegree, queue);
 
     while (queue->front != queue->rear) {
-        vertex = dequeue(queue);
+        const VertexId vertex = dequeue(queue);
         sortArray[counter++] = vertex;
 
-        for (edge = graph->vertices[vertex].outEdges; edge; edge = edge->next) {
-            if (!--inDegree[edge->target])
+        for (EdgePtr edge = graph->vertices[vertex].outEdges; edge; edge = edge->next) {
+            if (!--indegree[edge->target])
                 enqueue(queue, edge->target);
         }
     }
@@ -56,6 +53,6 @@ void topSort(GraphPtr graph, VertexId *sortArray) {
     if (counter != graph->vertexNum)
         fputs("topSort: Has Cycle\n", stderr);
 
-    free(inDegree);
+    free(indegree);
     queue_destroy(queue);
 }

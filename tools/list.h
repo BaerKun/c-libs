@@ -9,7 +9,7 @@
 
 // 包含头节点
 typedef struct Node Node, *NodePtr;
-typedef struct Node List, *ListPtr;
+typedef Node List, *ListPtr;
 
 struct Node{
     NodePtr next;
@@ -17,13 +17,13 @@ struct Node{
 };
 
 static inline ListPtr newList() {
-    ListPtr list = malloc(sizeof(struct Node));
+    const ListPtr list = malloc(sizeof(struct Node));
     list->next = NULL;
     return list;
 }
 
 static inline NodePtr newNode(LIST_ELEMENT_TYPE element) {
-    NodePtr node = malloc(sizeof(struct Node));
+    const NodePtr node = malloc(sizeof(struct Node));
     node->element = element;
 
     return node;
@@ -53,9 +53,9 @@ static NodePtr list_findPrev(ListPtr list, LIST_ELEMENT_TYPE element) {
 }
 
 static inline NodePtr list_deleteNode(ListPtr list, LIST_ELEMENT_TYPE element) {
-    NodePtr prev = list_findPrev(list, element);
+    const NodePtr prev = list_findPrev(list, element);
     if (prev) {
-        NodePtr next = prev->next;
+        const NodePtr next = prev->next;
         prev->next = next->next;
         return next;
     }
@@ -68,13 +68,13 @@ static inline void list_insertNode(ListPtr list, NodePtr node) {
 }
 
 static inline void list_insertData(ListPtr list, LIST_ELEMENT_TYPE element) {
-    NodePtr newNode = malloc(sizeof(struct Node));
+    const NodePtr newNode = malloc(sizeof(struct Node));
     newNode->element = element;
     list_insertNode(list, newNode);
 }
 
 static inline void list_deleteAndFree(ListPtr list, LIST_ELEMENT_TYPE element) {
-    NodePtr node = list_deleteNode(list, element);
+    const NodePtr node = list_deleteNode(list, element);
     free(node);
 }
 

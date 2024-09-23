@@ -1,27 +1,17 @@
-#include "utils/init_indegree.h"
+#include "share/init_indegree.h"
 #include <string.h>
 
-void InitIndegree(GraphPtr graph, int *indegree, QueuePtr queue) {
-    VertexId vertex;
+void InitIndegree(const GraphPtr graph, int *indegree, const QueuePtr queue) {
+    VertexPtr vertex = graph->vertices;
+    const VertexPtr end = vertex + graph->vertexNum;
+    int *dst = indegree;
 
-    if(graph->indegree){
-        for(vertex = 0; vertex < graph->vertexNum; vertex++) {
-            if(!(indegree[vertex] = graph->indegree[vertex]) && queue)
-                enqueue(queue, vertex);
-        }
-        return;
-    }
+    while (vertex != end) {
+        *dst = vertex->indegree;
+        if (*dst == 0)
+            enqueue(queue, vertex - graph->vertices);
 
-    memset(indegree, 0, graph->vertexNum * sizeof(int));
-    for(vertex = 0; vertex < graph->vertexNum; vertex++) {
-        for (EdgePtr pEdge = graph->vertices[vertex].outEdges; pEdge; pEdge = pEdge->next)
-            indegree[pEdge->target]++;
-    }
-
-    if(queue){
-        for(vertex = 0; vertex < graph->vertexNum; vertex++) {
-            if(!indegree[vertex])
-                enqueue(queue, vertex);
-        }
+        ++dst;
+        ++vertex;
     }
 }

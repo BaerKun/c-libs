@@ -8,28 +8,24 @@
 #ifndef GRAPH_GRAPH_H
 #define GRAPH_GRAPH_H
 
-#ifndef INFINITY
-#define INFINITY 0x7fffffff
-#endif
-
-#ifndef INITIAL_VERTICES_NUMBER
-#define INITIAL_VERTICES_NUMBER 32
-#endif
+#include "share/vertex_edge.h"
 
 typedef int VertexId;
 typedef int EdgeId;
 typedef int WeightType;
+
 typedef struct {
     VertexId vertex1;
     VertexId vertex2;
-    WeightType weight;
-}Edge, *EdgePtr;
+    EdgeData data;
+} Edge, *EdgePtr;
+
 typedef struct Graph {
     int edgeCapacity;
     int edgeNum;
     int vertexNum;
     EdgePtr edges;
-}Graph, *GraphPtr;
+} Graph, *GraphPtr;
 
 GraphPtr newGraph(int edgeCapacity, int vertexNum);
 

@@ -29,8 +29,8 @@ void DeleteNetwork(NetworkPtr pNetwork);
 
 void AddEdge(NetworkPtr pNetwork, Vertex source, Vertex target, FlowType capacity);
 
-NetworkPtr CopyNetwork(NetworkPtr pNetwork);
+NetworkPtr CopyNetwork(NetworkPtr network);
 
-FlowType EdmondKarpMaxFlow(NetworkPtr pNetwork, Vertex source, Vertex sink);
+FlowType EdmondKarpMaxFlow(NetworkPtr network, Vertex source, Vertex sink);
 
 #endif //NETWORKFLOW_H
