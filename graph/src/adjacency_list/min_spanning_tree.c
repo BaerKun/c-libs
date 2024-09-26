@@ -25,7 +25,7 @@ void PrimMinSpanningTree(const GraphPtr graph, VertexId parent[], const VertexId
 
     for (vertex = 0; vertex < graph->vertexNum; vertex++) {
         hasKnown[vertex] = 0;
-        minWeight[vertex] = INT_MAX;
+        minWeight[vertex] = WIGHT_MAX;
     }
 
     heap_insert(heap, minWeight + root);

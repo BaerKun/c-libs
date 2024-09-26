@@ -29,7 +29,7 @@ typedef struct Graph {
 
 GraphPtr newGraph(int edgeCapacity, int vertexNum);
 
-void graphAddEdge(GraphPtr graph, VertexId vertex1, VertexId vertex2, int weight);
+void graphAddEdge(GraphPtr graph, VertexId vertex1, VertexId vertex2, EdgeData data);
 
 void graphDestroy(GraphPtr graph);
 

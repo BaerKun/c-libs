@@ -24,7 +24,7 @@ static float ptsMinDistHelper_force(Point2f *ptsleft, Point2f *ptsright, Point2f
 }
 
 static float ptsMinDistHelper(Point2f pts[], Point2f outpts[], int left, int right) {
-    if (right - left < 10)
+    if (right - left < 8)
         return ptsMinDistHelper_force(pts + left, pts + right, outpts + left, outpts + right, FLT_MAX);
 
     int center = (left + right) / 2;

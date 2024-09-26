@@ -13,7 +13,7 @@ void DijkstraWeightedPath(const GraphPtr graph, VertexId *parent, const VertexId
 
     for (VertexId vertex = 0; vertex < graph->vertexNum; vertex++) {
         hasKnown[vertex] = 0;
-        distance[vertex] = INT_MAX;
+        distance[vertex] = WIGHT_MAX;
     }
 
     distance[source] = 0;
@@ -50,7 +50,7 @@ void weightedPath(const GraphPtr graph, VertexId *parent, const VertexId source)
 
     for (VertexId vertex = 0; vertex < graph->vertexNum; vertex++) {
         isInQueue[vertex] = 0;
-        distance[vertex] = INT_MAX;
+        distance[vertex] = WIGHT_MAX;
     }
 
     enqueue(queue, source);

@@ -12,7 +12,7 @@ void print(BinaryTreeNodePtr node) {
 
 int main() {
     int data[26];
-    float weight[26];
+    int weight[26];
     for (int i = 0; i < 26; ++i) {
         weight[i] = (i * i % 100);
         data[i] = i;

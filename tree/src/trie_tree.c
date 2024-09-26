@@ -8,30 +8,29 @@ typedef struct HeapElement {
 
 #define HEAP_ELEMENT_TYPE HeapElement
 #define HEAP_LESS_THAN(a, b) (a.value < b.value)
-#include "../../tools/heap.h"
+#include "heap.h"
 
 TrieTreePtr HuffmanCode(DataType *data, const int *cost, int number) {
-    HeapElement minCost, array[number];
-    int left, right;
     TrieTreePtr tree = newBinaryTree_fixedCapacity(number * 2 - 1);
+    HeapPtr heap = newHeap(number);
     TrieTreeNodePtr rootNode = NULL;
+    
+    for (int i = 1; i <= number; i++)
+        heap->prev[i] = (HeapElement) {i, cost[i]};
 
-    for (int i = 0; i < number; i++)
-        array[i] = (HeapElement) {i, cost[i]};
-
-    HeapPtr heap = buildHeap(array - 1, number);
+    buildHeap(heap, number);
 
     while (heap->size > 1) {
-        minCost = heap_deleteMin(heap);
+        const HeapElement minCost = heap_deleteMin(heap);
         rootNode = BT_newNode_fc(tree, NO_DATA);
 
-        left = minCost.key;
+        const int left = minCost.key;
         if (left < 0) {
             rootNode->left = tree->memoryPool - left;
         } else
             BT_insertData(tree, rootNode, data[left], 0);
 
-        right = heap->prev[1].key;
+        const int right = heap->prev[1].key;
         if (right < 0) {
             rootNode->right = tree->memoryPool - right;
         } else
