@@ -1,7 +1,7 @@
 #ifndef ALL4ALGORITHM_CONVEX_HULL_H
 #define ALL4ALGORITHM_CONVEX_HULL_H
 
-#include "2d_proc.h"
+#include "geometry.h"
 
 void convexHull(Point2f pts[], Point2f hullpts[], int npts, int *nhullpts);
 

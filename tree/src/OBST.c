@@ -2,11 +2,13 @@
 #include "queue.h"
 #include <stdlib.h>
 
+#define MAX_COUNT_INPUT_SIZE 64
+
 BSTPtr optimalBST(const DataType data[], const WeightType weight[], int number) {
     int left, root, right, treeWidth;
     WeightType minTreeWeight;
-    WeightType (*treeWeight)[number] = malloc(number * number * sizeof(WeightType));
-    int (*treeRoot)[number] = malloc(number * number * sizeof(BinaryTreeNodePtr));
+    WeightType (*treeWeight)[MAX_COUNT_INPUT_SIZE] = malloc(number * MAX_COUNT_INPUT_SIZE * sizeof(WeightType));
+    int (*treeRoot)[MAX_COUNT_INPUT_SIZE] = malloc(number * MAX_COUNT_INPUT_SIZE * sizeof(BinaryTreeNodePtr));
 
     for (root = 0; root < number; root++) {
         treeWeight[root][root] = weight[root];

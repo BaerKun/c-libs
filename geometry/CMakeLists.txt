@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.28)
-project(2d_process C)
+project(geometry C)
 
-if(WIN32)
+if (WIN32)
     set(OpenCV_DIR "C:\\_myLibs\\opencv-4.10\\build")
-endif()
+endif ()
 
 find_package(OpenCV)
 
@@ -13,10 +13,12 @@ add_library(graphical_debug STATIC src/graphical_debug.cpp)
 target_link_directories(graphical_debug PUBLIC ${OpenCV_DIRS})
 target_link_libraries(graphical_debug PRIVATE ${OpenCV_LIBS})
 
-add_library(other STATIC src/convex_hull.c)
+file(GLOB SOURCES "src/*.c")
 
-add_executable(discrete_alg main.c src/tools.c tests/tests.c)
+add_library(geometry_libs STATIC ${SOURCES})
+
+add_executable(geometry_exe main.c src/tools.c tests/tests.c)
 # math.h
-target_link_libraries(discrete_alg PRIVATE m)
-target_link_libraries(discrete_alg PRIVATE graphical_debug)
-target_link_libraries(discrete_alg PRIVATE other)
+target_link_libraries(geometry_exe PRIVATE m)
+target_link_libraries(geometry_exe PRIVATE graphical_debug)
+target_link_libraries(geometry_exe PRIVATE other)

@@ -1,7 +1,7 @@
 #ifndef ALL4ALGORITHM_GRAPHICAL_DEBUG_H
 #define ALL4ALGORITHM_GRAPHICAL_DEBUG_H
 
-#include "2d_proc.h"
+#include "geometry.h"
 
 typedef int Window;
 

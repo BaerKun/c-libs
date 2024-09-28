@@ -1,7 +1,7 @@
 #ifndef ALL4ALGORITHM_TOOLS_H
 #define ALL4ALGORITHM_TOOLS_H
 
-#include "2d_proc.h"
+#include "geometry.h"
 #include <math.h>
 
 static inline float minf(float a, float b){

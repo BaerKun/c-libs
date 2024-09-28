@@ -1,5 +1,6 @@
 #include "adjacency_list/weight_path.h"
 #include "queue.h"
+
 #define HEAP_ELEMENT_TYPE int *
 #define HEAP_LESS_THAN(a, b) (*a < *b)
 #include "heap.h"
