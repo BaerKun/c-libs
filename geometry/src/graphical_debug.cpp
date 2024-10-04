@@ -15,8 +15,8 @@ static inline cv::Point to2dPoint(Point2f point, int halfWidth, int halfHeight) 
     return {halfWidth + (int) point.x, halfHeight - (int) point.y};
 }
 
-static inline cv::Scalar toRGB(int rgb) {
-    return cv::Scalar(rgb & 0xff, (rgb >> 8) & 0xff, rgb >> 16);
+static inline cv::Scalar toScalar(int rgb) {
+    return {(double)(rgb & 0xff), (double)((rgb >> 8) & 0xff), (double)(rgb >> 16)};
 }
 
 extern "C" {
@@ -56,14 +56,14 @@ void drawLine(int window, const Point2f p1, const Point2f p2, int rgb, int thick
             halfWidth = img.cols / 2;
 
     cv::line(img, to2dPoint(p1, halfWidth, halfHeight), to2dPoint(p2, halfWidth, halfHeight),
-             toRGB(rgb), thickness);
+             toScalar(rgb), thickness);
 }
 
 void drawPoly(int window, const Point2f *points, int nponts, int rgb, int thickness, int connect) {
     cv::Mat img = windows[window].image;
     int halfHeight = img.rows / 2,
             halfWidth = img.cols / 2;
-    cv::Scalar color = toRGB(rgb);
+    cv::Scalar color = toScalar(rgb);
 
     if (thickness < 0) {
         auto *pts = new cv::Point[nponts];
@@ -93,7 +93,7 @@ void drawCircle(int window, const Point2f *points, int nponts, int rgb, int radi
     cv::Mat img = windows[window].image;
     int halfHeight = img.rows / 2,
             halfWidth = img.cols / 2;
-    cv::Scalar color = toRGB(rgb);
+    cv::Scalar color = toScalar(rgb);
 
     for (int i = 0; i < nponts; ++i)
         cv::circle(img, to2dPoint(points[i], halfWidth, halfHeight), radius,
