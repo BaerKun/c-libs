@@ -67,11 +67,24 @@ static void quickSortHelper(SORT_ELEMENT_TYPE *array, int left, int right) {
         insertSort(array + left, right - left + 1);
 }
 
-static void sort(SORT_ELEMENT_TYPE *array, int size){
+static void sort(SORT_ELEMENT_TYPE *array, int size) {
     quickSortHelper(array, 0, size - 1);
 }
 
+#ifdef TEST_SORT
 
+void shellSort(SORT_ELEMENT_TYPE *array, int size);
 
+void heapSort(SORT_ELEMENT_TYPE *array, int size);
+
+void mergeSort(SORT_ELEMENT_TYPE *array, int size);
+
+void quickSort(SORT_ELEMENT_TYPE *array, int size);
+
+void quickSelect(SORT_ELEMENT_TYPE *array, int size, int number);
+
+void bucketSort(SORT_ELEMENT_TYPE *array, int size);
+
+#endif
 
 #endif //SORT_H

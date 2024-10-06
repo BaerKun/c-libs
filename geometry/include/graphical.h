@@ -1,5 +1,5 @@
-#ifndef ALL4ALGORITHM_GRAPHICAL_DEBUG_H
-#define ALL4ALGORITHM_GRAPHICAL_DEBUG_H
+#ifndef ALL4ALGORITHM_GRAPHICAL_H
+#define ALL4ALGORITHM_GRAPHICAL_H
 
 #include "geometry.h"
 
@@ -19,4 +19,4 @@ void showWindow(Window window);
 
 void destroyWindow(Window window);
 
-#endif //ALL4ALGORITHM_GRAPHICAL_DEBUG_H
+#endif //ALL4ALGORITHM_GRAPHICAL_H

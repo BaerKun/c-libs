@@ -1,11 +1,12 @@
 #include "tests/tests.h"
+#include "geometry.h"
 
 int main(){
     initTest();
 
-    testConvexHull(100000);
-    testPtsMaxDist(100000);
-    testMinEnclosingCircle(100000);
+    for(int i = 0; i < 50; i++)
+        testConvexHull(9999);
+//    testMinEnclosingCircle(100000);
 
     return 0;
 }

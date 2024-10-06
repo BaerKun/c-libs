@@ -3,15 +3,15 @@
 
 #include <stdlib.h>
 
-# ifndef  LIST_ELEMENT_TYPE
-# define LIST_ELEMENT_TYPE int
+#ifndef LIST_ELEMENT_TYPE
+#define LIST_ELEMENT_TYPE int
 #endif
 
 // 包含头节点
 typedef struct Node Node, *NodePtr;
 typedef Node List, *ListPtr;
 
-struct Node{
+struct Node {
     NodePtr next;
     LIST_ELEMENT_TYPE element;
 };

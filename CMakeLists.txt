@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.28)
 
 project(all4algorithm)
 
-include_directories(tools)
+include_directories(utils)
 
-add_subdirectory(tools)
+add_subdirectory(utils)
 
 add_subdirectory(tree)
 

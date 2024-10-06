@@ -2,17 +2,16 @@
 #include <math.h>
 
 void cartesian2polar_pt(Point2f inpts[], Point2f outpts[], int npts, Point2f origin) {
-    float dx, dy;
     for(int i = 0; i < npts; ++i) {
-        dx = inpts[i].x - origin.x;
-        dy = inpts[i].y - origin.y;
+        const float dx = inpts[i].x - origin.x;
+        const float dy = inpts[i].y - origin.y;
         outpts[i].x = atan2f(dy, dx);
         outpts[i].y = sqrtf(dx * dx + dy * dy);
     }
 }
 
-void cartesian2polar_vec(Vector2f inVectors[], Point2f outVectors[], int nvts) {
-    for(int i = 0; i < nvts; ++i) {
+void cartesian2polar_vec(Vector2f inVectors[], Point2f outVectors[], int nvecs) {
+    for(int i = 0; i < nvecs; ++i) {
         const Vector2f vec = inVectors[i];
         outVectors[i].x = atan2f(vec.y, vec.x);
         outVectors[i].y = sqrtf(vec.x * vec.x + vec.y * vec.y);
@@ -20,12 +19,20 @@ void cartesian2polar_vec(Vector2f inVectors[], Point2f outVectors[], int nvts) {
 }
 
 void polar2cartesian_pt(Point2f pts[], Point2f outpts[], int npts, Point2f origin) {
-    float theta, r;
     for(int i = 0; i < npts; ++i) {
-        theta = pts[i].x;
-        r = pts[i].y;
+        const float theta = pts[i].x;
+        const float r = pts[i].y;
         outpts[i].x = origin.x + r * cosf(theta);
         outpts[i].y = origin.y + r * sinf(theta);
+    }
+}
+
+void polar2cartesian_vec(Vector2f invecs[], Vector2f outvecs[], int nvecs) {
+    for(int i = 0; i < nvecs; ++i) {
+        const float theta = invecs[i].x;
+        const float r = invecs[i].y;
+        outvecs[i].x = r * cosf(theta);
+        outvecs[i].y = r * sinf(theta);
     }
 }
 

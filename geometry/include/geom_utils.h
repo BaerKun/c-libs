@@ -16,10 +16,12 @@ static inline Point2f midpoint(Point2f a, Point2f b){
     return (Point2f){(a.x + b.x) / 2, (a.y + b.y) / 2};
 }
 
+static inline float sum_square(float a, float b) {
+    return a * a + b * b;
+}
+
 static inline float sqrdist(Point2f p1, Point2f p2){
-    float dx = p1.x - p2.x;
-    float dy = p1.y - p2.y;
-    return dx * dx + dy * dy;
+    return sum_square(p1.x - p2.x, p1.y - p2.y);
 }
 
 static inline float dist2f(Point2f p1, Point2f p2) {
@@ -38,15 +40,13 @@ static inline float vec3_dot(Vector3f vec1, Vector3f vec2){
     return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
 }
 
-static inline float sum_square(float a, float b){
-    return a * a + b * b;
-}
-
 void cartesian2polar_pt(Point2f inpts[], Point2f outpts[], int nPoints, Point2f origin);
 
-void cartesian2polar_vec(Vector2f inVectors[], Point2f outVectors[], int nVectors);
+void cartesian2polar_vec(Vector2f inVectors[], Point2f outVectors[], int nvecs);
 
 void polar2cartesian_pt(Point2f pts[], Point2f outpts[], int nPoints, Point2f origin);
+
+void polar2cartesian_vec(Vector2f invecs[], Vector2f outvecs[], int nvecs);
 
 void triCircumcircle(Point2f pt1, Point2f pt2, Point2f pt3, Point2f *center, float *radius);
 

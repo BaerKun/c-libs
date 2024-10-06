@@ -15,30 +15,30 @@ void shellSort(SORT_ELEMENT_TYPE *array, int size) {
     }
 }
 
-static void percDown(SORT_ELEMENT_TYPE *array, int father, int size) {
-    const SORT_ELEMENT_TYPE theTop = array[father];
-    for (int child; (child = father << 1) < size; father = child) {
-        if (child + 1 != size && SORT_LESS_THAN(array[child + 1], array[child]))
+static void percolateDown(SORT_ELEMENT_TYPE *prev, int father, int end){
+    int child;
+    SORT_ELEMENT_TYPE theTop = prev[father];
+
+    for( ; (child = father << 1) <= end; father = child){
+        if(child != end && SORT_LESS_THAN(prev[child], prev[child + 1]))
             child++;
-        if (SORT_LESS_THAN(theTop, array[child]))
-            array[father] = array[child];
+        if(SORT_LESS_THAN(theTop, prev[child]))
+            prev[father] = prev[child];
         else
             break;
     }
-    array[father] = theTop;
+    prev[father] = theTop;
 }
 
 void heapSort(SORT_ELEMENT_TYPE *array, int size) {
-    int i;
-    array--;
-    size++;
+    int *prev = array - 1;
 
-    for (i = size >> 1; i; i--)
-        percDown(array, i, size);
+    for(int i = size >> 1; i; --i)
+        percolateDown(prev, i, size);
 
-    for (i = size - 1; i; i--) {
-        swap(array + i, array + 1);
-        percDown(array, 1, i);
+    for(int i = size - 1; i > 0; --i) {
+        swap(array + i, array);
+        percolateDown(prev, 1, i);
     }
 }
 
@@ -84,7 +84,7 @@ void mergeSort(SORT_ELEMENT_TYPE *array, int size) {
     }
 }
 
-static void quickSort(SORT_ELEMENT_TYPE *array, int size) {
+void quickSort(SORT_ELEMENT_TYPE *array, int size) {
     quickSortHelper(array, 0, size - 1);
 }
 

@@ -6,23 +6,31 @@
 
 #define SORT_ELEMENT_TYPE Point2f
 #define SORT_LESS_THAN(p, q) (p.x < q.x)
+
 #include "sort.h"
 
 #define STACK_ELEMENT_TYPE Point2f
+
 #include "stack.h"
 
-static void convexHullHelper(StackPtr stack, Point2f point) {
-    Vector2f vec1, vec2;
-    while (stack->top > 1) {
-        vec1.x = point.x - stack->elements[stack->top - 2].x;
-        vec1.y = point.y - stack->elements[stack->top - 2].y;
-        vec2.x = point.x - stack->elements[stack->top - 1].x;
-        vec2.y = point.y - stack->elements[stack->top - 1].y;
-        if (cross_vec(vec1, vec2) > 0.f)
+static void convexHullHelper(StackPtr stack, const Point2f p) {
+    const Point2f *ptr2pt = stack->elements + stack->top - 1;
+    Point2f p2 = *ptr2pt;
+    Vector2f vec2 = (Vector2f) {p.x - p2.x, p.y - p2.y};
+
+    do {
+        const Vector2f vec1 = vec2;
+        --ptr2pt;
+        p2 = *ptr2pt;
+        vec2 = (Vector2f) {p.x - p2.x, p.y - p2.y};
+
+        if (cross_vec(vec1, vec2) < 0)
             break;
+
         stack_pop(stack);
-    }
-    stack_push(stack, point);
+    } while (stack->top > 2);
+
+    stack_push(stack, p);
 }
 
 static void ptsMaxDist_force(Point2f hullpts[], Point2f *outpts, int nhullpts) {
@@ -41,7 +49,8 @@ static void ptsMaxDist_force(Point2f hullpts[], Point2f *outpts, int nhullpts) {
     }
 }
 
-static float ptsMinDistHelper_force(Point2f *ptsleft, Point2f *ptsright, Point2f *outleft, Point2f *outright, float minsqd) {
+static float
+ptsMinDistHelper_force(Point2f *ptsleft, Point2f *ptsright, Point2f *outleft, Point2f *outright, float minsqd) {
     Point2f *p, *q;
     float sqrd;
     for (p = ptsleft; p != ptsright; ++p) {
@@ -88,30 +97,38 @@ static float ptsMinDistHelper(Point2f pts[], Point2f outpts[], int left, int rig
 }
 
 void convexHull(Point2f pts[], Point2f hullpts[], int npts, int *nhullpts) {
-    if(npts < 3) {
+    if (npts <= 3) {
         *nhullpts = npts;
         memcpy(hullpts, pts, sizeof(Point2f) * npts);
         return;
     }
 
-    int i;
     Point2f origin = pts[0];
 
-    for(i = 1; i < npts; ++i) {
-        if(pts[i].y < origin.y || (pts[i].y == origin.y && pts[i].x < origin.x))
+    for (int i = 1; i < npts; ++i) {
+        if (pts[i].y < origin.y || (pts[i].y == origin.y && pts[i].x < origin.x))
             origin = pts[i];
     }
 
-    cartesian2polar_pt(pts, pts, npts, origin);
-    sort(pts, npts);
-    polar2cartesian_pt(pts, pts, npts, origin);
+    struct {
+        float theta;
+        int index;
+    } *tmp = malloc(npts * sizeof(*tmp));
+
+    for (int i = 0; i < npts; ++i) {
+        tmp[i].theta = atan2f(pts[i].y - origin.y, pts[i].x - origin.x);
+        tmp[i].index = i;
+    }
+
+    sort((Point2f *) tmp, npts);
 
     StackPtr stack = newStack(npts);
-    stack_push(stack, pts[0]);
-    stack_push(stack, pts[1]);
+    stack_push(stack, pts[tmp[0].index]);
+    stack_push(stack, pts[tmp[1].index]);
+    stack_push(stack, pts[tmp[2].index]);
 
-    for(i = 2; i < npts; ++i)
-        convexHullHelper(stack, pts[i]);
+    for (int i = 3; i < npts; ++i)
+        convexHullHelper(stack, pts[tmp[i].index]);
 
     convexHullHelper(stack, origin);
 
@@ -119,6 +136,7 @@ void convexHull(Point2f pts[], Point2f hullpts[], int npts, int *nhullpts) {
     memcpy(hullpts, stack->elements, sizeof(Point2f) * *nhullpts);
 
     stack_destroy(stack);
+    free(tmp);
 }
 
 void convexHullDiameter(Point2f hullpts[], Point2f *outpts, int nhullpts) {
@@ -170,8 +188,8 @@ void ptsMaxDist(Point2f pts[], Point2f *maxPoint, int npts) {
     }
 
     int nhullpts;
-    Point2f *hullpts = malloc(npts* sizeof(Point2f));
-    if(!hullpts)
+    Point2f *hullpts = malloc(npts * sizeof(Point2f));
+    if (!hullpts)
         return;
 
     convexHull(pts, hullpts, npts, &nhullpts);

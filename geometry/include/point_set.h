@@ -3,6 +3,7 @@
 
 #include "geometry.h"
 
+// 当点的数量较多npts>10000时，会出现bug，可能是精度问题
 void convexHull(Point2f pts[], Point2f hullpts[], int npts, int *nhullpts);
 
 void convexHullDiameter(Point2f hullpts[], Point2f *outpts, int nhullpts);

@@ -22,8 +22,7 @@ struct Heap{
 
 static void heap_percolateDown(HEAP_ELEMENT_TYPE *prev, int father, int end){
     int child;
-    HEAP_ELEMENT_TYPE theTop;
-    theTop = prev[father];
+    HEAP_ELEMENT_TYPE theTop = prev[father];
 
     for( ; (child = father << 1) <= end; father = child){
         if(child != end && HEAP_LESS_THAN(prev[child + 1], prev[child]))

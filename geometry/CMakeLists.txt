@@ -9,7 +9,7 @@ find_package(OpenCV)
 
 include_directories(include)
 
-add_library(graphical_debug STATIC src/graphical_debug.cpp)
+add_library(graphical_debug STATIC src/graphical.cpp)
 target_link_directories(graphical_debug PRIVATE ${OpenCV_DIRS})
 target_link_libraries(graphical_debug PRIVATE ${OpenCV_LIBS})
 
