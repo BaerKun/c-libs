@@ -2,18 +2,19 @@
 #include "geometry.h"
 #include <stdio.h>
 
-Window mainWindow;
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
 
+Window mainWindow;
+const Point2i origin = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 100};
 
 char *console() {
     static char text[128] = {0};
     static int curser = 0;
 
     while (1){
-        drawRect(mainWindow, (Point2f){-WINDOW_WIDTH / 2, 100 - WINDOW_HEIGHT / 2}, WINDOW_WIDTH, 100, 0x888888, -1);
-        drawText(mainWindow, text, (Point2f){20 - WINDOW_WIDTH / 2, 60 - WINDOW_HEIGHT / 2}, 0x0e0e0e, 30);
+        drawRect(mainWindow, (Point2i){0, WINDOW_HEIGHT - 100}, WINDOW_WIDTH, 100, 0x888888, -1);
+        drawText(mainWindow, text, (Point2i){10, WINDOW_HEIGHT - 60}, 0x0e0e0e, 30);
         showWindow(mainWindow);
 
         const char c = waitKey(0);
