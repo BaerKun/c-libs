@@ -7,15 +7,15 @@ endif ()
 
 find_package(OpenCV REQUIRED core imgproc highgui)
 
-include_directories(include)
-
 add_library(graphical STATIC src/graphical.cpp)
-target_link_directories(graphical PRIVATE ${OpenCV_DIRS})
+target_link_directories(graphical PUBLIC ${OpenCV_DIRS})
+target_include_directories(graphical PRIVATE include)
 target_link_libraries(graphical PRIVATE ${OpenCV_LIBS})
 
 file(GLOB SOURCES "src/*.c")
 
 add_library(geometry_libs STATIC ${SOURCES})
+target_include_directories(geometry_libs PUBLIC include)
 
 add_executable(geometry_exe main.c tests/tests.c)
 

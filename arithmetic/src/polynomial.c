@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include "complex.h"
 #include <string.h>
@@ -81,13 +80,4 @@ void dftConv(const double a[], const double b[], double c[], const int size_a, c
     dftConvHelper(memory, memory + size, c, size);
 
     free(memory);
-}
-
-int main() {
-    double a[8] = {34, 22, 11};
-    double b[8] = {1, 2, 3, 4};
-    double c[8];
-    dftConv(a, b, c, 3, 4);
-    for (int i = 0; i < 6; ++i)
-        printf("%.0lf\n", c[i]);
 }

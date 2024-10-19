@@ -13,16 +13,16 @@
 
 #include "stack.h"
 
-static void convexHullHelper(StackPtr stack, const Point2f p) {
+static void convexHullHelper(const StackPtr stack, const Point2f p) {
     const Point2f *ptr2pt = stack->elements + stack->top - 1;
     Point2f p2 = *ptr2pt;
-    Vector2f vec2 = (Vector2f) {p.x - p2.x, p.y - p2.y};
+    Vector2f vec2 = (Vector2f){p.x - p2.x, p.y - p2.y};
 
     do {
         const Vector2f vec1 = vec2;
         --ptr2pt;
         p2 = *ptr2pt;
-        vec2 = (Vector2f) {p.x - p2.x, p.y - p2.y};
+        vec2 = (Vector2f){p.x - p2.x, p.y - p2.y};
 
         if (cross_vec(vec1, vec2) < 0)
             break;
@@ -34,14 +34,13 @@ static void convexHullHelper(StackPtr stack, const Point2f p) {
 }
 
 static void ptsMaxDist_force(Point2f hullpts[], Point2f *outpts, int nhullpts) {
-    float max = 0, sqd;
-    int i, j;
+    float max = 0;
 
-    for (i = 0; i < nhullpts; ++i) {
-        for (j = i + 1; j < nhullpts; ++j) {
-            sqd = sqrdist(hullpts[i], hullpts[j]);
-            if (sqd > max) {
-                max = sqd;
+    for (int i = 0; i < nhullpts; ++i) {
+        for (int j = i + 1; j < nhullpts; ++j) {
+            const float sqrd = sqrdist(hullpts[i], hullpts[j]);
+            if (sqrd > max) {
+                max = sqrd;
                 outpts[0] = hullpts[i];
                 outpts[1] = hullpts[j];
             }
@@ -50,12 +49,10 @@ static void ptsMaxDist_force(Point2f hullpts[], Point2f *outpts, int nhullpts) {
 }
 
 static float
-ptsMinDistHelper_force(Point2f *ptsleft, Point2f *ptsright, Point2f *outleft, Point2f *outright, float minsqd) {
-    Point2f *p, *q;
-    float sqrd;
-    for (p = ptsleft; p != ptsright; ++p) {
-        for (q = p + 1; q <= ptsright; ++q) {
-            sqrd = sqrdist(*p, *q);
+ptsMinDistHelper_force(const Point2f *ptsleft, const Point2f *ptsright, Point2f *outleft, Point2f *outright, float minsqd) {
+    for (const Point2f *p = ptsleft; p != ptsright; ++p) {
+        for (const Point2f *q = p + 1; q <= ptsright; ++q) {
+            const float sqrd = sqrdist(*p, *q);
             if (sqrd < minsqd) {
                 minsqd = sqrd;
                 *outleft = *p;
@@ -70,11 +67,11 @@ static float ptsMinDistHelper(Point2f pts[], Point2f outpts[], int left, int rig
     if (right - left < 8)
         return ptsMinDistHelper_force(pts + left, pts + right, outpts + left, outpts + right, FLT_MAX);
 
-    int center = (left + right) / 2;
-    float leftMinSqrd, rightMinSqrd, midMinSqrd;
+    const int center = (left + right) / 2;
+    float midMinSqrd;
 
-    leftMinSqrd = ptsMinDistHelper(pts, outpts, left, center);
-    rightMinSqrd = ptsMinDistHelper(pts, outpts, center + 1, right);
+    const float leftMinSqrd = ptsMinDistHelper(pts, outpts, left, center);
+    const float rightMinSqrd = ptsMinDistHelper(pts, outpts, center + 1, right);
 
     if (leftMinSqrd < rightMinSqrd) {
         midMinSqrd = leftMinSqrd;
@@ -84,7 +81,7 @@ static float ptsMinDistHelper(Point2f pts[], Point2f outpts[], int left, int rig
         outpts[left] = outpts[center + 1];
     }
 
-    float borderWidth = sqrtf(midMinSqrd);
+    const float borderWidth = sqrtf(midMinSqrd);
     int borderLeft = center, borderRight = center;
 
     while (borderLeft > left && pts[center].x - pts[borderLeft - 1].x < borderWidth)
@@ -122,7 +119,7 @@ void convexHull(Point2f pts[], Point2f hullpts[], int npts, int *nhullpts) {
 
     sort((Point2f *) tmp, npts);
 
-    StackPtr stack = newStack(npts);
+    const StackPtr stack = newStack(npts);
     stack_push(stack, pts[tmp[0].index]);
     stack_push(stack, pts[tmp[1].index]);
     stack_push(stack, pts[tmp[2].index]);
@@ -146,25 +143,24 @@ void convexHullDiameter(Point2f hullpts[], Point2f *outpts, int nhullpts) {
     }
 
     int i = 0, j = 3;
-    Point2f p1, p2, p3, p4;
-    Vector2f v1, v2;
-    float sqrd, max = 0.f;
+    float max = 0.f;
 
-    p2 = hullpts[0];
-    p4 = hullpts[2];
-    v2 = (Vector2f) {p4.x - hullpts[1].x, p4.y - hullpts[1].y};
+    Point2f p2 = hullpts[0],
+            p3 = hullpts[1],
+            p4 = hullpts[2];
+    Vector2f v2 = {p4.x - hullpts[1].x, p4.y - hullpts[1].y};
     do {
         ++i;
-        p1 = p2;
+        const Point2f p1 = p2;
         p2 = hullpts[i == nhullpts ? 0 : i];
-        v1 = (Vector2f) {p2.x - p1.x, p2.y - p1.y};
+        const Vector2f v1 = {p2.x - p1.x, p2.y - p1.y};
         do {
             if (cross_vec(v1, v2) <= 0.f)
                 break;
 
             p3 = p4;
             p4 = hullpts[j == nhullpts ? 0 : j];
-            v2 = (Vector2f) {p4.x - p3.x, p4.y - p3.y};
+            v2 = (Vector2f){p4.x - p3.x, p4.y - p3.y};
 
             if (j == nhullpts)
                 j = 1;
@@ -172,7 +168,7 @@ void convexHullDiameter(Point2f hullpts[], Point2f *outpts, int nhullpts) {
                 ++j;
         } while (1);
 
-        sqrd = sqrdist(p1, p3);
+        const float sqrd = sqrdist(p1, p3);
         if (sqrd > max) {
             max = sqrd;
             outpts[0] = p1;
@@ -189,7 +185,7 @@ void ptsMaxDist(Point2f pts[], Point2f *maxPoint, int npts) {
 
     int nhullpts;
     Point2f *hullpts = malloc(npts * sizeof(Point2f));
-    if (!hullpts)
+    if (hullpts == NULL)
         return;
 
     convexHull(pts, hullpts, npts, &nhullpts);
@@ -205,7 +201,7 @@ float ptsMinDist(Point2f pts[], Point2f outpts[2], int npts) {
 
     sort(pts, npts);
 
-    float mindist = sqrtf(ptsMinDistHelper(pts, tmpOutpts, 0, npts - 1));
+    const float mindist = sqrtf(ptsMinDistHelper(pts, tmpOutpts, 0, npts - 1));
 
     outpts[0] = tmpOutpts[0];
     outpts[1] = tmpOutpts[npts - 1];

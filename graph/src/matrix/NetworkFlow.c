@@ -4,7 +4,7 @@
 #include "queue.h"
 
 
-NetworkPtr CopyNetwork(NetworkPtr network) {
+NetworkPtr CopyNetwork(const NetworkPtr network) {
     const NetworkPtr copyNetwork = malloc(sizeof(Network));
     memcpy(copyNetwork, network, sizeof(Network));
 
