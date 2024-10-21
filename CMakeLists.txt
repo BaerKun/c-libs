@@ -22,4 +22,4 @@ target_include_directories(algorithm PRIVATE tree/include graph/include)
 
 target_link_libraries(algorithm PRIVATE adjacency_list_graph tree)
 
-add_executable(tmp tmp.c)
+# add_executable(tmp tmp.c)

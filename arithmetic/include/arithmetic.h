@@ -13,6 +13,8 @@ int integerPartition(int x);
 
 void float2fraction_precise(float x, int *numerator, int *denominator, const int maxDeno);
 
+// 单次调用，若输出0，则必是对的；若输出1，正确率 > 75%
+int primalityTest(unsigned n, unsigned numTest);
 
 
 #endif //ARITHMETIC_H

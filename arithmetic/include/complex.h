@@ -22,7 +22,7 @@ static inline Complex complexMul(Complex a, Complex b) {
 }
 
 static inline Complex complexDiv(Complex a, Complex b) {
-    double denominator = b.real * b.real + b.imag * b.imag;
+    const double denominator = b.real * b.real + b.imag * b.imag;
     return (Complex) {(a.real * b.real + a.imag * b.imag) / denominator, (a.imag * b.real - a.real * b.imag) / denominator};
 }
 

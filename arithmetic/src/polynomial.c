@@ -1,3 +1,4 @@
+#include <arithmetic.h>
 #include <stdlib.h>
 #include "complex.h"
 #include <string.h>
@@ -34,7 +35,7 @@ static Complex dftHelper(const double time[], const Complex rotationFactor, cons
 
 void dft(const double time[], Complex frequency[], const int size) {
     for (int i = 0; i < size; ++i)
-        frequency[i] = dftHelper(time, complexFromArgAndMod(-2 * 3.14159265358979323 * i / size,
+        frequency[i] = dftHelper(time, complexFromArgAndMod(-2 * M_PI * i / size,
                                                             1.), 0, size, 1);
 }
 
@@ -52,7 +53,7 @@ static Complex idftHelper(const Complex frequency[], const Complex rotationFacto
 
 void idft(const Complex frequency[], double time[], const int size) {
     for (int i = 0; i < size; ++i)
-        time[i] = idftHelper(frequency, complexFromArgAndMod(2 * 3.14159265358979323 * i / size,
+        time[i] = idftHelper(frequency, complexFromArgAndMod(2 * M_PI * i / size,
                                                              1.), 0, size, 1).real / size;
 }
 

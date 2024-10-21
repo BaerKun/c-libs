@@ -15,14 +15,14 @@ typedef struct pcg_state_setseq_64 pcg32_random_t;
 static pcg32_random_t pcg32_global = PCG32_INITIALIZER;
 
 static uint32_t pcg32_random(void) {
-    uint64_t oldstate = pcg32_global.state;
+    const uint64_t oldstate = pcg32_global.state;
     pcg32_global.state = oldstate * 6364136223846793005ULL + pcg32_global.inc;
-    uint32_t xorshifted = ((oldstate >> 18u) ^ oldstate) >> 27u;
-    uint32_t rot = oldstate >> 59u;
+    const uint32_t xorshifted = ((oldstate >> 18u) ^ oldstate) >> 27u;
+    const uint32_t rot = oldstate >> 59u;
     return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
 };
 
-static void pcg32_srandom(uint64_t initstate, uint64_t initseq) {
+static inline void pcg32_srandom(const uint64_t initstate, const uint64_t initseq) {
     pcg32_global.state = 0U;
     pcg32_global.inc = (initseq << 1u) | 1u;
     pcg32_random();
@@ -31,25 +31,25 @@ static void pcg32_srandom(uint64_t initstate, uint64_t initseq) {
 };
 
 // return a <= x < b
-static inline uint32_t randuint(uint32_t a, uint32_t b) {
+static inline int32_t randint(const int32_t a, const int32_t b) {
     return a + pcg32_random() % (b - a);
 }
 
-static inline int32_t randint(int32_t a, int32_t b) {
-    return (int) randuint(a, b);
+static inline int64_t randlong(const int64_t a, const int64_t b) {
+    return a + (pcg32_random() << 32 | pcg32_random()) % (b - a);
 }
 
-static inline float randfloat(float a, float b) {
+static inline float randfloat(const float a, const float b) {
     return a + (b - a) * (float) pcg32_random() / 4294967296.f;
 }
 
-static inline double randdouble(double a, double b) {
+static inline double randdouble(const double a, const double b) {
     return a + (b - a) * pcg32_random() / 4294967296.0;
 }
 
-static void shuffleArray(int *array, int len) {
-    for (int i = 1, j, c; i < len; ++i) {
-        j = randuint(0, i + 1);
+static void shuffleArray(int *array, const int size) {
+    for (int i = 1, j, c; i < size; ++i) {
+        j = randint(0, i + 1);
         c = array[i];
         array[i] = array[j];
         array[j] = c;

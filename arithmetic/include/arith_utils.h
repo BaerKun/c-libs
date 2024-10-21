@@ -9,4 +9,6 @@ float powerf(float base, int exponent);
 
 double powerd(double base, int exponent);
 
+int sqrti(int n);
+
 #endif //UTILS_H
