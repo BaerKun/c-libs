@@ -62,7 +62,7 @@ int sqrti(const int n) {
     do {
         x = y;
         y = (x + n / x) >> 1;
-    }while (x != y);
+    } while (y < x);
 
     return x;
 }

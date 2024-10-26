@@ -1,6 +1,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+static inline int squarei(const int n) {
+    return n * n;
+}
+
 int poweri(int base, int exponent);
 
 long long powerl(long long base, int exponent);

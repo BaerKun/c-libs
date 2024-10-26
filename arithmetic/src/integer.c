@@ -26,12 +26,12 @@ int integerPartition(const int x) {
     }
 }
 
-static uint64_t primalityTestBody(const unsigned base, const unsigned exponent, const unsigned n) {
+static uint64_t primalityTestHelper(const unsigned base, const unsigned exponent, const unsigned n) {
     if (exponent == 0)
         return 1;
 
     // 递归计算 base ^ exponent % n
-    const uint64_t x = primalityTestBody(base, exponent / 2, n);
+    const uint64_t x = primalityTestHelper(base, exponent / 2, n);
     if (x == 0)
         return 0;
 
@@ -55,12 +55,41 @@ int primalityTest(const unsigned n, const unsigned numTest) {
         return 1;
 
     for (unsigned time = 0; time < numTest; time++)
-        if (primalityTestBody(randint(2, n - 1), n - 1, n) != 1)
+        if (primalityTestHelper(randint(2, n - 1), n - 1, n) != 1)
             return 0;
 
     return 1;
 }
 
-void primeFactorization(const int n, int factors[], int *numFactors) {
+static void primeFactorizationHelper(int n, int factors[], int *numFactors) {
+    while (n % 2 == 0) {
+        factors[(*numFactors)++] = 2;
+        n >>= 1;
+    }
 
+    int a = 0;
+    int b2 = n;
+    int b = sqrti(n);
+    do {
+        if (b <= a + 1) {
+            factors[(*numFactors)++] = n;
+            return;
+        }
+
+        if (squarei(b) == b2) {
+            primeFactorizationHelper(a + b, factors, numFactors);
+            primeFactorizationHelper(b - a, factors, numFactors);
+            return;
+        }
+
+        b2 += (a << 1) | 1;
+        if (squarei(b + 1) <= b2)
+            ++b;
+        ++a;
+    } while (1);
+}
+
+void primeFactorization(const int n, int factors[], int *numFactors) {
+    *numFactors = 0;
+    primeFactorizationHelper(n, factors, numFactors);
 }

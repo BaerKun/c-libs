@@ -3,6 +3,8 @@
 
 int greatestCommonDivisor(int a, int b);
 
-int integerPartition(const int x);
+int integerPartition(int x);
+
+void primeFactorization(int n, int factors[], int *numFactors);
 
 #endif //INTEGER_H

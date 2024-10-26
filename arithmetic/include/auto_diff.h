@@ -6,7 +6,7 @@ typedef enum {
 } NumberType;
 
 typedef enum {
-    UNKNOWN, ADD, SUB, MUL, DIV, POW, EXP, LOG, SIN, COS, TAN
+    UNKNOWN, ADD, INV, MUL, REC, POW, EXP, LOG, SIN, COS, TAN
 } OperationType;
 
 typedef struct ComputationGraph *ComputationNodePtr, *MathFunction;
@@ -27,5 +27,9 @@ ComputationNodePtr createVariable(int index);
 ComputationNodePtr createIntermediate(OperationType operation);
 
 void linkOperand(ComputationNodePtr node, ComputationNodePtr operand);
+
+float autoDiff(MathFunction func, const float var[]);
+
+void destroyFunction(const MathFunction func);
 
 #endif //AUTO_DIFF_H
