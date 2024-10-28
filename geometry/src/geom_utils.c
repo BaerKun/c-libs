@@ -1,7 +1,7 @@
 #include "geom_utils.h"
 #include <math.h>
 
-void cartesian2polar_pt(Point2f inpts[], Point2f outpts[], int npts, Point2f origin) {
+void cartesian2polar_pt(Point2f inpts[], Point2f outpts[], const int npts, const Point2f origin) {
     for(int i = 0; i < npts; ++i) {
         const float dx = inpts[i].x - origin.x;
         const float dy = inpts[i].y - origin.y;
@@ -10,7 +10,7 @@ void cartesian2polar_pt(Point2f inpts[], Point2f outpts[], int npts, Point2f ori
     }
 }
 
-void cartesian2polar_vec(Vector2f inVectors[], Point2f outVectors[], int nvecs) {
+void cartesian2polar_vec(Vector2f inVectors[], Point2f outVectors[], const int nvecs) {
     for(int i = 0; i < nvecs; ++i) {
         const Vector2f vec = inVectors[i];
         outVectors[i].x = atan2f(vec.y, vec.x);
@@ -18,7 +18,7 @@ void cartesian2polar_vec(Vector2f inVectors[], Point2f outVectors[], int nvecs) 
     }
 }
 
-void polar2cartesian_pt(Point2f pts[], Point2f outpts[], int npts, Point2f origin) {
+void polar2cartesian_pt(Point2f pts[], Point2f outpts[], const int npts, const Point2f origin) {
     for(int i = 0; i < npts; ++i) {
         const float theta = pts[i].x;
         const float r = pts[i].y;
@@ -27,7 +27,7 @@ void polar2cartesian_pt(Point2f pts[], Point2f outpts[], int npts, Point2f origi
     }
 }
 
-void polar2cartesian_vec(Vector2f invecs[], Vector2f outvecs[], int nvecs) {
+void polar2cartesian_vec(Vector2f invecs[], Vector2f outvecs[], const int nvecs) {
     for(int i = 0; i < nvecs; ++i) {
         const float theta = invecs[i].x;
         const float r = invecs[i].y;

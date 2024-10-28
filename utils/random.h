@@ -20,7 +20,7 @@ static uint32_t pcg32_random(void) {
     const uint32_t xorshifted = ((oldstate >> 18u) ^ oldstate) >> 27u;
     const uint32_t rot = oldstate >> 59u;
     return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
-};
+}
 
 static inline void pcg32_srandom(const uint64_t initstate, const uint64_t initseq) {
     pcg32_global.state = 0U;
@@ -28,7 +28,7 @@ static inline void pcg32_srandom(const uint64_t initstate, const uint64_t initse
     pcg32_random();
     pcg32_global.state += initstate;
     pcg32_random();
-};
+}
 
 // return a <= x < b
 static inline int32_t randint(const int32_t a, const int32_t b) {
@@ -36,7 +36,7 @@ static inline int32_t randint(const int32_t a, const int32_t b) {
 }
 
 static inline int64_t randlong(const int64_t a, const int64_t b) {
-    return a + (pcg32_random() << 32 | pcg32_random()) % (b - a);
+    return a + ((uint64_t)pcg32_random() << 32 | pcg32_random()) % (b - a);
 }
 
 static inline float randfloat(const float a, const float b) {

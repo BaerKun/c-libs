@@ -40,7 +40,7 @@ void testConvexHull(const int npoint, const int count) {
     Point2i *hullPointsImg = (Point2i *)(memory + npoint * 2);
 
     int nHullPoints;
-    const Window window = getNewWindow("testConvexHull", WINDOW_WIDTH, WINDOW_HEIGHT);
+    const Window *window = getNewWindow("testConvexHull", WINDOW_WIDTH, WINDOW_HEIGHT);
 
     for(int i = 0; i < count; ++i) {
         randomCirclePoints(points, npoint, WINDOW_HEIGHT / 2 - 50);
@@ -62,7 +62,7 @@ void testConvexHull(const int npoint, const int count) {
 }
 
 void testPtsMaxDist(const int npts, const int count) {
-    const Window window = getNewWindow("testPtsMaxDist", WINDOW_WIDTH, WINDOW_HEIGHT);
+    const Window *window = getNewWindow("testPtsMaxDist", WINDOW_WIDTH, WINDOW_HEIGHT);
     Point2f maxpts[2],
     *pts = malloc(npts * 2 * sizeof(Point2f));
     Point2i *imgpts = (Point2i *) pts + npts;
@@ -86,7 +86,7 @@ void testPtsMaxDist(const int npts, const int count) {
 }
 
 void testMinEnclosingCircle(const int npts, const int count) {
-    const Window w = getNewWindow("testMinEnclosingCircle", WINDOW_WIDTH, WINDOW_HEIGHT);
+    const Window *w = getNewWindow("testMinEnclosingCircle", WINDOW_WIDTH, WINDOW_HEIGHT);
     Point2f *pts = malloc(npts * 2 * sizeof(Point2f));
     Point2i *imgpts = (Point2i *) pts + npts;
     Point2f center;

@@ -4,7 +4,11 @@
 #include "geometry.h"
 #include <math.h>
 
-typedef int Window;
+typedef struct {
+    int width, height;
+    char *name;
+    void *data;
+} Window;
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,29 +23,31 @@ static inline Point2i toImageCoord(const Point2f p, const Point2i origin) {
 
 void graphicalInit();
 
-Window getNewWindow(const char *name, int width, int height);
+Window *getNewWindow(const char *name, int width, int height);
 
-void windowFill(Window window, unsigned char r, unsigned char g, unsigned char b);
+Window *getSubWindow(const Window *window, const int x, const int y, const int width, const int height);
 
-void drawPoint(int window, Point2i p, int rgb);
+void windowFill(const Window *window, unsigned char r, unsigned char g, unsigned char b);
 
-void drawPointSet(int window, const Point2i *points, int npoints, int rgb);
+void drawPoint(const Window *window, Point2i p, int rgb);
 
-void drawLine(int window, Point2i p1, Point2i p2, int rgb, int thickness);
+void drawPointSet(const Window *window, const Point2i *points, int npoints, int rgb);
 
-void drawRect(Window window, Point2i lefttop, int width, int height, int rgb, int thickness);
+void drawLine(const Window *window, Point2i p1, Point2i p2, int rgb, int thickness);
 
-void drawPoly(Window window, const Point2i *points, int nponts, int rgb, int thickness, int connect);
+void drawRect(const Window *window, Point2i lefttop, int width, int height, int rgb, int thickness);
 
-void drawCircle(Window window, Point2i center, int radius, int rgb, int thickness);
+void drawPoly(const Window *window, const Point2i *points, int nponts, int rgb, int thickness, int connect);
 
-void drawText(Window window, const char *text, Point2i leftbottom, int rgb, int fontsize);
+void drawCircle(const Window *window, Point2i center, int radius, int rgb, int thickness);
+
+void drawText(const Window *window, const char *text, Point2i leftbottom, int rgb, int fontsize);
 
 char waitKey(int ms);
 
-void showWindow(Window window);
+void showWindow(const Window *window);
 
-void destroyWindow(Window window);
+void destroyWindow(const Window *window);
 
 #ifdef __cplusplus
 }

@@ -30,6 +30,6 @@ void linkOperand(ComputationNodePtr node, ComputationNodePtr operand);
 
 float autoDiff(MathFunction func, const float var[]);
 
-void destroyFunction(const MathFunction func);
+void destroyFunction(MathFunction func);
 
 #endif //AUTO_DIFF_H

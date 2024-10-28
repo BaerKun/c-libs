@@ -5,16 +5,6 @@
 #include "geometry.h"
 #include "graphical.h"
 
-#define WINDOW_COUNT 8
-
-struct WindowData {
-    cv::Mat image{};
-    char *name{};
-    int used = 0;
-};
-
-WindowData windows[WINDOW_COUNT];
-
 static inline cv::Scalar toScalar(const int &rgb) {
     return {(double) (rgb & 0xff), (double) ((rgb >> 8) & 0xff), (double) (rgb >> 16)};
 }
@@ -26,74 +16,64 @@ void graphicalInit() {
 #endif
 }
 
-Window getNewWindow(const char *name, const int width, const int height) {
-    static int windowCount = 0;
-    int count = windowCount;
+Window *getNewWindow(const char *name, const int width, const int height) {
+    const auto w = new Window;
+    w->width = width;
+    w->height = height;
+    w->name = new char[32];
+    strcpy_s(w->name, 32, name);
+    w->data = new cv::Mat(height, width, CV_8UC3, cv::Scalar(255, 255, 255));
 
-    do {
-        if (++count == WINDOW_COUNT)
-            count = 0;
-        if (windows[count].used == 0)
-            break;
-    } while (count != windowCount);
-
-    WindowData *window = windows + count;
-
-    if (window->used)
-        return -1;
-
-    windowCount = count;
-    window->image = cv::Mat(height, width, CV_8UC3, cv::Scalar(255, 255, 255));
-    window->name = new char[strlen(name) + 1];
-    strcpy(window->name, name);
-
-    window->used = 1;
-
-    return count;
+    return w;
 }
 
-void windowFill(const Window window, const uchar r, const uchar g, const uchar b) {
-    windows[window].image = cv::Scalar(b, g, r);
+Window *getSubWindow(const Window *window, const int x, const int y, const int width, const int height) {
+    const auto sub = new Window;
+    sub->width = width;
+    sub->height = height;
+    sub->name = new char[1];
+    *sub->name = '\0';
+    sub->data = new cv::Mat;
+    *(cv::Mat *) sub->data = (*(cv::Mat *) window->data)(cv::Rect(x, y, width, height));
+    return sub;
 }
 
-void drawPoint(const Window window, const Point2i point, const int rgb) {
-    cv::Mat img = windows[window].image;
-
-    cv::circle(img, reinterpret_cast<const cv::Point2i &>(point), 3, toScalar(rgb), -1);
+void windowFill(const Window *window, const uchar r, const uchar g, const uchar b) {
+    *(cv::Mat *) window->data = cv::Scalar(b, g, r);
 }
 
-void drawPointSet(const Window window, const Point2i *points, const int nponts, const int rgb) {
-    cv::Mat img = windows[window].image;
+void drawPoint(const Window *window, const Point2i point, const int rgb) {
+    cv::circle(*(cv::Mat *) window->data, reinterpret_cast<const cv::Point2i &>(point), 3, toScalar(rgb), -1);
+}
+
+void drawPointSet(const Window *window, const Point2i *points, const int npoints, const int rgb) {
+    cv::Mat img = *(cv::Mat *) window->data;
     const cv::Scalar color = toScalar(rgb);
 
-    for (int i = 0; i < nponts; ++i)
-        cv::circle(img, *(cv::Point2i *)(points + i), 3, color, -1);
+    for (int i = 0; i < npoints; ++i)
+        cv::circle(img, *(cv::Point2i *) (points + i), 3, color, -1);
 }
 
-void drawLine(const Window window, const Point2i p1, const Point2i p2, const int rgb, const int thickness) {
-    cv::Mat img = windows[window].image;
-
-    cv::line(img, reinterpret_cast<const cv::Point2i&>(p1), reinterpret_cast<const cv::Point2i&>(p2),
+void drawLine(const Window *window, const Point2i p1, const Point2i p2, const int rgb, const int thickness) {
+    cv::line(*(cv::Mat *) window->data, reinterpret_cast<const cv::Point2i &>(p1),
+             reinterpret_cast<const cv::Point2i &>(p2),
              toScalar(rgb), thickness);
 }
 
-void drawRect(const Window window, const Point2i lefttop, const int width, const int height, const int rgb,
+void drawRect(const Window *window, const Point2i lefttop, const int width, const int height, const int rgb,
               const int thickness) {
-    cv::Mat img = windows[window].image;
-    const cv::Rect rect(lefttop.x, lefttop.y, width, height);
-
-    cv::rectangle(img, rect, toScalar(rgb), thickness);
+    cv::rectangle(*(cv::Mat *) window->data, cv::Rect(lefttop.x, lefttop.y, width, height), toScalar(rgb), thickness);
 }
 
-void drawPoly(const Window window, const Point2i *points, const int nponts, const int rgb, const int thickness,
+void drawPoly(const Window *window, const Point2i *points, const int nponts, const int rgb, const int thickness,
               const int connect) {
-    cv::Mat img = windows[window].image;
+    cv::Mat img = *(cv::Mat *) window->data;
     const cv::Scalar color = toScalar(rgb);
 
     if (thickness < 0) {
         auto *pts = new cv::Point[nponts];
         for (int i = 0; i < nponts; ++i)
-            pts[i] = *(cv::Point2i *)(points + i);
+            pts[i] = *(cv::Point2i *) (points + i);
 
         cv::fillConvexPoly(img, pts, nponts, color);
 
@@ -103,45 +83,39 @@ void drawPoly(const Window window, const Point2i *points, const int nponts, cons
 
 
     for (int i = 0, j = 1; j < nponts; ++i, ++j) {
-        cv::line(img, *(cv::Point2i *)(points + i), *(cv::Point2i *)(points + j),
+        cv::line(img, *(cv::Point2i *) (points + i), *(cv::Point2i *) (points + j),
                  color, thickness);
     }
 
     if (connect)
-        cv::line(img, *(cv::Point2i *)(points + nponts - 1), *(cv::Point2i *)points,
+        cv::line(img, *(cv::Point2i *) (points + nponts - 1), *(cv::Point2i *) points,
                  color, thickness);
 }
 
-void drawCircle(const Window window, const Point2i center, const int radius, const int rgb, const int thickness) {
-    cv::Mat img = windows[window].image;
+void drawCircle(const Window *window, const Point2i center, const int radius, const int rgb, const int thickness) {
     const cv::Scalar color = toScalar(rgb);
 
-    cv::circle(img, reinterpret_cast<const cv::Point2i&>(center), radius,
+    cv::circle(*(cv::Mat *) window->data, reinterpret_cast<const cv::Point2i &>(center), radius,
                color, thickness);
 }
 
-void drawText(const Window window, const char *text, const Point2i leftbottom, const int rgb, const int fontsize) {
-    cv::Mat img = windows[window].image;
-
-    cv::putText(img, text, reinterpret_cast<const cv::Point2i&>(leftbottom),
+void drawText(const Window *window, const char *text, const Point2i leftbottom, const int rgb, const int fontsize) {
+    cv::putText(*(cv::Mat *) window->data, text, reinterpret_cast<const cv::Point2i &>(leftbottom),
                 cv::FONT_HERSHEY_SIMPLEX, fontsize / 20.0, toScalar(rgb));
 }
 
 char waitKey(const int ms) {
-    return (char)cv::waitKey(ms);
+    return (char) cv::waitKey(ms);
 }
 
-void showWindow(const Window window) {
-    const WindowData *w = windows + window;
-    cv::imshow(w->name, w->image);
+void showWindow(const Window *window) {
+    cv::imshow(window->name, *(cv::Mat *) window->data);
 }
 
-void destroyWindow(const Window window) {
-    WindowData *w = windows + window;
-
-    cv::destroyWindow(w->name);
-    w->used = 0;
-
-    delete[] w->name;
+void destroyWindow(const Window *window) {
+    cv::destroyWindow(window->name);
+    delete[] window->name;
+    delete (cv::Mat *) window->data;
+    delete window;
 }
 }
