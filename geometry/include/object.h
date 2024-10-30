@@ -5,30 +5,47 @@
 #include "graphical.h"
 
 typedef enum {
-    POINT, LINE, CIRCLE
+    POINT, CIRCLE, LINE, RAY, SEG
 } ObjectType;
 
-typedef struct {
-    float A, B, C;
-} Line;
+typedef struct PointObject_ PointObject;
+typedef struct LineObject_ LineObject;
+typedef struct CircleObject_ CircleObject;
+typedef struct GeomObject_ GeomObject;
+typedef union ObjectSelector_ ObjectSelector;
 
-typedef struct {
-    Point2f c;
-    float r;
-} Circle;
+struct PointObject_ {
+    Point2f coord;
+    int fixed;
+    int numCite;
+};
 
-typedef struct {
+struct LineObject_ {
+    PointObject *pt1, *pt2;
+};
+
+struct CircleObject_ {
+    PointObject *center, *pt;
+    float radus;
+};
+
+union ObjectSelector_ {
+    PointObject point;
+    LineObject line;
+    CircleObject circle;
+};
+
+struct GeomObject_ {
+    long long id;
+    int show, color;
     ObjectType type;
+    GeomObject *next;
+    ObjectSelector ptr[0];
+};
 
-    union {
-        Point2f point;
-        Line line;
-        Circle circle;
-    } object;
 
-    int show;
-    int color;
-} GeomObject;
+
+
 
 char *create(int argc, const char **argv);
 
