@@ -1,7 +1,6 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "geom_utils.h"
 #include "graphical.h"
 
 typedef enum {
@@ -43,10 +42,10 @@ struct GeomObject_ {
     ObjectSelector ptr[0];
 };
 
-
-
-
-
 char *create(int argc, const char **argv);
+
+char *show(int argc, const char **argv);
+
+char *hide(int argc, const char **argv);
 
 #endif //OBJECT_H
