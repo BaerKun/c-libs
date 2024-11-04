@@ -3,7 +3,6 @@
 #include "console.h"
 #include <stdlib.h>
 #include "geom_utils.h"
-#include "../../arithmetic/include/auto_diff.h"
 
 #define MAX_OBJECTS 64
 
@@ -77,7 +76,7 @@ static void drawLineHelper(const LineObject line, const ObjectType type, const i
     const Vector2f vec = {pt2.x - pt1.x, pt2.y - pt1.y};
     const Point2i imagePt = toImageCoord(pt1, origin);
 
-    if (vec.x == 0.f || fabs(vec.y / vec.x) > (float) height / width) {
+    if (vec.x == 0.f || fabsf(vec.y / vec.x) > (float) height / width) {
         const float kxy = vec.x / vec.y;
         const int x0 = imagePt.x + (int) (imagePt.y * kxy);
         const int xh = imagePt.x - (int) ((height - imagePt.y) * kxy);
@@ -292,7 +291,7 @@ char *create(const int argc, const char **argv) {
     }
 
     int show = 1, rgb = -1;
-    long long id = 0;
+    uint64_t id = 0;
 
     ++argv;
     while (argv != endptr) {

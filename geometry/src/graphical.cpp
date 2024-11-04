@@ -21,7 +21,8 @@ Window *getNewWindow(const char *name, const int width, const int height) {
     w->width = width;
     w->height = height;
     w->name = new char[32];
-    strcpy_s(w->name, 32, name);
+    strncpy(w->name, name, 31);
+    w->name[31] = '\0';
     w->data = new cv::Mat(height, width, CV_8UC3, cv::Scalar(255, 255, 255));
 
     return w;
@@ -106,6 +107,10 @@ void drawText(const Window *window, const char *text, const Point2i leftbottom, 
 
 char waitKey(const int ms) {
     return (char) cv::waitKey(ms);
+}
+
+void setMouseCallback(const Window *window, void (*callback)(int, int, int, int, void *), void *userdata) {
+    cv::setMouseCallback(window->name, callback, userdata);
 }
 
 void showWindow(const Window *window) {

@@ -45,6 +45,8 @@ void drawText(const Window *window, const char *text, Point2i leftbottom, int rg
 
 char waitKey(int ms);
 
+void setMouseCallback(const Window *window, void (*callback)(int event, int x, int y, int flags, void *userdata), void *userdata);
+
 void showWindow(const Window *window);
 
 void destroyWindow(const Window *window);

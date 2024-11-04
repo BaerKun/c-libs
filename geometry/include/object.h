@@ -35,7 +35,7 @@ union ObjectSelector_ {
 };
 
 struct GeomObject_ {
-    long long id;
+    unsigned long long id;
     int show, color;
     ObjectType type;
     GeomObject *next;
