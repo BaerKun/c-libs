@@ -42,10 +42,12 @@ struct GeomObject_ {
     ObjectSelector ptr[0];
 };
 
-char *create(int argc, const char **argv);
+const GeomObject *mouseSelect(int x, int y);
 
-char *show(int argc, const char **argv);
+const char *create(int argc, const char **argv);
 
-char *hide(int argc, const char **argv);
+const char *show(int argc, const char **argv);
+
+const char *hide(int argc, const char **argv);
 
 #endif //OBJECT_H

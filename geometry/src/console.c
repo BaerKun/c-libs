@@ -1,11 +1,14 @@
 #include "console.h"
 
+#include <string.h>
 #include <object.h>
 #include <stdio.h>
 
 #include "graphical.h"
 
 extern Window *mainWindow, *consoleWindow;
+static char strCmdLine[256] = {0};
+static int curser = 0;
 
 uint64_t strhash64(const char *str) {
     uint64_t hash = 0;
@@ -60,10 +63,13 @@ static int splitArgs(const char *ptrCmdLine, char **argv) {
     }
 }
 
-static char *consoleGetLine() {
-    static char strCmdLine[256] = {0};
-    static int curser = 0;
+static void reflashConsole() {
+    windowFill(consoleWindow, 0x88, 0x88, 0x88);
+    drawText(consoleWindow, strCmdLine, (Point2i){10, 30}, 0x0e0e0e, 20);
+    showWindow(mainWindow);
+}
 
+static char *consoleGetLine() {
     while (1) {
         const char c = waitKey(0);
         switch (c) {
@@ -80,10 +86,14 @@ static char *consoleGetLine() {
                 strCmdLine[curser++] = c;
         }
 
-        windowFill(consoleWindow, 0x88, 0x88, 0x88);
-        drawText(consoleWindow, strCmdLine, (Point2i){10, 30}, 0x0e0e0e, 20);
-        showWindow(mainWindow);
+        reflashConsole();
     }
+}
+
+static void pushback(const char *src) {
+    const int len = src[7] == '\0' ? strlen(src) : 8;
+    memcpy(strCmdLine + curser, src, len);
+    curser += len;
 }
 
 static void processCommand(const char *cmdLine) {
@@ -92,7 +102,7 @@ static void processCommand(const char *cmdLine) {
     const int argc = splitArgs(cmdLine, argv);
     if (argc == 0) return;
 
-    char *error;
+    const char *error;
     switch (strhash64(argv[0])) {
         case STR_HASH64('c', 'r', 'e', 'a', 't', 'e', 0, 0):
             error = create(argc, argv);
@@ -113,9 +123,21 @@ static void processCommand(const char *cmdLine) {
     showWindow(mainWindow);
 }
 
+static void mouseCallback(const int event, const int x, const int y, const int flags, void *userdata) {
+    switch (event) {
+        case EVENT_LBUTTONDOWN:
+            const GeomObject *obj = mouseSelect(x, y);
+            if (obj == NULL)
+                return;
+            pushback((char *) &obj->id);
+            reflashConsole();
+    }
+}
+
 void console() {
     windowFill(consoleWindow, 0x88, 0x88, 0x88);
     showWindow(mainWindow);
+    setMouseCallback(mainWindow, mouseCallback, NULL);
 
     while (1) {
         const char *cmdLine = consoleGetLine();

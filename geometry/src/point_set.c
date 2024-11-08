@@ -33,7 +33,7 @@ static void convexHullHelper(const StackPtr stack, const Point2f p) {
     stack_push(stack, p);
 }
 
-static void ptsMaxDist_force(Point2f hullpts[], Point2f *outpts, int nhullpts) {
+static void ptsMaxDist_force(Point2f hullpts[], Point2f *outpts, const int nhullpts) {
     float max = 0;
 
     for (int i = 0; i < nhullpts; ++i) {
