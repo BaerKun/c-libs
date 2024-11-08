@@ -36,34 +36,21 @@ static GeomObject *createGeomObject(ObjectType type, const ObjectSelector *arg, 
 // public
 const GeomObject *mouseSelect(const int x, const int y) {
     const Point2f mouse = toMathCoord((Point2i){x, y}, origin);
-    const GeomObject *obj = NULL;
-    float minSqrDist = 25.f;
+    const float theshold = 25.f;
 
-    for (const GeomObject *pt = pointSet; pt != NULL; pt = pt->next) {
-        const float sqrDist = sqrdist(mouse, pt->ptr->point.coord);
-        if (sqrDist < minSqrDist) {
-            obj = pt;
-            minSqrDist = sqrDist;
-        }
-    }
+    for (const GeomObject *pt = pointSet; pt != NULL; pt = pt->next)
+        if (sqrdist(mouse, pt->ptr->point.coord) < theshold)
+            return pt;
 
-    for (const GeomObject *ln = lineSet; ln != NULL; ln = ln->next) {
-        const float sqrDist = sqrdist_lp(ln, mouse);
-        if (sqrDist < minSqrDist) {
-            obj = ln;
-            minSqrDist = sqrDist;
-        }
-    }
+    for (const GeomObject *ln = lineSet; ln != NULL; ln = ln->next)
+        if(sqrdist_lp(ln, mouse) < theshold)
+            return ln;
 
-    for (const GeomObject *cr = circleSet; cr != NULL; cr = cr->next) {
-        const float sqrDist = sqr(dist2f(mouse, cr->ptr->circle.center->coord) - cr->ptr->circle.radus);
-        if (sqrDist < minSqrDist) {
-            obj = cr;
-            minSqrDist = sqrDist;
-        }
-    }
+    for (const GeomObject *cr = circleSet; cr != NULL; cr = cr->next)
+        if(dist2f(mouse, cr->ptr->circle.center->coord) - cr->ptr->circle.radus < 5.f)
+            return cr;
 
-    return obj;
+    return NULL;
 }
 
 const char *create(const int argc, const char **argv) {
@@ -473,7 +460,7 @@ static float sqrdist_lp(const GeomObject *line, const Point2f p) {
             case 3:
                 return sqrdist(lineObj.pt2->coord, p);
             default:
-                return 25.f;
+                return 9.f;
         }
 
     switch ((vec2_dot(vec1, lineDir) > 0.f) | ((vec2_dot(vec2, lineDir) > 0.f) << 1)) {
@@ -483,6 +470,6 @@ static float sqrdist_lp(const GeomObject *line, const Point2f p) {
         case 0:
             return sqrdist(lineObj.pt1->coord, p);
         default:
-            return 25.f;
+            return 9.f;
     }
 }
