@@ -1,7 +1,6 @@
 #include "graphical.h"
 #include "geometry.h"
 #include "console.h"
-#include <stdio.h>
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -17,8 +16,6 @@ int main(){
     consoleWindow = getSubWindow(mainWindow, 0, WINDOW_HEIGHT - 100, WINDOW_WIDTH, 100);
 
     console();
-
-    destroyWindow(mainWindow);
 
     return 0;
 }

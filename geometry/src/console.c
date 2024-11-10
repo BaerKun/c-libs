@@ -1,14 +1,18 @@
 #include "console.h"
+#include "object.h"
+#include "file_manage.h"
+#include "graphical.h"
+#include "geom_errors.h"
 
 #include <string.h>
-#include <object.h>
-#include <stdio.h>
+#include <stdlib.h>
 
-#include "graphical.h"
 
 extern Window *mainWindow, *consoleWindow;
 static char strCmdLine[256] = {0};
 static int curser = 0;
+extern const char *errorText;
+extern int errorType;
 
 uint64_t strhash64(const char *str) {
     uint64_t hash = 0;
@@ -35,45 +39,54 @@ int strtobool(const char *str, const char **endptr) {
     }
 }
 
-static void printError(const char *error) {
-    drawText(consoleWindow, error, (Point2i){10, 90}, 0xff0000, 20);
-}
-
-static int splitArgs(const char *ptrCmdLine, char **argv) {
-    static char buffer[256] = {0};
-
-    char *ptrBuffer = buffer;
+static int splitArgs(char *buffer, char **argv) {
     int argc = 0;
-
+    int isOneWord = 1;
     while (1) {
-        while (*ptrCmdLine == ' ')
-            ++ptrCmdLine;
-        if (*ptrCmdLine == '\0') return argc;
-
-        argv[argc++] = ptrBuffer;
-        while (*ptrCmdLine != ' ') {
-            *ptrBuffer++ = *ptrCmdLine++;
-            if (*ptrCmdLine == '\0') {
-                *ptrBuffer = '\0';
+        switch (*buffer) {
+            case '\n':
+                *buffer = 0;
+            case '\0':
                 return argc;
-            }
+            case ' ':
+                *buffer++ = 0;
+                isOneWord = 1;
+                break;
+            default:
+                if (isOneWord) {
+                    argv[argc++] = buffer;
+                    isOneWord = 0;
+                }
+                ++buffer;
         }
-        *ptrBuffer++ = '\0';
-        if (argc == 16) return argc;
+        if (argc == 16)
+            return argc;
     }
 }
 
 static void reflashConsole() {
     windowFill(consoleWindow, 0x88, 0x88, 0x88);
-    drawText(consoleWindow, strCmdLine, (Point2i){10, 30}, 0x0e0e0e, 20);
+    if (strCmdLine[0] != '\0')
+        drawText(consoleWindow, strCmdLine, (Point2i){10, 30}, 0x0e0e0e, 15);
+    if (errorText != NULL)
+        drawText(consoleWindow, errorText, (Point2i){10, 90}, 0xff0000, 15);
     showWindow(mainWindow);
 }
 
 static char *consoleGetLine() {
+    static char buffer[256];
+
     while (1) {
         const char c = waitKey(0);
+
+        // 鼠标回调
+        while (strCmdLine[curser] != 0)
+            ++curser;
+
         switch (c) {
             case 27: // ESC
+                destroyWindow(mainWindow);
+            case -1: // 点击窗口叉叉
                 return NULL;
             case '\b':
                 if (curser != 0)
@@ -81,7 +94,8 @@ static char *consoleGetLine() {
                 break;
             case '\n':
             case '\r':
-                return strCmdLine;
+                memcpy(buffer, strCmdLine, curser + 1);
+                return buffer;
             default:
                 strCmdLine[curser++] = c;
         }
@@ -91,36 +105,33 @@ static char *consoleGetLine() {
 }
 
 static void pushback(const char *src) {
-    const int len = src[7] == '\0' ? strlen(src) : 8;
+    const int len = src[7] == 0 ? strlen(src) : 8;
     memcpy(strCmdLine + curser, src, len);
-    curser += len;
 }
 
-static void processCommand(const char *cmdLine) {
+int processCommand(char *buffer) {
     static char *argv[16];
+    const int argc = splitArgs(buffer, argv);
+    if (argc == 0) return 0;
 
-    const int argc = splitArgs(cmdLine, argv);
-    if (argc == 0) return;
-
-    const char *error;
+    resetError();
     switch (strhash64(argv[0])) {
         case STR_HASH64('c', 'r', 'e', 'a', 't', 'e', 0, 0):
-            error = create(argc, argv);
+            create(argc, argv);
             break;
         case STR_HASH64('s', 'h', 'o', 'w', 0, 0, 0, 0):
-            error = show(argc, argv);
+            show(argc, argv);
             break;
         case STR_HASH64('h', 'i', 'd', 'e', 0, 0, 0, 0):
-            error = hide(argc, argv);
+            hide(argc, argv);
+            break;
+        case STR_HASH64('l', 'o', 'a', 'd', '-', 's', 'r', 'c'):
+            load_src(argc, argv);
             break;
         default:
-            error = "Unknown command";
-            break;
+            throwError(ERROR_UNKOWN_COMMAND, unkownCommand(argv[0]));
     }
-
-    if (error != NULL)
-        printError(error);
-    showWindow(mainWindow);
+    return errorType;
 }
 
 static void mouseCallback(const int event, const int x, const int y, const int flags, void *userdata) {
@@ -131,6 +142,8 @@ static void mouseCallback(const int event, const int x, const int y, const int f
                 return;
             pushback((char *) &obj->id);
             reflashConsole();
+        default:
+            break;
     }
 }
 
@@ -141,8 +154,12 @@ void console() {
 
     while (1) {
         const char *cmdLine = consoleGetLine();
-        if (cmdLine == NULL) return;
+        if (cmdLine == NULL) break;
+
+        memset(strCmdLine, 0, curser);
+        curser = 0;
 
         processCommand(cmdLine);
+        reflashConsole();
     }
 }

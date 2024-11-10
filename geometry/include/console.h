@@ -13,6 +13,8 @@ uint64_t strhash64(const char *str);
 
 int strtobool(const char *str, const char **endptr);
 
+int processCommand(const char *buffer);
+
 void console();
 
 #endif //CONSOLE_H

@@ -12,11 +12,20 @@ typedef struct LineObject_ LineObject;
 typedef struct CircleObject_ CircleObject;
 typedef struct GeomObject_ GeomObject;
 typedef union ObjectSelector_ ObjectSelector;
+typedef struct SubPointList_ SubPointList;
+
+struct SubPointList_ {
+    PointObject *pt;
+    SubPointList *next;
+};
 
 struct PointObject_ {
     Point2f coord;
-    int fixed;
-    int numCite;
+    SubPointList *firstChild;
+
+    void (*derive)(PointObject *);
+
+    PointObject *parents[0];
 };
 
 struct LineObject_ {
@@ -44,10 +53,10 @@ struct GeomObject_ {
 
 const GeomObject *mouseSelect(int x, int y);
 
-const char *create(int argc, const char **argv);
+void create(int argc, const char **argv);
 
-const char *show(int argc, const char **argv);
+void show(int argc, const char **argv);
 
-const char *hide(int argc, const char **argv);
+void hide(int argc, const char **argv);
 
 #endif //OBJECT_H

@@ -1,17 +1,16 @@
 #include "object.h"
 #include "random.h"
 #include "console.h"
-#include <stdlib.h>
 #include "geom_utils.h"
+#include "geom_errors.h"
 
-#define MAX_OBJECTS 64
+#include <stdlib.h>
 
 extern Window *imageWindow;
 extern Point2i origin;
 
 // private
 static GeomObject *pointSet = NULL, *lineSet = NULL, *circleSet = NULL;
-static const char noArgGiven[] = "No arguments given.";
 static const char tooFewArgs[] = "Not enough arguments.";
 static const char invalidColor[] = "Invalid color argument. Please hexadecimal.";
 
@@ -23,14 +22,11 @@ static float sqrdist_lp(const GeomObject *line, Point2f p);
 
 static const char *getArgs(ObjectType type, const char *str1, const char *str2, ObjectSelector *arg);
 
-static char *objectNotFoundError(const char *name);
-
 static void showObject(const GeomObject *obj, int color);
 
 static void hideObject(GeomObject *obj);
 
-static GeomObject *createGeomObject(ObjectType type, const ObjectSelector *arg, uint64_t id, int show,
-                                    int rgb);
+static GeomObject *createGeomObject(ObjectType type, const ObjectSelector *arg, uint64_t id, int show, int rgb);
 
 
 // public
@@ -39,55 +35,53 @@ const GeomObject *mouseSelect(const int x, const int y) {
     const float theshold = 25.f;
 
     for (const GeomObject *pt = pointSet; pt != NULL; pt = pt->next)
-        if (sqrdist(mouse, pt->ptr->point.coord) < theshold)
+        if (pt->show && sqrdist(mouse, pt->ptr->point.coord) < theshold)
             return pt;
 
     for (const GeomObject *ln = lineSet; ln != NULL; ln = ln->next)
-        if(sqrdist_lp(ln, mouse) < theshold)
+        if (ln->show && sqrdist_lp(ln, mouse) < theshold)
             return ln;
 
     for (const GeomObject *cr = circleSet; cr != NULL; cr = cr->next)
-        if(dist2f(mouse, cr->ptr->circle.center->coord) - cr->ptr->circle.radus < 5.f)
+        if (cr->show && dist2f(mouse, cr->ptr->circle.center->coord) - cr->ptr->circle.radus < 5.f)
             return cr;
 
     return NULL;
 }
 
-const char *create(const int argc, const char **argv) {
+void create(const int argc, const char **argv) {
     const char **endptr = argv + argc;
-    if (++argv == endptr)
-        return noArgGiven;
+    if (argc == 1)
+        return throwError(ERROR_NO_ARG_GIVEN, noArgGiven(*argv));
 
     ObjectType type;
-    ObjectSelector arg; {
-        const uint64_t hashType = strhash64(*argv);
-        const char *str1 = ++argv == endptr ? NULL : *argv,
-                *str2 = ++argv >= endptr ? NULL : *argv;
-        switch (hashType) {
-            case STR_HASH64('p', 'o', 'i', 'n', 't', 0, 0, 0):
-                type = POINT;
-                break;
-            case STR_HASH64('l', 'i', 'n', 'e', 0, 0, 0, 0):
-                type = LINE;
-                break;
-            case STR_HASH64('r', 'a', 'y', 0, 0, 0, 0, 0):
-                type = RAY;
-                break;
-            case STR_HASH64('s', 'e', 'g', 0, 0, 0, 0, 0):
-                type = SEG;
-                break;
-            case STR_HASH64('c', 'i', 'r', 'c', 'l', 'e', 0, 0):
-                type = CIRCLE;
-                break;
-            case STR_HASH64('h', 'e', 'l', 'p', 0, 0, 0, 0):
-                return "Usage: create <object> <arg1> <arg2> [show_if] [color_rgb] [as <name>]";
-            default:
-                return "Invalid object type.";
-        }
-
-        const char *error = getArgs(type, str1, str2, &arg);
+    ObjectSelector arg;
+    switch (strhash64(*++argv)) {
+        case STR_HASH64('p', 'o', 'i', 'n', 't', 0, 0, 0):
+            type = POINT;
+            break;
+        case STR_HASH64('l', 'i', 'n', 'e', 0, 0, 0, 0):
+            type = LINE;
+            break;
+        case STR_HASH64('r', 'a', 'y', 0, 0, 0, 0, 0):
+            type = RAY;
+            break;
+        case STR_HASH64('s', 'e', 'g', 0, 0, 0, 0, 0):
+            type = SEG;
+            break;
+        case STR_HASH64('c', 'i', 'r', 'c', 'l', 'e', 0, 0):
+            type = CIRCLE;
+            break;
+        case STR_HASH64('h', 'e', 'l', 'p', 0, 0, 0, 0):
+            return throwError(ERROR_HELP, "Usage: create <object> <arg1> <arg2> [as <name>]");
+        default:
+            return throwError(ERROR_INVALID_ARG, "Invalid object type.");
+    } {
+        const char *arg1 = ++argv == endptr ? NULL : *argv,
+                *arg2 = ++argv == endptr ? NULL : *argv;
+        const char *error = getArgs(type, arg1, arg2, &arg);
         if (error != NULL)
-            return error;
+            return throwError(ERROR_INVALID_ARG, error);
     }
 
     int show = 1, rgb = -1;
@@ -102,22 +96,25 @@ const char *create(const int argc, const char **argv) {
                     break;
                 id = strhash64(*argv++);
                 break;
+
             case STR_HASH64('-', '-', 's', 'h', 'o', 'w', 0, 0):
                 if (++argv == endptr)
                     break;
                 show = strtobool(*argv++, &end);
                 if (*end != '\0')
-                    return "Invalid show argument. Please true / false";
+                    return throwError(ERROR_INVALID_ARG, "Invalid show argument. Please true/false");
                 break;
+
             case STR_HASH64('-', '-', 'c', 'o', 'l', 'o', 'r', 0):
                 if (++argv == endptr)
                     break;
                 rgb = strtol(*argv++, (char **) &end, 16);
                 if (*end != '\0')
-                    return invalidColor;
+                    return throwError(ERROR_INVALID_ARG, invalidColor);
                 break;
+
             default:
-                return "Invalid argument.";
+                return throwError(ERROR_INVALID_ARG, "Invalid argument.");
         }
     }
 
@@ -128,13 +125,11 @@ const char *create(const int argc, const char **argv) {
 
     if (show && newObj != NULL)
         showObject(newObj, rgb);
-
-    return NULL;
 }
 
-const char *show(const int argc, const char **argv) {
+void show(const int argc, const char **argv) {
     if (argc == 1)
-        return noArgGiven;
+        return throwError(ERROR_NO_ARG_GIVEN, noArgGiven(*argv));
 
     const uint64_t id = strhash64(argv[1]);
     GeomObject *obj = findObject(pointSet, id);
@@ -145,28 +140,27 @@ const char *show(const int argc, const char **argv) {
     }
 
     if (obj == NULL)
-        return objectNotFoundError(argv[1]);
+        return throwError(ERROR_NOT_FOUND_OBJECT, objectNotFound(argv[1]));
 
     if (argc == 2) {
         obj->show = 1;
         showObject(obj, obj->color);
-        return NULL;
+        return;
     }
 
     char *end;
     const int color = strtol(argv[2], &end, 16);
     if (*end != '\0')
-        return invalidColor;
+        return throwError(ERROR_INVALID_ARG,invalidColor);
 
     obj->show = 1;
     obj->color = color;
     showObject(obj, color);
-    return NULL;
 }
 
-const char *hide(const int argc, const char **argv) {
+void hide(const int argc, const char **argv) {
     if (argc == 1)
-        return noArgGiven;
+        return throwError(ERROR_NO_ARG_GIVEN, noArgGiven(*argv));
 
     const uint64_t id = strhash64(argv[1]);
     GeomObject *obj = findObject(pointSet, id);
@@ -177,10 +171,9 @@ const char *hide(const int argc, const char **argv) {
     }
 
     if (obj == NULL)
-        return objectNotFoundError(argv[1]);
+        return throwError(ERROR_NOT_FOUND_OBJECT, objectNotFound(argv[1]));
 
     hideObject(obj);
-    return NULL;
 }
 
 
@@ -191,20 +184,6 @@ static inline int randomColor() {
 
 static inline float getRadius(const CircleObject circle) {
     return circle.pt == NULL ? circle.radus : dist2f(circle.center->coord, circle.pt->coord);
-}
-
-static void strmove8(const char *src, char *dst) {
-    for (int i = 0; i < 8 && *src != '\0'; ++i) {
-        *dst = *src;
-        ++dst, ++src;
-    }
-    *dst = '\0';
-}
-
-static char *objectNotFoundError(const char *name) {
-    static char error[32] = "Object not found: ";
-    strmove8(name, error + 18);
-    return error;
 }
 
 static uint64_t getDefaultId() {
@@ -295,8 +274,8 @@ static const char *getPointArg(const char *str1, const char *str2, PointObject *
     if (*end != '\0')
         return "Invalid y coordinate.";
 
-    arg->numCite = 0;
-    arg->fixed = 0;
+    arg->firstChild = NULL;
+    arg->derive = NULL;
     return NULL;
 }
 
@@ -305,14 +284,14 @@ static const char *getLineArg(const char *str1, const char *str2, LineObject *ar
     const uint64_t id1 = strhash64(str1);
     const GeomObject *obj = findObject(pointSet, id1);
     if (obj == NULL)
-        return objectNotFoundError(str1);
+        return objectNotFound(str1);
     arg->pt1 = (PointObject *) obj->ptr;
 
     if (str2 == NULL) return tooFewArgs;
     const uint64_t id2 = strhash64(str2);
     obj = findObject(pointSet, id2);
     if (obj == NULL)
-        return objectNotFoundError(str2);
+        return objectNotFound(str2);
     arg->pt2 = (PointObject *) obj->ptr;
 
     return NULL;
@@ -323,7 +302,7 @@ static const char *getCircleArg(const char *str1, const char *str2, CircleObject
     const uint64_t id1 = strhash64(str1);
     const GeomObject *obj = findObject(pointSet, id1);
     if (obj == NULL)
-        return objectNotFoundError(str1);
+        return objectNotFound(str1);
     arg->center = (PointObject *) obj->ptr;
 
     if (str2 == NULL) return tooFewArgs;
@@ -337,7 +316,7 @@ static const char *getCircleArg(const char *str1, const char *str2, CircleObject
     const uint64_t id2 = strhash64(str2);
     obj = findObject(pointSet, id2);
     if (obj == NULL)
-        return objectNotFoundError(str2);
+        return objectNotFound(str2);
     arg->pt = (PointObject *) obj->ptr;
 
     return NULL;
