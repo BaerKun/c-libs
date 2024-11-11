@@ -53,10 +53,10 @@ struct GeomObject_ {
 
 const GeomObject *mouseSelect(int x, int y);
 
-void create(int argc, const char **argv);
+int create(int argc, const char **argv);
 
-void show(int argc, const char **argv);
+int show(int argc, const char **argv);
 
-void hide(int argc, const char **argv);
+int hide(int argc, const char **argv);
 
 #endif //OBJECT_H

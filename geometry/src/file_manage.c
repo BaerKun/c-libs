@@ -16,7 +16,7 @@ static const char *errorInline(const char *error, const int line) {
     return errorTemplate;
 }
 
-void load_src(const int argc, const char **argv) {
+int load_src(const int argc, const char **argv) {
     if(argc == 1)
         return throwError(ERROR_NO_ARG_GIVEN, "Please give a file.");
 
@@ -34,4 +34,5 @@ void load_src(const int argc, const char **argv) {
     }
 
     fclose(file);
+    return 0;
 }

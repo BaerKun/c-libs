@@ -6,7 +6,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-
+#include  <stdio.h>
 
 extern Window *mainWindow, *consoleWindow;
 static char strCmdLine[256] = {0};
@@ -39,31 +39,6 @@ int strtobool(const char *str, const char **endptr) {
     }
 }
 
-static int splitArgs(char *buffer, char **argv) {
-    int argc = 0;
-    int isOneWord = 1;
-    while (1) {
-        switch (*buffer) {
-            case '\n':
-                *buffer = 0;
-            case '\0':
-                return argc;
-            case ' ':
-                *buffer++ = 0;
-                isOneWord = 1;
-                break;
-            default:
-                if (isOneWord) {
-                    argv[argc++] = buffer;
-                    isOneWord = 0;
-                }
-                ++buffer;
-        }
-        if (argc == 16)
-            return argc;
-    }
-}
-
 static void reflashConsole() {
     windowFill(consoleWindow, 0x88, 0x88, 0x88);
     if (strCmdLine[0] != '\0')
@@ -78,7 +53,6 @@ static char *consoleGetLine() {
 
     while (1) {
         const char c = waitKey(0);
-
         // 鼠标回调
         while (strCmdLine[curser] != 0)
             ++curser;
@@ -86,7 +60,9 @@ static char *consoleGetLine() {
         switch (c) {
             case 27: // ESC
                 destroyWindow(mainWindow);
-            case -1: // 点击窗口叉叉
+#ifdef _WIN32
+            case -1: // 点击窗口叉叉（只有windows有效）
+#endif
                 return NULL;
             case '\b':
                 if (curser != 0)
@@ -104,34 +80,53 @@ static char *consoleGetLine() {
     }
 }
 
-static void pushback(const char *src) {
-    const int len = src[7] == 0 ? strlen(src) : 8;
-    memcpy(strCmdLine + curser, src, len);
+static inline void pushback(const char *src) {
+    memcpy(strCmdLine + curser, src, 8);
+}
+
+static int splitArgs(char *buffer, const char **argv) {
+    int argc = 0;
+    int isOneWord = 1;
+    while (1) {
+        switch (*buffer) {
+            case '\n':
+                *buffer = 0;
+            case '\0':
+                return argc;
+            case ' ':
+                *buffer++ = 0;
+            isOneWord = 1;
+            break;
+            default:
+                if (isOneWord) {
+                    argv[argc++] = buffer;
+                    isOneWord = 0;
+                }
+            ++buffer;
+        }
+        if (argc == 16)
+            return argc;
+    }
 }
 
 int processCommand(char *buffer) {
-    static char *argv[16];
+    static const char *argv[16];
     const int argc = splitArgs(buffer, argv);
     if (argc == 0) return 0;
 
     resetError();
     switch (strhash64(argv[0])) {
         case STR_HASH64('c', 'r', 'e', 'a', 't', 'e', 0, 0):
-            create(argc, argv);
-            break;
+            return create(argc, argv);
         case STR_HASH64('s', 'h', 'o', 'w', 0, 0, 0, 0):
-            show(argc, argv);
-            break;
+            return show(argc, argv);
         case STR_HASH64('h', 'i', 'd', 'e', 0, 0, 0, 0):
-            hide(argc, argv);
-            break;
+            return hide(argc, argv);
         case STR_HASH64('l', 'o', 'a', 'd', '-', 's', 'r', 'c'):
-            load_src(argc, argv);
-            break;
+            return load_src(argc, argv);
         default:
-            throwError(ERROR_UNKOWN_COMMAND, unkownCommand(argv[0]));
+            return throwError(ERROR_UNKOWN_COMMAND, unkownCommand(argv[0]));
     }
-    return errorType;
 }
 
 static void mouseCallback(const int event, const int x, const int y, const int flags, void *userdata) {
@@ -153,7 +148,7 @@ void console() {
     setMouseCallback(mainWindow, mouseCallback, NULL);
 
     while (1) {
-        const char *cmdLine = consoleGetLine();
+        char *cmdLine = consoleGetLine();
         if (cmdLine == NULL) break;
 
         memset(strCmdLine, 0, curser);
