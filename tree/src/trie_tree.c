@@ -10,9 +10,9 @@ typedef struct HeapElement {
 #define HEAP_LESS_THAN(a, b) (a.value < b.value)
 #include "heap.h"
 
-TrieTreePtr HuffmanCode(DataType *data, const int *cost, int number) {
-    TrieTreePtr tree = newBinaryTree_fixedCapacity(number * 2 - 1);
-    HeapPtr heap = newHeap(number);
+TrieTreePtr HuffmanCode(const DataType *data, const int *cost, const int number) {
+    const TrieTreePtr tree = newBinaryTree_fixedCapacity(number * 2 - 1);
+    const HeapPtr heap = newHeap(number);
     TrieTreeNodePtr rootNode = NULL;
     
     for (int i = 1; i <= number; i++)

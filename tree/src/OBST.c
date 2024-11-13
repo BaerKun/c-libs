@@ -4,8 +4,8 @@
 
 #define MAX_COUNT_INPUT_SIZE 64
 
-BSTPtr optimalBST(const DataType data[], const WeightType weight[], int number) {
-    int left, root, right, treeWidth;
+BSTPtr optimalBST(const DataType data[], const WeightType weight[], const int number) {
+    int left, root, right;
     WeightType minTreeWeight;
     WeightType (*treeWeight)[MAX_COUNT_INPUT_SIZE] = malloc(number * MAX_COUNT_INPUT_SIZE * sizeof(WeightType));
     int (*treeRoot)[MAX_COUNT_INPUT_SIZE] = malloc(number * MAX_COUNT_INPUT_SIZE * sizeof(BinaryTreeNodePtr));
@@ -15,7 +15,7 @@ BSTPtr optimalBST(const DataType data[], const WeightType weight[], int number) 
         treeRoot[root][root] = root;
     }
 
-    for (treeWidth = 1; treeWidth < number; treeWidth++) {
+    for (int treeWidth = 1; treeWidth < number; treeWidth++) {
         for (left = 0; (right = treeWidth + left) < number; left++) {
 
             treeWeight[right][left] = treeWeight[left][left] + treeWeight[right][left + 1];
@@ -41,10 +41,9 @@ BSTPtr optimalBST(const DataType data[], const WeightType weight[], int number) 
 
     free(treeWeight);
 
-    BSTPtr tree = newBinaryTree_fixedCapacity(number);
-    QueuePtr pLeftQueue = newQueue(number);
-    QueuePtr pRightQueue = newQueue(number);
-    BinaryTreeNodePtr rootNode;
+    const BSTPtr tree = newBinaryTree_fixedCapacity(number);
+    const QueuePtr pLeftQueue = newQueue(number);
+    const QueuePtr pRightQueue = newQueue(number);
 
     enqueue(pLeftQueue, 0);
     enqueue(pRightQueue, number - 1);
@@ -56,7 +55,7 @@ BSTPtr optimalBST(const DataType data[], const WeightType weight[], int number) 
         left = dequeue(pLeftQueue);
         right = dequeue(pRightQueue);
         root = treeRoot[left][right];
-        rootNode = tree->memoryPool + root;
+        const BinaryTreeNodePtr rootNode = tree->memoryPool + root;
 
         rootNode->isEmpty = 0;
         rootNode->data = data[root];

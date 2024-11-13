@@ -26,6 +26,6 @@ BinaryTreeNodePtr BST_deleteNode(BSTPtr tree, BinaryTreeNodePtr node, int isRigh
 
 BinaryTreeNodePtr BST_deleteData(BSTPtr tree, DataType data);
 
-BSTPtr buildBST(DataType data[], int len, int isFixed);
+BSTPtr buildBST(const DataType data[], int len, int isFixed);
 
 #endif //TREE_BINARY_SEARCH_TREE_H
