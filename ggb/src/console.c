@@ -3,16 +3,18 @@
 #include "file_manage.h"
 #include "graphical.h"
 #include "geom_errors.h"
+#include "board.h"
 
 #include <string.h>
 #include <stdlib.h>
-#include  <stdio.h>
 
 extern Window *mainWindow, *consoleWindow;
-static char strCmdLine[256] = {0};
-static int curser = 0;
 extern const char *errorText;
 extern int errorType;
+
+static char strCmdLine[256] = {0};
+static int curser = 0;
+
 
 uint64_t strhash64(const char *str) {
     uint64_t hash = 0;
@@ -95,14 +97,14 @@ static int splitArgs(char *buffer, const char **argv) {
                 return argc;
             case ' ':
                 *buffer++ = 0;
-            isOneWord = 1;
-            break;
+                isOneWord = 1;
+                break;
             default:
                 if (isOneWord) {
                     argv[argc++] = buffer;
                     isOneWord = 0;
                 }
-            ++buffer;
+                ++buffer;
         }
         if (argc == 16)
             return argc;
@@ -124,6 +126,8 @@ int processCommand(char *buffer) {
             return hide(argc, argv);
         case STR_HASH64('l', 'o', 'a', 'd', '-', 's', 'r', 'c'):
             return load_src(argc, argv);
+        case STR_HASH64('m', 'i', 'd', 'p', 'o', 'i', 'n', 't'):
+            return midpoint(argc, argv);
         default:
             return throwError(ERROR_UNKOWN_COMMAND, unkownCommand(argv[0]));
     }

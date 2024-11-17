@@ -24,19 +24,19 @@ static inline float sqr(const float a) {
     return a * a;
 }
 
-static inline float sum_square(const float a, const float b) {
+static inline float sum_sqr(const float a, const float b) {
     return a * a + b * b;
 }
 
 static inline float sqr_vec2(const Vector2f vec) {
-    return sum_square(vec.x, vec.y);
+    return sum_sqr(vec.x, vec.y);
 }
 
 static inline float sqrdist(const Point2f p1, const Point2f p2) {
-    return sum_square(p1.x - p2.x, p1.y - p2.y);
+    return sum_sqr(p1.x - p2.x, p1.y - p2.y);
 }
 
-static inline Point2f midpoint(const Point2f a, const Point2f b) {
+static inline Point2f midpt(const Point2f a, const Point2f b) {
     return (Point2f){(a.x + b.x) / 2, (a.y + b.y) / 2};
 }
 

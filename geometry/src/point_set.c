@@ -224,12 +224,12 @@ void minEnclosingCircle(Point2f pts[], const int npts, Point2f *center, float *r
 
         if (dist2f(*center, pts[i]) <= *radius)
             continue;
-        *center = midpoint(*pts, pts[i]);
+        *center = midpt(*pts, pts[i]);
         *radius = dist2f(*center, *pts);
         for (int j = 1; j < i; ++j) {
             if (dist2f(*center, pts[j]) <= *radius)
                 continue;
-            *center = midpoint(pts[i], pts[j]);
+            *center = midpt(pts[i], pts[j]);
             *radius = dist2f(*center, pts[i]);
 
             // 遍历三点外接圆

@@ -1,10 +1,10 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "graphical.h"
+#include "geometry.h"
 
 typedef enum {
-    POINT, CIRCLE, LINE, RAY, SEG
+    ANY, POINT, CIRCLE, LINE, RAY, SEG
 } ObjectType;
 
 typedef struct PointObject_ PointObject;
@@ -12,18 +12,19 @@ typedef struct LineObject_ LineObject;
 typedef struct CircleObject_ CircleObject;
 typedef struct GeomObject_ GeomObject;
 typedef union ObjectSelector_ ObjectSelector;
-typedef struct SubPointList_ SubPointList;
+typedef struct SubPoint_ SubPoint;
 
-struct SubPointList_ {
+struct SubPoint_ {
     PointObject *pt;
-    SubPointList *next;
+    SubPoint *next;
 };
 
 struct PointObject_ {
     Point2f coord;
-    SubPointList *firstChild;
+    SubPoint *children;
+    PointObject *next;
 
-    void (*derive)(PointObject *);
+    Point2f (*derive)(PointObject *);
 
     PointObject *parents[0];
 };
@@ -34,11 +35,10 @@ struct LineObject_ {
 
 struct CircleObject_ {
     PointObject *center, *pt;
-    float radus;
 };
 
 union ObjectSelector_ {
-    PointObject point;
+    PointObject *point;
     LineObject line;
     CircleObject circle;
 };
@@ -51,12 +51,10 @@ struct GeomObject_ {
     ObjectSelector ptr[0];
 };
 
-const GeomObject *mouseSelect(int x, int y);
+GeomObject *findObject(ObjectType type, unsigned long long id);
 
 int create(int argc, const char **argv);
 
-int show(int argc, const char **argv);
-
-int hide(int argc, const char **argv);
+int midpoint(int argc, const char **argv);
 
 #endif //OBJECT_H
