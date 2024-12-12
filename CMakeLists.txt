@@ -18,6 +18,4 @@ add_subdirectory(some_useful)
 
 add_subdirectory(geometry)
 
-add_subdirectory(ggb)
-
  add_executable(tmp tmp.c)

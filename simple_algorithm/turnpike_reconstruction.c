@@ -1,6 +1,7 @@
 #include "turnpike_reconstruction.h"
 #include "tree/binary_search_tree.h"
 #include <stdio.h>
+#define STACK_ELEMENT_TYPE BinaryTreeNodePtr
 #include "stack.h"
 
 typedef struct {
@@ -15,17 +16,17 @@ int RT_Delete(const BSTPtr tree, const StackPtr stack, const DistanceType points
     int i;
     BinaryTreeNodePtr node;
     for (i = 0; i < left; i++) {
-        node = BST_deleteData(tree, point - points[i]);
+        node = bstUnlinkWithData(tree, point - points[i]);
         if (node == NULL)
             return i;
-        stack_push(stack, (int) (node - tree->memoryPool));
+        stackPush(stack, node);
     }
 
     for (i = right + 1; i < end; i++) {
-        node = BST_deleteData(tree, points[i] - point);
+        node = bstUnlinkWithData(tree, points[i] - point);
         if (node == NULL)
             return i;
-        stack_push(stack, (int) (node - tree->memoryPool));
+        stackPush(stack, node);
     }
 
     return end;
@@ -38,20 +39,20 @@ void RT_Insert(const BSTPtr tree, const StackPtr stack, int left, const int righ
         left = end;
 
     for (i = right + 1; i < end; i++)
-        BST_insertNode(tree, tree->memoryPool + stack_pop(stack));
+        bstInsertNode(tree, stackPop(stack));
 
     for (i = 0; i < left; i++)
-        BST_insertNode(tree, tree->memoryPool + stack_pop(stack));
+        bstInsertNode(tree, stackPop(stack));
 }
 
 int reconstructTurnpikeBody(Package *package, const int left, const int right) {
-    DistanceType max, isSuccessful = 0;
+    int isSuccessful = 0;
     int end;
 
     if (left > right)
         return 1;
 
-    max = BST_findMax(package->tree)->data;
+    DistanceType max = bstFindMax(package->tree)->data;
 
     if (package->npoints ==
         (end = RT_Delete(package->tree, package->stack, package->points, max, left, right, package->npoints))) {
@@ -79,15 +80,16 @@ int reconstructTurnpikeBody(Package *package, const int left, const int right) {
 
 void reconstructTurnpike(DistanceType distances[], DistanceType points[], const int npoints) {
     const int numOfDistances = npoints * (npoints - 1) / 2;
-    const BSTPtr tree = buildBST(distances, numOfDistances, 1);
+    BinaryTreeNodePtr buffer = malloc(sizeof(BinaryTreeNode) * numOfDistances);
+    const BSTPtr tree = buildBST(distances, numOfDistances, buffer);
     const StackPtr stack = newStack(numOfDistances);
     Package package = (Package){tree, points, stack, npoints};
 
     points[0] = 0;
-    points[npoints - 1] = BST_deleteMax(tree)->data;
-    points[npoints - 2] = BST_deleteMax(tree)->data;
+    points[npoints - 1] = bstUnlinkMax(tree)->data; // buffer，不用free单个节点
+    points[npoints - 2] = bstUnlinkMax(tree)->data;
 
-    if (BST_deleteData(tree, points[npoints - 1] - points[npoints - 2]) != NULL) {
+    if (bstUnlinkWithData(tree, points[npoints - 1] - points[npoints - 2]) != NULL) {
         if (reconstructTurnpikeBody(&package, 1, npoints - 3)) {
             puts("reconstruct successfully!");
             goto END;
@@ -96,6 +98,7 @@ void reconstructTurnpike(DistanceType distances[], DistanceType points[], const 
 
     puts("reconstruct failed!");
 END:
-    BT_destroy(tree);
-    stack_destroy(stack);
+    stackDestroy(stack);
+    free(buffer);
+    free(tree);
 }

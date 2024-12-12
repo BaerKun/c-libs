@@ -36,7 +36,7 @@ static inline float sqrdist(const Point2f p1, const Point2f p2) {
     return sum_square(p1.x - p2.x, p1.y - p2.y);
 }
 
-static inline Point2f midpoint(const Point2f a, const Point2f b) {
+static inline Point2f midpt(const Point2f a, const Point2f b) {
     return (Point2f){(a.x + b.x) / 2, (a.y + b.y) / 2};
 }
 

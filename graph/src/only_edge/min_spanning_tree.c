@@ -22,17 +22,17 @@ void KruskalMinSpanningTree(const GraphPtr graph, EdgeId outputArray[]) {
 
     while (heap->size != 0) {
         edge = heap_deleteMin(heap);
-        const ClassId root1 = disjSet_find(disjSet, edge->vertex1);
-        const ClassId root2 = disjSet_find(disjSet, edge->vertex2);
+        const ClassId root1 = disjSetFind(disjSet, edge->vertex1);
+        const ClassId root2 = disjSetFind(disjSet, edge->vertex2);
 
         if (root1 != root2) {
             outputArray[counter++] = (EdgeId) (edge - graph->edges);
-            disjSet_union(disjSet, root1, root2);
+            disjSetUnion(disjSet, root1, root2);
         }
     }
     if (counter + 1 != graph->vertexNum)
         printf("No spanning tree!\n");
 
     outputArray[counter] = -1;
-    heap_destroy(heap);
+    heapDestroy(heap);
 }

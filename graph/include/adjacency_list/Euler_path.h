@@ -4,8 +4,8 @@
 #include "graph.h"
 #include "list.h"
 
-void EulerCircuit(GraphPtr graph, ListPtr path, VertexId source);
+void EulerCircuit(GraphPtr graph, NodePtr path, VertexId source);
 
-void EulerPath(GraphPtr graph, ListPtr path, VertexId src, VertexId dst);
+void EulerPath(GraphPtr graph, NodePtr path, VertexId src, VertexId dst);
 
 #endif //GRAPH_EULER_PATH_H

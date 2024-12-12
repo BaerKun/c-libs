@@ -1,7 +1,8 @@
 #include "tree/binary_search_tree.h"
 #include <stdio.h>
+#include <stdlib.h>
 
-BinaryTreeNodePtr BST_findMax(const BSTPtr tree) {
+BinaryTreeNodePtr bstFindMax(const BSTPtr tree) {
     BinaryTreeNodePtr node;
 
     for(node = tree->root; node->right != NULL; node = node->right);
@@ -9,18 +10,12 @@ BinaryTreeNodePtr BST_findMax(const BSTPtr tree) {
     return node;
 }
 
-BinaryTreeNodePtr BST_deleteMax(const BSTPtr tree) {
+BinaryTreeNodePtr bstUnlinkMax(const BSTPtr tree) {
     BinaryTreeNodePtr parent = NULL;
     for(BinaryTreeNodePtr child = tree->root; child->right != NULL; child = child->right)
         parent = child;
 
-    return BT_deleteNode(tree, parent, 1, NULL);
-}
-
-DataType bstDeleteAndFreeMax(const BSTPtr tree) {
-    const BinaryTreeNodePtr node = BST_deleteMax(tree);
-    BT_freeNode(tree, node);
-    return node->data;
+    return btUnlink(tree, parent, 1, NULL);
 }
 
 static BinaryTreeNodePtr bstFindParent(const BSTPtr tree, const DataType data, int *isRight) {
@@ -44,23 +39,23 @@ static BinaryTreeNodePtr bstFindParent(const BSTPtr tree, const DataType data, i
     return parent;
 }
 
-void BST_insertNode(const BSTPtr tree, const BinaryTreeNodePtr node) {
+void bstInsertNode(const BSTPtr tree, const BinaryTreeNodePtr node) {
     int isRight;
 
     const BinaryTreeNodePtr parent = bstFindParent(tree, node->data, &isRight);
 
-    BT_insertNode(tree, parent, node, isRight);
+    btInsertNode(tree, parent, node, isRight);
 }
 
-void BST_insertData(const BSTPtr tree, const DataType data){
+void bstInsertData(const BSTPtr tree, const DataType data){
     int isRight;
 
     const BinaryTreeNodePtr parent = bstFindParent(tree, data, &isRight);
 
-    BT_insertData(tree, parent, data, isRight);
+    btInsertData(tree, parent, data, isRight);
 }
 
-static BinaryTreeNodePtr bstDeleteRightMin(const BSTPtr tree, const BinaryTreeNodePtr node) {
+static BinaryTreeNodePtr bstUnlinkRightMin(const BSTPtr tree, const BinaryTreeNodePtr node) {
     BinaryTreeNodePtr parent = node;
     BinaryTreeNodePtr child = node->right;
     while (child->left != NULL) {
@@ -68,43 +63,34 @@ static BinaryTreeNodePtr bstDeleteRightMin(const BSTPtr tree, const BinaryTreeNo
         child = child->left;
     }
 
-    return BT_deleteNode(tree, parent, parent == node, NULL);
+    return btUnlink(tree, parent, parent == node, NULL);
 }
 
 static BinaryTreeNodePtr if2childrenCallback(const BinaryTreePtr tree, const BinaryTreeNodePtr parent, const int isRight) {
-    BinaryTreeNodePtr node, *ptr;
-    if(parent == NULL) {
-        node = tree->root;
-        ptr = &tree->root;
-    }else if(isRight) {
-        node = parent->right;
-        ptr = &parent->right;
-    } else {
-        node = parent->left;
-        ptr = &parent->left;
-    }
-    const BinaryTreeNodePtr replace = bstDeleteRightMin(tree, node);
+    BinaryTreeNodePtr *ptr = btGetChild(tree, parent, isRight);
+    const BinaryTreeNodePtr node = *ptr;
+
+    const BinaryTreeNodePtr replace = bstUnlinkRightMin(tree, node);
     replace->left = node->left;
     replace->right = node->right;
     replace->next = NULL;
     *ptr = replace;
 
     tree->nodeNum--;
-
     return node;
 }
 
-BinaryTreeNodePtr BST_deleteNode(const BSTPtr tree, const BinaryTreeNodePtr node, const int isRight) {
-    return BT_deleteNode(tree, node, isRight, if2childrenCallback);
+BinaryTreeNodePtr bstUnlink(const BSTPtr tree, const BinaryTreeNodePtr node, const int isRight) {
+    return btUnlink(tree, node, isRight, if2childrenCallback);
 }
 
-BinaryTreeNodePtr BST_deleteData(const BSTPtr tree, const DataType data) {
+BinaryTreeNodePtr bstUnlinkWithData(const BSTPtr tree, const DataType data) {
     int isRight;
     const BinaryTreeNodePtr parent = bstFindParent(tree, data, &isRight);
-    return BST_deleteNode(tree, parent, isRight);
+    return bstUnlink(tree, parent, isRight);
 }
 
-BinaryTreeNodePtr BST_find(const BSTPtr tree, const DataType data) {
+BinaryTreeNodePtr bstFind(const BSTPtr tree, const DataType data) {
     BinaryTreeNodePtr node;
 
     for(node = tree->root; node != NULL;){
@@ -119,11 +105,17 @@ BinaryTreeNodePtr BST_find(const BSTPtr tree, const DataType data) {
     return node;
 }
 
-BSTPtr buildBST(const DataType data[], const int len, const int isFixed) {
-    const BSTPtr tree = isFixed ? newBinaryTree_fixedCapacity(len) : newBinaryTree();
+BSTPtr buildBST(const DataType data[], const int len, const BinaryTreeNodePtr buffer) {
+    const BSTPtr tree = newBinaryTree();
 
-    for(int i = 0; i < len; i++){
-        BST_insertData(tree, data[i]);
+    if (buffer == NULL) {
+        for(int i = 0; i < len; i++)
+            bstInsertData(tree, data[i]);
+    } else {
+        for (int i = 0; i < len; i++) {
+            buffer[i].data = data[i];
+            bstInsertNode(tree, buffer + i);
+        }
     }
 
     return tree;

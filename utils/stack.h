@@ -8,16 +8,16 @@
 #define STACK_ELEMENT_TYPE int
 #endif
 
-typedef struct Stack Stack, *StackPtr;
+typedef struct Stack_ Stack, *StackPtr;
 
-struct Stack{
+struct Stack_{
     STACK_ELEMENT_TYPE *elements;
     int capacity;
     int top;
 };
 
-static inline StackPtr newStack(int capacity){
-    StackPtr stack = (StackPtr)malloc(sizeof(Stack));
+static inline StackPtr newStack(const int capacity){
+    const StackPtr stack = (StackPtr)malloc(sizeof(Stack));
 
     stack->capacity = capacity;
     stack->top = 0;
@@ -26,29 +26,19 @@ static inline StackPtr newStack(int capacity){
     return stack;
 }
 
-static inline void stack_push(StackPtr stack, STACK_ELEMENT_TYPE element){
-//    if(stack->top == stack->capacity) {
-//        fputs("stack_push: Stack is full!", stderr);
-//        return;
-//    }
-
+static inline void stackPush(const StackPtr stack, STACK_ELEMENT_TYPE const element){
     stack->elements[stack->top++] = element;
 }
 
-static inline STACK_ELEMENT_TYPE stack_pop(StackPtr stack){
-//    if(stack->top == 0){
-//        fputs("stack_pop: Stack is empty!", stderr);
-//        exit(1);
-//    }
-
+static inline STACK_ELEMENT_TYPE stackPop(const StackPtr stack){
     return stack->elements[--stack->top];
 }
 
-static inline STACK_ELEMENT_TYPE stack_peek(StackPtr stack){
+static inline STACK_ELEMENT_TYPE stack_peek(const StackPtr stack){
     return stack->elements[stack->top - 1];
 }
 
-static inline void stack_destroy(StackPtr stack){
+static inline void stackDestroy(const StackPtr stack){
     free(stack->elements);
     free(stack);
 }

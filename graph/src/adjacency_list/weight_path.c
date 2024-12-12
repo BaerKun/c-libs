@@ -18,10 +18,10 @@ void DijkstraWeightedPath(const GraphPtr graph, VertexId *parent, const VertexId
     }
 
     distance[source] = 0;
-    heap_insert(heap, distance + source);
+    heapInsert(heap, distance + source);
 
     while (heap->size) {
-        const VertexId vertex = (VertexId) (heap_deleteMin(heap) - distance);
+        const VertexId vertex = (VertexId) (heapDeleteMin(heap) - distance);
         if (vertex == target)
             return;
 
@@ -34,13 +34,13 @@ void DijkstraWeightedPath(const GraphPtr graph, VertexId *parent, const VertexId
 
             distance[adjacentVertex] = distance[vertex] + edge->data.WEIGHT_FOR_WEIGHTED_PATH;
             parent[adjacentVertex] = vertex;
-            heap_insert(heap, distance + adjacentVertex);
+            heapInsert(heap, distance + adjacentVertex);
         }
     }
 
     free(hasKnown);
     free(distance);
-    heap_destroy(heap);
+    heapDestroy(heap);
 }
 
 // 无负值圈

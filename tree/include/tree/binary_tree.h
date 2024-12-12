@@ -10,40 +10,32 @@ struct BinaryTreeNode{
     BinaryTreeNodePtr left;
     BinaryTreeNodePtr right;
     BinaryTreeNodePtr next;
-    BinaryTreeNodePtr nextEmpty;
-    int isEmpty;
     DataType data;
 };
 
 typedef struct {
-    int capacity;
     int nodeNum;
-    BinaryTreeNodePtr memoryPool;
     BinaryTreeNodePtr root;
 }BinaryTree, *BinaryTreePtr;
 
-BinaryTreePtr newBinaryTree_fixedCapacity(int capacity);
-
 BinaryTreePtr newBinaryTree();
 
-void BT_destroy(BinaryTreePtr tree);
+static void deleteTreeNodeRecursively(BinaryTreeNodePtr root);
 
-BinaryTreeNodePtr BT_newNode_fc(BinaryTreePtr tree, DataType data);
+void btDestroy(BinaryTreePtr tree);
 
-BinaryTreeNodePtr BT_newNode(DataType data);
+BinaryTreeNodePtr btNewNode(DataType data);
 
-void BT_freeNode(BinaryTreePtr tree, BinaryTreeNodePtr node);
+BinaryTreeNodePtr *btGetChild(BinaryTreePtr tree,  BinaryTreeNodePtr parent, int isRight);
 
-void BT_insertNode(BinaryTreePtr tree, BinaryTreeNodePtr parent, BinaryTreeNodePtr node, int isRight);
+BinaryTreeNodePtr btUnlink(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
+                                BinaryTreeNodePtr (*if2children)(BinaryTreePtr, BinaryTreeNodePtr, int));
 
-void BT_insertData(BinaryTreePtr tree, BinaryTreeNodePtr parent, DataType data, int isRight);
+void btDeleteNode(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
+                      BinaryTreeNodePtr (*if2children)(BinaryTreePtr, BinaryTreeNodePtr, int));
 
-BinaryTreeNodePtr BT_deleteNode(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
-                                BinaryTreeNodePtr if2children(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight));
+void btInsertNode(BinaryTreePtr tree, BinaryTreeNodePtr parent, BinaryTreeNodePtr node, int isRight);
 
-void BT_deleteAndFree(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight,
-                      BinaryTreeNodePtr if2children(BinaryTreePtr tree, BinaryTreeNodePtr parent, int isRight));
-
-//void PrintBinaryTree(BinaryTreePtr pTree);
+void btInsertData(BinaryTreePtr tree, BinaryTreeNodePtr parent, DataType data, int isRight);
 
 #endif //TREE_BINARY_TREE_H

@@ -33,7 +33,7 @@ static void findSccForward(Package *package, VertexArg *vertex) {
         edge->target = vertex - package->vertices;
     }
 
-    stack_push(package->stack, vertex);
+    stackPush(package->stack, vertex);
 }
 
 static void findSccBackward(Package *package, VertexArg *vertex) {

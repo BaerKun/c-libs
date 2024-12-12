@@ -7,79 +7,132 @@
 #define LIST_ELEMENT_TYPE int
 #endif
 
-// 包含头节点
-typedef struct Node Node, *NodePtr;
-typedef Node List, *ListPtr;
+#define FOR_EACH_LIST_LIKE(_node, _head) for (const typeof(_head) _node = _head; _node; _node = _node->next)
 
-struct Node {
+typedef struct Node_ Node, *NodePtr;
+typedef struct List_ List, *ListPtr;
+
+struct Node_ {
     NodePtr next;
     LIST_ELEMENT_TYPE element;
 };
 
+struct List_ {
+    NodePtr head;
+    NodePtr tail;
+    unsigned size;
+};
+
 static inline ListPtr newList() {
-    const ListPtr list = malloc(sizeof(struct Node));
-    list->next = NULL;
+    const ListPtr list = malloc(sizeof(List));
+    list->head = list->tail = NULL;
+    list->size = 0;
     return list;
 }
 
-static inline NodePtr newNode(LIST_ELEMENT_TYPE element) {
-    const NodePtr node = malloc(sizeof(struct Node));
+static inline NodePtr newNode(LIST_ELEMENT_TYPE const element) {
+    const NodePtr node = malloc(sizeof(Node));
     node->element = element;
+    node->next = NULL;
 
     return node;
 }
 
-static void list_makeEmpty(ListPtr list) {
-    for (NodePtr next = list->next; next; next = list->next) {
-        list->next = next->next;
-        free(next);
+static void listClear(const ListPtr list) {
+    for (NodePtr prev = NULL, node = list->head; node; ) {
+        prev = node;
+        node = node->next;
+        free(prev);
     }
+    list->tail = list->head = NULL;
+    list->size = 0;
 }
 
-static NodePtr list_find(ListPtr list, LIST_ELEMENT_TYPE element) {
-    NodePtr node;
-    for (node = list->next; node && node->element != element; node = node->next);
+static NodePtr listFind(const ListPtr list, LIST_ELEMENT_TYPE const element) {
+    NodePtr node = list->head;
+    while (node && node->element != element)
+        node = node->next;
     return node;
 }
 
-static NodePtr list_findPrev(ListPtr list, LIST_ELEMENT_TYPE element) {
-    NodePtr prev, next;
-    for (prev = list, next = prev->next;
-         next && next->element != element; next = next->next)
-        prev = next;
-    if (next)
-        return prev;
-    return NULL;
+static NodePtr listFindPrev(const ListPtr list, LIST_ELEMENT_TYPE const element) {
+    NodePtr prev = NULL;
+    for (NodePtr node = list->head; node && node->element != element; node = node->next)
+        prev = node;
+    return prev;
 }
 
-static inline NodePtr list_deleteNode(ListPtr list, LIST_ELEMENT_TYPE element) {
-    const NodePtr prev = list_findPrev(list, element);
-    if (prev) {
-        const NodePtr next = prev->next;
-        prev->next = next->next;
-        return next;
-    }
-    return NULL;
+static void insertNode(const NodePtr parent, const NodePtr node) {
+    node->next = parent->next;
+    parent->next = node;
 }
 
-static inline void list_insertNode(ListPtr list, NodePtr node) {
-    node->next = list->next;
-    list->next = node;
+static void insertData(const NodePtr parent, LIST_ELEMENT_TYPE const element) {
+    const NodePtr node = malloc(sizeof(Node));
+    node->element = element;
+    insertNode(parent, node);
 }
 
-static inline void list_insertData(ListPtr list, LIST_ELEMENT_TYPE element) {
-    const NodePtr newNode = malloc(sizeof(struct Node));
-    newNode->element = element;
-    list_insertNode(list, newNode);
+static void listPush(const ListPtr list, LIST_ELEMENT_TYPE const element) {
+    const NodePtr node = malloc(sizeof(Node));
+    node->element = element;
+    node->next = list->head;
+    list->head = node;
+    if (++list->size == 1)
+        list->tail = node;
 }
 
-static inline void list_deleteAndFree(ListPtr list, LIST_ELEMENT_TYPE element) {
-    const NodePtr node = list_deleteNode(list, element);
+static LIST_ELEMENT_TYPE listPop(const ListPtr list) {
+    if (list->size == 0)
+        return (LIST_ELEMENT_TYPE){0};
+
+    const NodePtr node = list->head;
+    const LIST_ELEMENT_TYPE element = node->element;
+    list->head = node->next;
     free(node);
+    if (--list->size == 0)
+        list->tail = NULL;
+    return element;
 }
 
-static inline void list_destroy(ListPtr list) {
-    list_makeEmpty(list);
+static void listDelete(const ListPtr list, LIST_ELEMENT_TYPE const element) {
+    const NodePtr prev = listFindPrev(list, element);
+    if (prev == list->tail)
+        return;
+
+    if (prev == NULL) {
+        const NodePtr head = list->head;
+        list->head = head->next;
+        free(head);
+        if (--list->size == 0)
+            list->tail = NULL;
+        return;
+    }
+
+    const NodePtr node = prev->next;
+    prev->next = node->next;
+    if (node == list->tail)
+        list->tail = prev;
+    free(node);
+    list->size--;
+}
+
+static inline void listEnqueue(const ListPtr list, LIST_ELEMENT_TYPE const element) {
+    const NodePtr node = newNode(element);
+    if (++list->size == 1)
+        list->head = node;
+    else
+        list->tail->next = node;
+
+    list->tail = node;
+}
+
+static inline LIST_ELEMENT_TYPE listDequeue(const ListPtr list) {
+    return listPop(list);
+}
+
+static inline void listDestroy(const ListPtr list) {
+    listClear(list);
     free(list);
 }
 

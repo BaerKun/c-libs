@@ -9,6 +9,6 @@ typedef BinaryTree TrieTree, *TrieTreePtr;
 
 #define NO_DATA (-1)
 
-TrieTreePtr HuffmanCode(DataType *data, const int *cost, int number);
+TrieTreePtr HuffmanCode(const DataType *data, const int *cost, int number);
 
 #endif //TRIE_TREE_H

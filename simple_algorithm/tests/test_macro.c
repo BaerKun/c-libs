@@ -1,13 +1,10 @@
 #include "stdio.h"
-#include "random.h"
-#include "kalman.h"
-
+#include "turnpike_reconstruction.h"
 int main() {
-	KalmanFilter filter = KALMAN_INIT(1, 1, 1, 0.01, 0.1);
-	for(int i = 0; i < 100; i++) {
-		float input = 1;
-		float m = randfloat(i + -0.1, i + 0.1);
-		float x = kalmanUpdate(&filter, input, m);
-		printf("%f\n", x);
-	}
+    DistanceType distances[10] = {3, 1, 2, 5, 2, 4};
+    DistanceType points[5];
+    reconstructTurnpike(distances, points, 4);
+    for (int i = 0; i < 4; ++i) {
+        printf("%d ", points[i]);
+    }
 }

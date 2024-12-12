@@ -7,7 +7,7 @@
 #define MAX_WORK_TIME 8.5   // 最大工作时间
 #define INIT_PHEROMONE 0.1f // 初始信息素
 
-typedef List Path;
+typedef Node Path;
 
 float dency = 0.1f; // 挥发率
 float alpha = 1.0f;
@@ -123,7 +123,7 @@ void antColony(int nants) {
         // 更新信息素和趋势
         update(&head, totalTime);
         // 清空路径
-        list_makeEmpty(&head);
+        listClear(&head);
     }
     free(mask);
 }

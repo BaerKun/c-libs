@@ -1,8 +1,8 @@
-#include "../include/tree/trie_tree.h"
+#include "tree/trie_tree.h"
 #include <stdio.h>
 
 typedef struct HeapElement {
-    int key;
+    TrieTreeNodePtr node;
     int value;
 } HeapElement;
 
@@ -11,38 +11,32 @@ typedef struct HeapElement {
 #include "heap.h"
 
 TrieTreePtr HuffmanCode(const DataType *data, const int *cost, const int number) {
-    const TrieTreePtr tree = newBinaryTree_fixedCapacity(number * 2 - 1);
+    const TrieTreePtr tree = newBinaryTree();
     const HeapPtr heap = newHeap(number);
-    TrieTreeNodePtr rootNode = NULL;
-    
-    for (int i = 1; i <= number; i++)
-        heap->prev[i] = (HeapElement) {i, cost[i]};
+    TrieTreeNodePtr root = NULL;
+
+    for (int i = 0, j = 1; i < number; i = j++) {
+        const TrieTreeNodePtr node = btNewNode(data[i]);
+        heap->prev[j] = (HeapElement) {node, cost[i]};
+    }
 
     buildHeap(heap, number);
 
     while (heap->size > 1) {
-        const HeapElement minCost = heap_deleteMin(heap);
-        rootNode = BT_newNode_fc(tree, NO_DATA);
+        const HeapElement minCost = heapDeleteMin(heap);
+        root = btNewNode(NO_DATA);
 
-        const int left = minCost.key;
-        if (left < 0) {
-            rootNode->left = tree->memoryPool - left;
-        } else
-            BT_insertData(tree, rootNode, data[left], 0);
-
-        const int right = heap->prev[1].key;
-        if (right < 0) {
-            rootNode->right = tree->memoryPool - right;
-        } else
-            BT_insertData(tree, rootNode, data[right], 1);
+        root->left = minCost.node;
+        root->right = heapDeleteMin(heap).node;
 
         heap->prev[1].value += minCost.value;
-        heap->prev[1].key = (int) (tree->memoryPool - rootNode);
-        heap_percolateDown(heap->prev, 1, heap->size);
+        heap->prev[1].node = root;
+        heapPercolateDown(heap->prev, 1, heap->size);
     }
 
-    tree->root = rootNode;
+    tree->root = root;
+    tree->nodeNum = number;
 
-    heap_destroy(heap);
+    heapDestroy(heap);
     return tree;
 }

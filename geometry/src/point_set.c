@@ -27,10 +27,10 @@ static void convexHullHelper(const StackPtr stack, const Point2f p) {
         if (cross_vec(vec1, vec2) < 0)
             break;
 
-        stack_pop(stack);
+        stackPop(stack);
     } while (stack->top > 2);
 
-    stack_push(stack, p);
+    stackPush(stack, p);
 }
 
 static void ptsMaxDist_force(Point2f hullpts[], Point2f *outpts, const int nhullpts) {
@@ -120,9 +120,9 @@ void convexHull(Point2f pts[], Point2f hullpts[], int npts, int *nhullpts) {
     sort((Point2f *) tmp, npts);
 
     const StackPtr stack = newStack(npts);
-    stack_push(stack, pts[tmp[0].index]);
-    stack_push(stack, pts[tmp[1].index]);
-    stack_push(stack, pts[tmp[2].index]);
+    stackPush(stack, pts[tmp[0].index]);
+    stackPush(stack, pts[tmp[1].index]);
+    stackPush(stack, pts[tmp[2].index]);
 
     for (int i = 3; i < npts; ++i)
         convexHullHelper(stack, pts[tmp[i].index]);
@@ -132,7 +132,7 @@ void convexHull(Point2f pts[], Point2f hullpts[], int npts, int *nhullpts) {
     *nhullpts = stack->top - 1;
     memcpy(hullpts, stack->elements, sizeof(Point2f) * *nhullpts);
 
-    stack_destroy(stack);
+    stackDestroy(stack);
     free(tmp);
 }
 
