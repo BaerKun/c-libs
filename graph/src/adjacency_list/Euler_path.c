@@ -2,10 +2,8 @@
 #include <stdio.h>
 
 typedef struct {
-    EdgePtr *availableEdge;
     NodePtr path;
     VertexId source;
-    VertexId previous;
 } Argument;
 
 #define STACK_ELEMENT_TYPE Argument
@@ -26,94 +24,66 @@ static EdgePtr *getAvailableEdges(const GraphPtr graph) {
     return availableEdges;
 }
 
-// 获取下一条可用边，并用previous更新availableEdge
-static EdgePtr getEdge(EdgePtr *availableEdge, const VertexId previous) {
-    EdgePtr nextEdge = *availableEdge;
-    if (nextEdge == NULL)
+static EdgePtr getEdge(EdgePtr *availableEdges, const VertexId source) {
+    const EdgePtr edge = availableEdges[source];
+    if (edge == NULL)
         return NULL;
 
-    *availableEdge = nextEdge->next;
-    if (nextEdge->target == previous) {
-        nextEdge = *availableEdge;
-        if (nextEdge != NULL)
-            *availableEdge = nextEdge->next;
-        return nextEdge;
-    }
+    availableEdges[source] = edge->next;
+    const VertexId target = edge->target;
 
-    EdgePtr this, next;
-    for (this = nextEdge; (next = this->next) != NULL && next->target != previous; this = next);
-
-    if (next) {
-        if (this == nextEdge)
-            *availableEdge = next->next;
-        else {
-            this->next = next->next;
-            next->next = *availableEdge;
-            nextEdge->next = next;
+    // 删除target->source边
+    for (EdgePtr *prev = availableEdges + target, node = *prev; node; prev = &node->next, node = *prev) {
+        if (node->target == source) {
+            *prev = node->next;
+            break;
         }
     }
-
-    return nextEdge;
+    return edge;
 }
 
-static VertexId getTarget(const StackPtr stack) {
-    const Argument argument = stack_peek(stack);
-    const EdgePtr nextEdge = getEdge(argument.availableEdge, argument.previous);
-    if(nextEdge == NULL){
-        stackPop(stack);
-        return -1;
-    }
-    return nextEdge->target;
-}
-
-static int EulerCircuitHelper(Package *package, const NodePtr path, const VertexId source, const VertexId previous) {
+static int EulerCircuitHelper(Package *package, const NodePtr path, const VertexId source) {
     while (1) {
-        const EdgePtr edge = getEdge(package->availableEdges + source, previous);
+        const EdgePtr edge = getEdge(package->availableEdges, source);
         if (edge == NULL)
             break;
 
-        insertData(path, edge->target);
+        nodeInsert(&path->next, edge->target);
 
-        if (EulerCircuitHelper(package, path->next, edge->target, source))
-            return 1;
+        if (!EulerCircuitHelper(package, path->next, edge->target))
+            return 0;
+        package->tmpdst = source;
     }
 
-    if (source != package->tmpdst)
-        return 1;
-
-    package->tmpdst = previous;
-    return 0;
+    return source == package->tmpdst;
 }
 
-static void EulerPath_stack(const GraphPtr graph, NodePtr path, VertexId src, VertexId dst) {
+void EulerPath_stack(const GraphPtr graph, const NodePtr path, const VertexId src, VertexId dst) {
     const StackPtr stack = newStack(graph->edgeNum);
     EdgePtr *availableEdges = getAvailableEdges(graph);
-    VertexId previous = -1;
 
-    insertData(path, src);
-    stackPush(stack, (Argument){availableEdges + src, path->next, src, -1});
+    path->element = src;
+    path->next = NULL;
+    Argument arg = {path, src}; // 当前函数参数
     do {
-        const VertexId target = getTarget(stack);
-        if (target == -1) {
-            if (src != dst) {
+        const EdgePtr edge = getEdge(availableEdges, arg.source);
+        if (edge == NULL) {
+            if (arg.source != dst) {
                 puts("EulerCircuit: No Circuit\n");
+                nodeClear(&path->next);
                 break;
             }
-            dst = previous;
 
             // 模拟函数返回
-            const Argument arg = stack_peek(stack);
-            path = arg.path;
-            src = arg.source;
-            previous = arg.previous;
+            arg = stackPop(stack);
+            dst = arg.source;
             continue;
         }
-        insertData(path, target);
+        nodeInsert(&arg.path->next, edge->target);
 
         // 模拟函数调用
-        previous = src;
-        src = target;
-        stackPush(stack, (Argument){availableEdges + target, path->next, src, previous});
+        stackPush(stack, arg);
+        arg = (Argument){arg.path->next, edge->target};
     } while (stack->top != 0);
 
     free(availableEdges);
@@ -123,11 +93,14 @@ static void EulerPath_stack(const GraphPtr graph, NodePtr path, VertexId src, Ve
 static void EulerPath_recursive(const GraphPtr graph, const NodePtr path, const VertexId src, const VertexId dst) {
     EdgePtr *availableEdges = getAvailableEdges(graph);
 
-    insertData(path, src);
+    path->element = src;
+    path->next = NULL;
     Package package = {availableEdges, dst};
 
-    if (EulerCircuitHelper(&package, path, src, -1))
+    if (!EulerCircuitHelper(&package, path, src)) {
         puts("EulerCircuit: No Circuit\n");
+        nodeClear(&path->next);
+    }
 
     free(availableEdges);
 }

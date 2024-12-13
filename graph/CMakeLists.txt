@@ -7,6 +7,6 @@ include_directories(include)
 
 add_subdirectory(src)
 
-add_executable(graph_tests tests/test.c)
+add_executable(test_graph tests/test.c)
 
-target_link_libraries(graph_tests PRIVATE adjacency_list_graph)
+target_link_libraries(test_graph PRIVATE adjacency_list_graph)

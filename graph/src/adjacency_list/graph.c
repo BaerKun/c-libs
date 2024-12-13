@@ -23,9 +23,9 @@ void graphDestroy(const GraphPtr graph) {
     VertexPtr vertex, end;
 
     for (vertex = graph->vertices, end = vertex + graph->vertexNum; vertex != end; vertex++) {
-        for (EdgePtr next, this = vertex->outEdges; this; this = next) {
-            next = this->next;
-            free(this);
+        for (EdgePtr next, curr = vertex->outEdges; curr; curr = next) {
+            next = curr->next;
+            free(curr);
         }
     }
 

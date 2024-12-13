@@ -34,7 +34,7 @@ static inline STACK_ELEMENT_TYPE stackPop(const StackPtr stack){
     return stack->elements[--stack->top];
 }
 
-static inline STACK_ELEMENT_TYPE stack_peek(const StackPtr stack){
+static inline STACK_ELEMENT_TYPE stackPeek(const StackPtr stack){
     return stack->elements[stack->top - 1];
 }
 

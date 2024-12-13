@@ -1,5 +1,4 @@
 #include "share/init_indegree.h"
-#include <string.h>
 
 void InitIndegree(const GraphPtr graph, int *indegree, const QueuePtr queue) {
     VertexPtr vertex = graph->vertices;

@@ -1,26 +1,30 @@
 #define TEST_SORT
+#define SORT_ELEMENT_TYPE double
 #include "sort.h"
 
 #include "timer.h"
 #include "random.h"
 
-int main(){
-    int n = 999999;
-    int array[n];
+void test_sort() {
+    const int n = 10000;
+    SORT_ELEMENT_TYPE array[n];
 
-    uint64_t seed = time(0) ^ (uint64_t)main;
+    uint64_t seed = time(0) ^ (uint64_t)test_sort;
     pcg32_srandom(seed, seed << 1 | 1);
 
     for(int i = 0; i < n; i++)
-        array[i] = i;
-
-    shuffleArray(array, n);
+        array[i] = randdouble(0, n);
 
     TEST_TIME(sort(array, n));
 
-    for(int i = 0; i < n; i++)
-        if(array[i] != i)
-            printf("%d ", array[i]);
+    for(int i = 0; i < 100; i++) {
+        for (int j = 0; j < 100; j++) {
+            printf("%.2lf ", array[i * 100 + j]);
+        }
+        putchar('\n');
+    }
+}
 
-    return 0;
+int main(){
+    test_sort();
 }

@@ -1,1 +1,1 @@
-add_executable(test_sort test.c sort.c)
+add_executable(test_utils test.c sort.c)

@@ -4,30 +4,31 @@
 #include <time.h>
 #include <stdio.h>
 
+#ifdef __unix
 typedef struct {
-    clock_t start;
-    clock_t stop;
+    struct timespec start;
+    struct timespec stop;
 } Timer;
 
 static Timer __static_timer__;
 
 static inline void timerStart(Timer *timer) {
-    timer->start = clock();
+    clock_gettime(CLOCK_MONOTONIC, &timer->start);
 }
 
 static inline void timerStop(Timer *timer) {
-    timer->stop = clock();
+    clock_gettime(CLOCK_MONOTONIC, &timer->stop);
 }
 
-static inline clock_t timerGetms(const Timer *timer) {
-    return (timer->stop - timer->start) / (CLOCKS_PER_SEC / 1000);
+static inline unsigned long long timerGetns(const Timer *timer) {
+    return (timer->stop.tv_sec - timer->start.tv_sec) * 1000000000llu + (timer->stop.tv_nsec - timer->start.tv_nsec);
 }
-
+#endif
 
 #define TEST_TIME(code) \
-    __static_timer__.start = clock(); \
+    timerStart(&__static_timer__); \
     code; \
-    __static_timer__.stop = clock(); \
-    printf("Time: %ld ms\n", (__static_timer__.stop - __static_timer__.start) / (CLOCKS_PER_SEC / 1000))
+    timerStop(&__static_timer__); \
+    printf("time: %llu ns\n", timerGetns(&__static_timer__))
 
 #endif //TIMER_H
