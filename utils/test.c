@@ -7,9 +7,9 @@
 
 void test_sort() {
     const int n = 10000;
-    SORT_ELEMENT_TYPE array[n];
+    SORT_ELEMENT_TYPE array[10000];
 
-    uint64_t seed = time(0) ^ (uint64_t)test_sort;
+    const uint64_t seed = (uint64_t)&__static_timer__ ^ (uint64_t)test_sort;
     pcg32_srandom(seed, seed << 1 | 1);
 
     for(int i = 0; i < n; i++)
@@ -17,12 +17,12 @@ void test_sort() {
 
     TEST_TIME(sort(array, n));
 
-    for(int i = 0; i < 100; i++) {
-        for (int j = 0; j < 100; j++) {
-            printf("%.2lf ", array[i * 100 + j]);
-        }
-        putchar('\n');
-    }
+    // for(int i = 0; i < 100; i++) {
+    //     for (int j = 0; j < 100; j++) {
+    //         printf("%.2lf ", array[i * 100 + j]);
+    //     }
+    //     putchar('\n');
+    // }
 }
 
 int main(){

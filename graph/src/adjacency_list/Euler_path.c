@@ -10,6 +10,7 @@ typedef struct {
 #include "stack.h"
 
 typedef struct {
+    Vertex *vertices;
     EdgePtr *availableEdges;
     VertexId tmpdst;
 } Package;
@@ -24,7 +25,7 @@ static EdgePtr *getAvailableEdges(const GraphPtr graph) {
     return availableEdges;
 }
 
-static EdgePtr getEdge(EdgePtr *availableEdges, const VertexId source) {
+static EdgePtr getEdge(Vertex *vertices, EdgePtr *availableEdges, const VertexId source) {
     const EdgePtr edge = availableEdges[source];
     if (edge == NULL)
         return NULL;
@@ -32,10 +33,12 @@ static EdgePtr getEdge(EdgePtr *availableEdges, const VertexId source) {
     availableEdges[source] = edge->next;
     const VertexId target = edge->target;
 
-    // 删除target->source边
-    for (EdgePtr *prev = availableEdges + target, node = *prev; node; prev = &node->next, node = *prev) {
-        if (node->target == source) {
-            *prev = node->next;
+    // “删除”target->source边
+    for (EdgePtr *prev = availableEdges + target, oppoEdge = *prev; oppoEdge; prev = &oppoEdge->next, oppoEdge = *prev) {
+        if (oppoEdge->target == source) {
+            *prev = oppoEdge->next;
+            oppoEdge->next = vertices[target].outEdges;
+            vertices[target].outEdges = oppoEdge;
             break;
         }
     }
@@ -44,7 +47,7 @@ static EdgePtr getEdge(EdgePtr *availableEdges, const VertexId source) {
 
 static int EulerCircuitHelper(Package *package, const NodePtr path, const VertexId source) {
     while (1) {
-        const EdgePtr edge = getEdge(package->availableEdges, source);
+        const EdgePtr edge = getEdge(package->vertices, package->availableEdges, source);
         if (edge == NULL)
             break;
 
@@ -66,7 +69,7 @@ void EulerPath_stack(const GraphPtr graph, const NodePtr path, const VertexId sr
     path->next = NULL;
     Argument arg = {path, src}; // 当前函数参数
     do {
-        const EdgePtr edge = getEdge(availableEdges, arg.source);
+        const EdgePtr edge = getEdge(graph->vertices, availableEdges, arg.source);
         if (edge == NULL) {
             if (arg.source != dst) {
                 puts("EulerCircuit: No Circuit\n");
@@ -95,7 +98,7 @@ static void EulerPath_recursive(const GraphPtr graph, const NodePtr path, const 
 
     path->element = src;
     path->next = NULL;
-    Package package = {availableEdges, dst};
+    Package package = {graph->vertices, availableEdges, dst};
 
     if (!EulerCircuitHelper(&package, path, src)) {
         puts("EulerCircuit: No Circuit\n");
