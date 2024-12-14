@@ -30,13 +30,21 @@ int main() {
     graphAddUndirectedEdge(graph, 2, 0, NO_EDGE_DATA);
     graphAddUndirectedEdge(graph, 0, 3, NO_EDGE_DATA);
     NodePtr path = newNode(0);
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 10; i++) {
         TEST_TIME(EulerPath(graph, path, 2, 1));
+        FOR_EACH_LIST_LIKE(node, path) {
+            printf("%d ", node->element);
+        }
+        putchar('\n');
         nodeClear(&path->next);
     }
     printf("stack\n");
     for (int i = 0; i < 20; i++) {
         TEST_TIME(EulerPath_stack(graph, path, 2, 1));
+        FOR_EACH_LIST_LIKE(node, path) {
+            printf("%d ", node->element);
+        }
+        putchar('\n');
         nodeClear(&path->next);
     }
     return 0;
