@@ -32,16 +32,7 @@ int main() {
     NodePtr path = newNode(0);
     for (int i = 0; i < 10; i++) {
         TEST_TIME(EulerPath(graph, path, 2, 1));
-        FOR_EACH_LIST_LIKE(node, path) {
-            printf("%d ", node->element);
-        }
-        putchar('\n');
-        nodeClear(&path->next);
-    }
-    printf("stack\n");
-    for (int i = 0; i < 20; i++) {
-        TEST_TIME(EulerPath_stack(graph, path, 2, 1));
-        FOR_EACH_LIST_LIKE(node, path) {
+        for(NodePtr node = path; node != NULL; node = node->next) {
             printf("%d ", node->element);
         }
         putchar('\n');

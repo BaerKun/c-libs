@@ -7,8 +7,6 @@
 #define LIST_ELEMENT_TYPE int
 #endif
 
-#define FOR_EACH_LIST_LIKE(_node, _head) for (typeof(_head) _node = _head; _node; _node = _node->next)
-
 typedef struct Node_ Node, *NodePtr;
 
 struct Node_ {

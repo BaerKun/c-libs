@@ -1,5 +1,5 @@
 #define TEST_SORT
-#define SORT_ELEMENT_TYPE double
+#define SORT_ELEMENT_TYPE float
 #include "sort.h"
 
 #include "timer.h"
@@ -13,7 +13,7 @@ void test_sort() {
     pcg32_srandom(seed, seed << 1 | 1);
 
     for(int i = 0; i < n; i++)
-        array[i] = randdouble(0, n);
+        array[i] = randfloat(0, n);
 
     TEST_TIME(sort(array, n));
 

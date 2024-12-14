@@ -5,6 +5,8 @@
 #define HEAP_LESS_THAN(a, b) ((a)->data.weight < (b)->data.weight)
 #include "heap.h"
 
+#include <stdio.h>
+
 
 void KruskalMinSpanningTree(const GraphPtr graph, EdgeId outputArray[]) {
     int counter = 0;
@@ -21,7 +23,7 @@ void KruskalMinSpanningTree(const GraphPtr graph, EdgeId outputArray[]) {
         disjSet[vertex] = -1;
 
     while (heap->size != 0) {
-        edge = heap_deleteMin(heap);
+        edge = heapDeleteMin(heap);
         const ClassId root1 = disjSetFind(disjSet, edge->vertex1);
         const ClassId root2 = disjSetFind(disjSet, edge->vertex2);
 

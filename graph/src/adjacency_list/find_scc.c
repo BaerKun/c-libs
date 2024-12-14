@@ -77,7 +77,7 @@ void graphFindScc(const GraphPtr graph, int number[]) {
 
     // 逆序
     while (stack->top != 0) {
-        VertexArg *vertex = stack_pop(stack);
+        VertexArg *vertex = stackPop(stack);
         if (vertex->visitedOnce == 1)
             findSccBackward(&package, vertex);
         ++package.counter;

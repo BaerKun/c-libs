@@ -5,6 +5,7 @@
 
 #ifdef __unix
 #include <time.h>
+
 typedef struct {
     unsigned long long read;
     struct timespec last;
@@ -30,7 +31,9 @@ static inline unsigned long long timerGetns(const Timer *timer) {
 #endif
 
 #ifdef _WIN32
+// Windows下的Timer精度只有100ns
 #include <windows.h>
+
 typedef struct {
     LARGE_INTEGER freq;
     LARGE_INTEGER read;
