@@ -1,5 +1,6 @@
 #include "adjacency_list/Euler_path.h"
 #include <stdio.h>
+#include "adjacency_list/edge_list.h"
 
 typedef struct {
     NodePtr path;
@@ -33,15 +34,9 @@ static EdgePtr getEdge(EdgePtr *availableEdges[], const VertexId source) {
     const VertexId target = edge->target;
 
     // “删除”target->source边（如有，则移至availableEdge前一个节点）
-    for (EdgePtr *prev = availableEdges[target], oppoEdge = *prev; oppoEdge; prev = &oppoEdge->next, oppoEdge = *prev) {
-        if (oppoEdge->target == source) {
-            *prev = oppoEdge->next;
-            oppoEdge->next = *availableEdges[target];
-            *availableEdges[target] = oppoEdge;
-            availableEdges[target] = &oppoEdge->next;
-            break;
-        }
-    }
+    const EdgePtr oppoEdge = edgeUnlinkWithTarget(availableEdges[target], source);
+    edgeInsert(availableEdges[target], oppoEdge);
+    availableEdges[target] = &oppoEdge->next;
     return edge;
 }
 

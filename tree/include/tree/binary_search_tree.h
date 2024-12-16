@@ -12,17 +12,17 @@ typedef float WeightType;
 
 typedef BinaryTree BST, *BSTPtr;
 
-BinaryTreeNodePtr bstFindMax(BSTPtr tree);
+BinaryTreeNodePtr *bstFindMax(BSTPtr tree);
 
 BinaryTreeNodePtr bstUnlinkMax(BSTPtr tree);
 
-BinaryTreeNodePtr bstFind(BSTPtr tree, DataType data);
+BinaryTreeNodePtr *bstFind(BSTPtr tree, DataType data);
 
 void bstInsertNode(BSTPtr tree, BinaryTreeNodePtr node);
 
 void bstInsertData(BSTPtr tree, DataType data);
 
-BinaryTreeNodePtr bstUnlink(BSTPtr tree, BinaryTreeNodePtr node, int isRight);
+BinaryTreeNodePtr bstUnlink(BSTPtr tree, BinaryTreeNodePtr *parent2child);
 
 BinaryTreeNodePtr bstUnlinkWithData(BSTPtr tree, DataType data);
 

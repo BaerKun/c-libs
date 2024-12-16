@@ -10,6 +10,6 @@ add_library(algorithm STATIC ${SOURCES})
 target_include_directories(algorithm PRIVATE ../tree/include ../graph/include)
 target_link_libraries(algorithm PRIVATE adjacency_list_graph tree)
 
-add_executable(test_simple_alg tests/test_macro.c)
+add_executable(test_simple_alg test/test_macro.c)
 
 target_link_libraries(test_simple_alg algorithm)

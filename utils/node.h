@@ -18,7 +18,6 @@ static inline NodePtr newNode(LIST_ELEMENT_TYPE const element) {
     const NodePtr node = malloc(sizeof(Node));
     node->element = element;
     node->next = NULL;
-
     return node;
 }
 
@@ -35,18 +34,20 @@ static inline NodePtr nodeUnlink(NodePtr *const prevNextPtr) {
     return node;
 }
 
-static NodePtr NodeUnlinkWithData(NodePtr *const headNextPtr, LIST_ELEMENT_TYPE const element) {
-    for (NodePtr *prev = headNextPtr, node = *prev; node; prev = &node->next, node = *prev) {
-        if (node->element == element)
-            return nodeUnlink(prev);
-    }
-    return NULL;
+static NodePtr *nodeFind(NodePtr *const headNextPtr, LIST_ELEMENT_TYPE const element) {
+    NodePtr *prev = headNextPtr;
+    for (NodePtr node = *prev; node && node->element != element; prev = &node->next, node = *prev);
+    return prev;
 }
 
-static inline void nodeDelete(NodePtr *const prevNextPtr){
+static NodePtr NodeUnlinkWithData(NodePtr *const headNextPtr, LIST_ELEMENT_TYPE const element) {
+    NodePtr *const prev = nodeFind(headNextPtr, element);
+    return *prev ? nodeUnlink(prev) : NULL;
+}
+
+static inline void nodeDelete(NodePtr *const prevNextPtr) {
     const NodePtr node = nodeUnlink(prevNextPtr);
-    if (node != NULL)
-        free(node);
+    free(node);
 }
 
 static void nodeClear(NodePtr *const headNextPtr) {

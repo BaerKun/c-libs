@@ -4,24 +4,24 @@
 #include "share/vertex_edge.h"
 
 typedef int VertexId;
-typedef struct Vertex Vertex, *VertexPtr;
-typedef struct Edge Edge, *EdgePtr;
-typedef struct Graph Graph, *GraphPtr;
+typedef struct Vertex_ Vertex, *VertexPtr;
+typedef struct Edge_ Edge, *EdgePtr;
+typedef struct Graph_ Graph, *GraphPtr;
 
-struct Vertex {
+struct Vertex_ {
     VertexData data;
     int indegree;
     VertexId path;
     EdgePtr outEdges;
 };
 
-struct Edge {
+struct Edge_ {
+    EdgePtr next;
     VertexId target;
     EdgeData data;
-    EdgePtr next;
 };
 
-struct Graph {
+struct Graph_ {
     int capacity;
     int vertexNum;
     int edgeNum;

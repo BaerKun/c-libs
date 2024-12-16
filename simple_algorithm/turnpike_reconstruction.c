@@ -52,7 +52,7 @@ int reconstructTurnpikeBody(Package *package, const int left, const int right) {
     if (left > right)
         return 1;
 
-    DistanceType max = bstFindMax(package->tree)->data;
+    DistanceType max = (*bstFindMax(package->tree))->data;
 
     if (package->npoints ==
         (end = RT_Delete(package->tree, package->stack, package->points, max, left, right, package->npoints))) {

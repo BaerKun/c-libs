@@ -24,11 +24,8 @@ static void listClear(const ListPtr list) {
     list->size = 0;
 }
 
-static NodePtr listFind(const ListPtr list, LIST_ELEMENT_TYPE const element) {
-    NodePtr node = list->head;
-    while (node && node->element != element)
-        node = node->next;
-    return node;
+static NodePtr *listFind(const ListPtr list, LIST_ELEMENT_TYPE const element) {
+    return nodeFind(&list->head, element);
 }
 
 static void listPush(const ListPtr list, LIST_ELEMENT_TYPE const element) {

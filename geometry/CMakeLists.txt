@@ -17,7 +17,7 @@ file(GLOB SOURCES "src/*.c")
 add_library(geometry_libs STATIC ${SOURCES})
 target_include_directories(geometry_libs PUBLIC include)
 
-add_executable(test_geometry tests/tests.c)
+add_executable(test_geometry test/tests.c)
 
 if(UNIX)
     # math.h
