@@ -33,10 +33,10 @@ static EdgePtr getEdge(EdgePtr *availableEdges[], const VertexId source) {
     availableEdges[source] = &edge->next;
     const VertexId target = edge->target;
 
-    // “删除”target->source边（如有，则移至availableEdge前一个节点）
-    const EdgePtr oppoEdge = edgeUnlinkWithTarget(availableEdges[target], source);
-    edgeInsert(availableEdges[target], oppoEdge);
-    availableEdges[target] = &oppoEdge->next;
+    // “删除”反向（target->source）边（如有，则移至availableEdge前一个节点）
+    const EdgePtr reverseEdges = edgeUnlinkWithTarget(availableEdges[target], source);
+    edgeInsert(availableEdges[target], reverseEdges);
+    availableEdges[target] = &reverseEdges->next;
     return edge;
 }
 
@@ -104,7 +104,7 @@ static void EulerPath_recursive(const GraphPtr graph, const NodePtr path, const 
 }
 
 void EulerPath(const GraphPtr graph, const NodePtr path, const VertexId src, const VertexId dst) {
-    EulerPath_stack(graph, path, src, dst);
+    EulerPath_recursive(graph, path, src, dst);
 }
 
 void EulerCircuit(const GraphPtr graph, const NodePtr path, const VertexId source) {

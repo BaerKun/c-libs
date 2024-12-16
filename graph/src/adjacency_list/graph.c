@@ -1,6 +1,7 @@
 #include "adjacency_list/graph.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "adjacency_list/edge_list.h"
 
 GraphPtr newGraph(const int capacity, const int vertexNum) {
     const GraphPtr graph = malloc(sizeof(Graph));
@@ -22,12 +23,8 @@ GraphPtr newGraph(const int capacity, const int vertexNum) {
 void graphDestroy(const GraphPtr graph) {
     VertexPtr vertex, end;
 
-    for (vertex = graph->vertices, end = vertex + graph->vertexNum; vertex != end; vertex++) {
-        for (EdgePtr next, curr = vertex->outEdges; curr; curr = next) {
-            next = curr->next;
-            free(curr);
-        }
-    }
+    for (vertex = graph->vertices, end = vertex + graph->vertexNum; vertex != end; vertex++)
+        edgeClear(&vertex->outEdges);
 
     free(graph->vertices);
     free(graph);
@@ -38,21 +35,11 @@ void graphAddEdge(const GraphPtr graph, const VertexId source, const VertexId ta
         fputs("graphAddEdge:InvalidVertex\n", stderr);
         return;
     }
-
-    EdgePtr edge;
-    for (edge = graph->vertices[source].outEdges; edge && edge->target != target; edge = edge->next);
-    if (edge)
+    if (*edgeFind(&graph->vertices[source].outEdges, target) != NULL)
         return;
 
-    edge = malloc(sizeof(Edge));
-    edge->target = target;
-    edge->data = data;
-
-    edge->next = graph->vertices[source].outEdges;
-    graph->vertices[source].outEdges = edge;
-
+    edgeInsertWithData(&graph->vertices[source].outEdges, target, data);
     graph->vertices[target].indegree++;
-
     graph->edgeNum++;
 }
 

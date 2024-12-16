@@ -3,10 +3,16 @@
 
 #include "graph.h"
 
-extern inline void edgeInsert(EdgePtr *next, EdgePtr edge);
+extern inline void edgeInsert(EdgePtr *prevNextPtr, EdgePtr edge);
 
-extern inline EdgePtr edgeUnlink(EdgePtr *next);
+extern inline void edgeInsertWithData(EdgePtr *prevNextPtr, VertexId target, EdgeData data);
 
-EdgePtr edgeUnlinkWithTarget(EdgePtr *next, VertexId target);
+extern inline EdgePtr edgeUnlink(EdgePtr *prevNextPtr);
+
+extern inline EdgePtr edgeUnlinkWithTarget(EdgePtr *prevNextPtr, VertexId target);
+
+EdgePtr *edgeFind(EdgePtr *prevNextPtr, VertexId target);
+
+void edgeClear(EdgePtr *prevNextPtr);
 
 #endif //EDGE_LIST_H
