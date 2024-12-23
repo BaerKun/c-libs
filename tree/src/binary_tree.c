@@ -1,85 +1,56 @@
-#include "tree/binary_tree.h"
-
-#include <node.h>
+#include <binary_tree.h>
+#include <tree.h>
 #include <stdlib.h>
-#include <stdio.h>
 
-
-BinaryTreePtr newBinaryTree() {
-    const BinaryTreePtr tree = malloc(sizeof(BinaryTree));
-    tree->nodeNum = 0;
-    return tree;
+inline void btDestroy(const TreeNodePtr root) {
+    treeDestroy(root);
 }
 
-static void deleteTreeNodeRecursively(const BinaryTreeNodePtr root) {
-    if (root->left != NULL)
-        deleteTreeNodeRecursively(root->left);
-    if (root->right != NULL)
-        deleteTreeNodeRecursively(root->right);
-    free(root);
+inline TreeNodePtr btNewNode(const DataType data) {
+    return treeNewNode(data);
 }
 
-void btDestroy(const BinaryTreePtr tree) {
-    if (tree->root != NULL)
-        deleteTreeNodeRecursively(tree->root);
-    free(tree);
-}
-
-BinaryTreeNodePtr btNewNode(const DataType data) {
-    const BinaryTreeNodePtr node = malloc(sizeof(BinaryTreeNode));
-    node->data = data;
-    node->left = node->right = node->next = NULL;
-
-    return node;
-}
-
-BinaryTreeNodePtr btUnlink(const BinaryTreePtr tree, BinaryTreeNodePtr *const parent2child,
-                            BinaryTreeNodePtr (*if2children)(BinaryTreePtr, BinaryTreeNodePtr *)) {
-    const BinaryTreeNodePtr node = *parent2child;
-
-    if (node == NULL)
-        return NULL;
+TreeNodePtr btUnlink(TreeNodePtr *const parent2child, TreeNodePtr (*if2children)(TreeNodePtr *)) {
+    const TreeNodePtr node = *parent2child;
 
     if (node->next != NULL) {
-        node->next->left = node->left;
-        node->next->right = node->right;
         *parent2child = node->next;
-    } else if (node->left == NULL)
+        (*parent2child)->left = node->left;
+        (*parent2child)->right = node->right;
+        node->next = node->left = node->right = NULL;
+    } else if (node->left == NULL) {
         *parent2child = node->right;
-    else if (node->right == NULL)
+        node->right = NULL;
+    } else if (node->right == NULL) {
         *parent2child = node->left;
-    else if (if2children == NULL)
+        node->left = NULL;
+    } else if (if2children == NULL)
         return NULL;
     else
-        return if2children(tree, parent2child);
+        return if2children(parent2child);
 
-    tree->nodeNum--;
     return node;
 }
 
-void btDeleteNode(const BinaryTreePtr tree, BinaryTreeNodePtr *const parent2child,
-               BinaryTreeNodePtr (*if2children)(BinaryTreePtr, BinaryTreeNodePtr *)) {
-    const BinaryTreeNodePtr node = btUnlink(tree, parent2child, if2children);
+void btDeleteNode(TreeNodePtr *const parent2child, TreeNodePtr (*if2children)(TreeNodePtr *)) {
+    const TreeNodePtr node = btUnlink(parent2child, if2children);
     if (node != NULL)
         free(node);
 }
 
-void btInsertNode(const BinaryTreePtr tree, BinaryTreeNodePtr *const parent2child, const BinaryTreeNodePtr node) {
-    const BinaryTreeNodePtr _node = *parent2child;
+void btInsertNode(TreeNodePtr *const parent2child, const TreeNodePtr node) {
+    const TreeNodePtr head = *parent2child;
 
-    if (_node == NULL) {
-        node->left = node->right = node->next = NULL;
+    if (head == NULL) {
         *parent2child = node;
     } else {
-        node->left = _node->left;
-        node->right = _node->right;
-        node->next = _node;
-        *parent2child = node;
+        node->left = head->left;
+        node->right = head->right;
+        treeInsertNode(&head->next, node);
     }
-    tree->nodeNum++;
 }
 
-void btInsertData(const BinaryTreePtr tree, BinaryTreeNodePtr *const parent2child, const DataType data) {
-    const BinaryTreeNodePtr node = btNewNode(data);
-    btInsertNode(tree, parent2child, node);
+void btInsertData(TreeNodePtr *const parent2child, const DataType data) {
+    const TreeNodePtr node = btNewNode(data);
+    btInsertNode(parent2child, node);
 }

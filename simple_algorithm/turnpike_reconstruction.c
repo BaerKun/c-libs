@@ -1,20 +1,20 @@
 #include "turnpike_reconstruction.h"
-#include "tree/binary_search_tree.h"
+#include "binary_search_tree.h"
 #include <stdio.h>
 #define STACK_ELEMENT_TYPE BinaryTreeNodePtr
 #include "stack.h"
 
 typedef struct {
-    BSTPtr tree;
+    TreeNodePtr *tree;
     DistanceType *points;
     StackPtr stack;
-    int npoints;
+    int npts;
 } Package;
 
-int RT_Delete(const BSTPtr tree, const StackPtr stack, const DistanceType points[], const DistanceType point,
+int RT_Delete(TreeNodePtr *const tree, const StackPtr stack, const DistanceType points[], const DistanceType point,
               const int left, const int right, const int end) {
     int i;
-    BinaryTreeNodePtr node;
+    TreeNodePtr node;
     for (i = 0; i < left; i++) {
         node = bstUnlinkWithData(tree, point - points[i]);
         if (node == NULL)
@@ -32,7 +32,7 @@ int RT_Delete(const BSTPtr tree, const StackPtr stack, const DistanceType points
     return end;
 }
 
-void RT_Insert(const BSTPtr tree, const StackPtr stack, int left, const int right, const int end) {
+void RT_Insert(TreeNodePtr *const tree, const StackPtr stack, int left, const int right, const int end) {
     int i;
 
     if (end < left)
@@ -54,8 +54,8 @@ int reconstructTurnpikeBody(Package *package, const int left, const int right) {
 
     DistanceType max = (*bstFindMax(package->tree))->data;
 
-    if (package->npoints ==
-        (end = RT_Delete(package->tree, package->stack, package->points, max, left, right, package->npoints))) {
+    if (package->npts ==
+        (end = RT_Delete(package->tree, package->stack, package->points, max, left, right, package->npts))) {
         package->points[right] = max;
         isSuccessful = reconstructTurnpikeBody(package, left, right - 1);
     }
@@ -63,9 +63,9 @@ int reconstructTurnpikeBody(Package *package, const int left, const int right) {
     if (!isSuccessful) {
         RT_Insert(package->tree, package->stack, left, right, end);
 
-        if (package->npoints ==
-            (end = RT_Delete(package->tree, package->stack, package->points, max = package->points[package->npoints - 1] - max,
-                             left, right, package->npoints))) {
+        if (package->npts ==
+            (end = RT_Delete(package->tree, package->stack, package->points, max = package->points[package->npts - 1] - max,
+                             left, right, package->npts))) {
             package->points[left] = max;
             isSuccessful = reconstructTurnpikeBody(package, left + 1, right);
         }
@@ -78,19 +78,19 @@ int reconstructTurnpikeBody(Package *package, const int left, const int right) {
     return isSuccessful;
 }
 
-void reconstructTurnpike(DistanceType distances[], DistanceType points[], const int npoints) {
-    const int numOfDistances = npoints * (npoints - 1) / 2;
-    BinaryTreeNodePtr buffer = malloc(sizeof(BinaryTreeNode) * numOfDistances);
-    const BSTPtr tree = buildBST(distances, numOfDistances, buffer);
+void reconstructTurnpike(DistanceType distances[], DistanceType points[], const int npts) {
+    const int numOfDistances = npts * (npts - 1) / 2;
+    const TreeNodePtr buffer = malloc(sizeof(TreeNode) * numOfDistances);
+    TreeNodePtr tree = buildBST(distances, numOfDistances, buffer);
     const StackPtr stack = newStack(numOfDistances);
-    Package package = (Package){tree, points, stack, npoints};
+    Package package = (Package){&tree, points, stack, npts};
 
     points[0] = 0;
-    points[npoints - 1] = bstUnlinkMax(tree)->data; // buffer，不用free单个节点
-    points[npoints - 2] = bstUnlinkMax(tree)->data;
+    points[npts - 1] = bstUnlinkMax(&tree)->data; // buffer，不用free单个节点
+    points[npts - 2] = bstUnlinkMax(&tree)->data;
 
-    if (bstUnlinkWithData(tree, points[npoints - 1] - points[npoints - 2]) != NULL) {
-        if (reconstructTurnpikeBody(&package, 1, npoints - 3)) {
+    if (bstUnlinkWithData(&tree, points[npts - 1] - points[npts - 2]) != NULL) {
+        if (reconstructTurnpikeBody(&package, 1, npts - 3)) {
             puts("reconstruct successfully!");
             goto END;
         }

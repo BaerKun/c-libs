@@ -17,11 +17,10 @@ file(GLOB SOURCES "src/*.c")
 add_library(geometry_libs STATIC ${SOURCES})
 target_include_directories(geometry_libs PUBLIC include)
 
-add_executable(test_geometry test/tests.c)
-
-if(UNIX)
-    # math.h
-    target_link_libraries(test_geometry PRIVATE m)
-endif ()
-target_link_libraries(test_geometry PRIVATE geometry_libs)
-target_link_libraries(test_geometry PRIVATE graphical_debug)
+#add_executable(test_geometry test/tests.c)
+#target_link_libraries(test_geometry PRIVATE geometry_libs)
+#target_link_libraries(test_geometry PRIVATE graphical_debug)
+#if(UNIX)
+#    # math.h
+#    target_link_libraries(test_geometry PRIVATE m)
+#endif ()

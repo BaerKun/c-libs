@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "tree/OBST.h"
-#include "tree/trie_tree.h"
+#include "OBST.h"
+#include "trie_tree.h"
 
-void print(BinaryTreeNodePtr node) {
+void print(TreeNodePtr node) {
     if (node->left)
         print(node->left);
     printf("%d\n", node->data);
@@ -18,8 +18,8 @@ int main() {
         data[i] = i;
     }
     // BSTPtr tree = optimalBST(data, weight, 26);
-    TrieTreePtr tree1 = HuffmanCode(data, weight, 26);
-    print(tree1->root);
+    TreeNodePtr tree1 = HuffmanCode(data, weight, 26);
+    print(tree1);
     // BinaryTreePtr tree = newBinaryTree_fixedCapacity(3);
     // BT_insertData(tree, NULL, 1, 0);
     // BT_insertData(tree, tree->root, 2, 0);

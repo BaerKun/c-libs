@@ -1,14 +1,14 @@
-#include "tree/OBST.h"
+#include "OBST.h"
 #include "queue.h"
 #include <stdlib.h>
 
 #define MAX_COUNT_INPUT_SIZE 64
 
-BSTPtr optimalBST(const DataType data[], const WeightType weight[], const int number, void **buffer) {
+TreeNodePtr optimalBST(const DataType data[], const WeightType weight[], const int number, void **buffer) {
     int left, root, right;
     WeightType minTreeWeight;
     WeightType (*treeWeight)[MAX_COUNT_INPUT_SIZE] = malloc(number * MAX_COUNT_INPUT_SIZE * sizeof(WeightType));
-    int (*treeRoot)[MAX_COUNT_INPUT_SIZE] = malloc(number * MAX_COUNT_INPUT_SIZE * sizeof(BinaryTreeNodePtr));
+    int (*treeRoot)[MAX_COUNT_INPUT_SIZE] = malloc(number * MAX_COUNT_INPUT_SIZE * sizeof(TreeNodePtr));
 
     for (root = 0; root < number; root++) {
         treeWeight[root][root] = weight[root];
@@ -40,22 +40,20 @@ BSTPtr optimalBST(const DataType data[], const WeightType weight[], const int nu
 
     free(treeWeight);
 
-    const BSTPtr tree = newBinaryTree();
     const QueuePtr pLeftQueue = newQueue(number);
     const QueuePtr pRightQueue = newQueue(number);
-    BinaryTreeNodePtr _buffer = malloc(number * sizeof(BinaryTreeNode));
+    const TreeNodePtr _buffer = malloc(number * sizeof(TreeNode));
 
     enqueue(pLeftQueue, 0);
     enqueue(pRightQueue, number - 1);
 
-    tree->root = _buffer + treeRoot[0][number - 1];
-    tree->nodeNum = number;
+    const TreeNodePtr tree = _buffer + treeRoot[0][number - 1];
 
     while (pLeftQueue->front != pLeftQueue->rear) {
         left = dequeue(pLeftQueue);
         right = dequeue(pRightQueue);
         root = treeRoot[left][right];
-        const BinaryTreeNodePtr rootNode = _buffer + root;
+        const TreeNodePtr rootNode = _buffer + root;
 
         rootNode->data = data[root];
         rootNode->next = NULL;

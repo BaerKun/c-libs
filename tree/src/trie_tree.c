@@ -1,8 +1,8 @@
-#include "tree/trie_tree.h"
+#include <trie_tree.h>
 #include <stdio.h>
 
 typedef struct HeapElement {
-    TrieTreeNodePtr node;
+    TreeNodePtr node;
     int value;
 } HeapElement;
 
@@ -10,13 +10,12 @@ typedef struct HeapElement {
 #define HEAP_LESS_THAN(a, b) (a.value < b.value)
 #include "heap.h"
 
-TrieTreePtr HuffmanCode(const DataType *data, const int *cost, const int number) {
-    const TrieTreePtr tree = newBinaryTree();
+TreeNodePtr HuffmanCode(const DataType *data, const int *cost, const int number) {
     const HeapPtr heap = newHeap(number);
-    TrieTreeNodePtr root = NULL;
+    TreeNodePtr root = NULL;
 
     for (int i = 0, j = 1; i < number; i = j++) {
-        const TrieTreeNodePtr node = btNewNode(data[i]);
+        const TreeNodePtr node = btNewNode(data[i]);
         heap->prev[j] = (HeapElement) {node, cost[i]};
     }
 
@@ -34,9 +33,6 @@ TrieTreePtr HuffmanCode(const DataType *data, const int *cost, const int number)
         heapPercolateDown(heap->prev, 1, heap->size);
     }
 
-    tree->root = root;
-    tree->nodeNum = number;
-
     heapDestroy(heap);
-    return tree;
+    return root;
 }

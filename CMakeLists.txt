@@ -18,4 +18,5 @@ add_subdirectory(some_useful)
 
 add_subdirectory(geometry)
 
- add_executable(tmp tmp.c)
+add_executable(tmp tmp.c)
+target_link_libraries(tmp PRIVATE m)
