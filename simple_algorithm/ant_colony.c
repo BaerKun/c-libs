@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
-#include "random.h"
-#include "list.h"
+#include <random.h>
+#include <list.h>
 
 #define NUM_OF_PLACES 222   // 地点数量
 #define MAX_WORK_TIME 8.5   // 最大工作时间

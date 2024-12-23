@@ -1,5 +1,4 @@
-#include <trie_tree.h>
-#include <stdio.h>
+#include <Huffman.h>
 
 typedef struct HeapElement {
     TreeNodePtr node;

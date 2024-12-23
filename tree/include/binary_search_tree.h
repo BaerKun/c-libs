@@ -10,17 +10,17 @@
 
 TreeNodePtr *bstFindMax(TreeNodePtr *root);
 
-TreeNodePtr bstUnlinkMax(TreeNodePtr *root);
+extern inline TreeNodePtr bstUnlinkMax(TreeNodePtr *root);
 
 TreeNodePtr *bstFind(TreeNodePtr *root, DataType data);
 
-void bstInsertNode(TreeNodePtr *root, TreeNodePtr node);
+extern inline void bstInsertNode(TreeNodePtr *root, TreeNodePtr node);
 
-void bstInsertData(TreeNodePtr *root, DataType data);
+extern inline void bstInsertData(TreeNodePtr *root, DataType data);
 
-TreeNodePtr bstUnlink(TreeNodePtr *parent2child);
+extern inline TreeNodePtr bstUnlink(TreeNodePtr *parent2child);
 
-TreeNodePtr bstUnlinkWithData(TreeNodePtr *root, DataType data);
+extern inline TreeNodePtr bstUnlinkWithData(TreeNodePtr *root, DataType data);
 
 TreeNodePtr buildBST(const DataType data[], int len, TreeNodePtr buffer);
 

@@ -13,6 +13,9 @@ inline TreeNodePtr btNewNode(const DataType data) {
 TreeNodePtr btUnlink(TreeNodePtr *const parent2child, TreeNodePtr (*if2children)(TreeNodePtr *)) {
     const TreeNodePtr node = *parent2child;
 
+    if (node == NULL)
+        return NULL;
+
     if (node->next != NULL) {
         *parent2child = node->next;
         (*parent2child)->left = node->left;
@@ -50,7 +53,7 @@ void btInsertNode(TreeNodePtr *const parent2child, const TreeNodePtr node) {
     }
 }
 
-void btInsertData(TreeNodePtr *const parent2child, const DataType data) {
+inline void btInsertData(TreeNodePtr *const parent2child, const DataType data) {
     const TreeNodePtr node = btNewNode(data);
     btInsertNode(parent2child, node);
 }
