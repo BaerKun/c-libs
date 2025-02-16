@@ -38,10 +38,10 @@ void polar2cartesian_vec(Vector2f invecs[], Vector2f outvecs[], const int nvecs)
 
 void triCircumcircle(const Point2f pt1, const Point2f pt2, const Point2f pt3, Point2f *center, float *radius){
     const Vector3f a = {pt2.y - pt3.y, pt3.y - pt1.y, pt1.y - pt2.y};
-    const Vector3f b = {norm_vec2({pt1.x, pt1.y}), norm_vec2({pt2.x, pt2.y}), norm_vec2({pt3.x, pt3.y})};
+    const Vector3f b = {norm_vec2((Point2f){pt1.x, pt1.y}), norm_vec2((Point2f){pt2.x, pt2.y}), norm_vec2((Point2f){pt3.x, pt3.y})};
 
-    const float d = vec3_dot(a, {pt1.x, pt2.x, pt3.x}) * 2.f;
+    const float d = vec3_dot(a, (Vector3f){pt1.x, pt2.x, pt3.x}) * 2.f;
     center->x = vec3_dot(a, b) / d;
-    center->y = vec3_dot(b, {pt3.x - pt2.x, pt1.x - pt3.x, pt2.x - pt1.x}) / d;
+    center->y = vec3_dot(b, (Vector3f){pt3.x - pt2.x, pt1.x - pt3.x, pt2.x - pt1.x}) / d;
     *radius = dist2f(*center, pt1);
 }

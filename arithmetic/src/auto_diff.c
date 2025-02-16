@@ -2,6 +2,10 @@
 #include <math.h>
 #include <stdlib.h>
 
+static inline float square(float x){
+    return x * x;
+}
+
 
 float calculate(const MathFunction func, const float var[]) {
     func->grad = 0.f;
@@ -99,6 +103,7 @@ static void backward(const MathFunction func) {
         return;
 
     ComputationNodePtr operand = func->operand;
+    ComputationNodePtr base;
     switch (func->operation) {
         case ADD:
             do {
@@ -119,11 +124,11 @@ static void backward(const MathFunction func) {
             } while (operand != NULL);
             break;
         case REC:
-            operand->grad -= func->grad / (operand->value * operand->value);
+            operand->grad -= func->grad / square(operand->value);
             backward(operand);
             break;
         case POW:
-            const ComputationNodePtr base = operand->next;
+            base = operand->next;
             base->grad += func->grad * func->value / base->value;
             backward(base);
 
@@ -143,8 +148,7 @@ static void backward(const MathFunction func) {
             operand->grad += func->grad * -sinf(operand->value);
             break;
         case TAN:
-            const float cosVal = cosf(operand->value);
-            operand->grad += func->grad / (cosVal * cosVal);
+            operand->grad += func->grad / square(operand->value);
             break;
         default:
             break;

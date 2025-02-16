@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <random.h>
-#include <list.h>
+#include <node.h>
 
 #define NUM_OF_PLACES 222   // 地点数量
 #define MAX_WORK_TIME 8.5   // 最大工作时间
@@ -114,7 +114,7 @@ void antColony(int nants) {
             totalTime += moveTime[source][target] + workTime[target];
 
             // 链接路径
-            list_insertData(path, target);
+            nodeInsert(&path->next, target);
 
             source = target;
         }
@@ -123,7 +123,7 @@ void antColony(int nants) {
         // 更新信息素和趋势
         update(&head, totalTime);
         // 清空路径
-        listClear(&head);
+        nodeClear(&head.next);
     }
     free(mask);
 }
