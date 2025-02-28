@@ -9,6 +9,3 @@ file(GLOB SOURCES "*.c")
 add_library(algorithm STATIC ${SOURCES})
 target_include_directories(algorithm PRIVATE ../tree/include ../graph/include)
 target_link_libraries(algorithm PRIVATE adjacency_list_graph bst)
-
-add_executable(test_simple_alg test/test.c)
-target_link_libraries(test_simple_alg algorithm)

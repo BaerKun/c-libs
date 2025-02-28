@@ -8,6 +8,3 @@ file(GLOB SOURCES "src/*.c")
 
 add_library(bst STATIC ${SOURCES})
 target_compile_definitions(bst PUBLIC TREE_BINARY)
-
-add_executable(test_tree test/test.c)
-target_link_libraries(test_tree bst)
