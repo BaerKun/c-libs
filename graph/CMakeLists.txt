@@ -1,11 +1,13 @@
-cmake_minimum_required(VERSION 3.27)
-project(Graph)
+file(GLOB UTILS_SOURCES "src/utils/*.c")
+file(GLOB SOURCES "src/adjacency_list/*.c")
+add_library(adjacency_list_graph STATIC ${UTILS_SOURCES} ${SOURCES})
+target_include_directories(adjacency_list_graph PUBLIC include)
+unset(UTILS_SOURCES)
 
-set(CMAKE_C_STANDARD 11)
+file(GLOB SOURCES "src/matrix/*.c")
+add_library(matrix_graph STATIC ${SOURCES})
+target_include_directories(matrix_graph PUBLIC include)
 
-include_directories(include)
-
-add_subdirectory(src)
-
-#add_executable(test_graph test/test.c)
-#target_link_libraries(test_graph PRIVATE adjacency_list_graph)
+file(GLOB SOURCES "src/only_edge/*.c")
+add_library(only_edge_graph STATIC ${SOURCES})
+target_include_directories(only_edge_graph PUBLIC include)

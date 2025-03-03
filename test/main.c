@@ -1,12 +1,19 @@
-#include "auto_diff.h"
+#include "math_func.h"
 #include <stdio.h>
 
 int main() {
-    const ComputationNodePtr x = variable(0);
-    MathFunction *func = mfPow(mfSub(constant(1), mfTan(x)), constant(2));
-
-    x->value = 3.f / 4;
+    ComputationNodePtr x = variable(0);
+    MathFunction *func = mfAdd(mfMul(x, mfExp(x)), mfPow(x, x));
     MathFunction *deriv = derivative(func);
+
+    x->value = 1;
+    float dy = calculate(deriv);
+    float _dy = autoDiff(func);
+    printFunc(func);
+    printf("\n");
     printFunc(deriv);
-    printf("\n%.2f\n", calculate(deriv));
+    printf("\ndy = %f, _dy = %f\n", dy, x->grad);
+    deleteNode(func);
+    deleteNode(deriv);
+    return 0;
 }

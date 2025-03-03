@@ -3,13 +3,20 @@
 
 #include "graph.h"
 
-extern inline void edgeInsert(EdgePtr *prevNextPtr, EdgePtr edge);
+static inline void edgeInsert(EdgePtr *const prevNextPtr, const EdgePtr edge) {
+    edge->next = *prevNextPtr;
+    *prevNextPtr = edge;
+}
 
-extern inline void edgeInsertWithData(EdgePtr *prevNextPtr, VertexId target, EdgeData data);
+static inline EdgePtr edgeUnlink(EdgePtr *const prevNextPtr) {
+    const EdgePtr edge = *prevNextPtr;
+    *prevNextPtr = edge->next;
+    return edge;
+}
 
-extern inline EdgePtr edgeUnlink(EdgePtr *prevNextPtr);
+void edgeInsertWithData(EdgePtr *prevNextPtr, VertexId target, EdgeData data);
 
-extern inline EdgePtr edgeUnlinkWithTarget(EdgePtr *prevNextPtr, VertexId target);
+EdgePtr edgeUnlinkWithTarget(EdgePtr *prevNextPtr, VertexId target);
 
 EdgePtr *edgeFind(EdgePtr *prevNextPtr, VertexId target);
 

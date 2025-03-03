@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.28)
 project(geometry C)
 
 if (WIN32)
-    set(OpenCV_DIR "C:\\_myLibs\\opencv-4.10\\build")
+    if(MSVC)
+        set(OpenCV_DIR "C:\\_myLibs\\opencv-4.10\\build")
+    else ()
+        return()
+    endif ()
 endif ()
 
 find_package(OpenCV REQUIRED core imgproc highgui)

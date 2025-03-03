@@ -1,22 +1,38 @@
-#include "auto_diff.h"
+#include "math_func.h"
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-static float square(const float x) {
+static inline float square(const float x) {
     return x * x;
 }
 
-static ComputationNode *newNode() {
+static inline ComputationNode *newNode() {
     const ComputationNodePtr node = malloc(sizeof(ComputationNode));
     node->link = NULL;
     node->lastNext = &node->link;
+    node->shared = 1;
     return node;
+}
+
+static void _deleteNode(const ComputationNodePtr node) {
+    for(ComputationLink *link = node->link, *next; link != NULL; link = next) {
+        const ComputationNodePtr operand = link->node;
+        if(--operand->shared == 0)
+            deleteNode(operand);
+        next = link->next;
+        free(link);
+    }
+    free(node);
+}
+
+void deleteNode(const ComputationNodePtr node) {
+    if(--node->shared == 0)
+        _deleteNode(node);
 }
 
 ComputationNode *constant(const float value) {
     const ComputationNodePtr node = newNode();
-
     node->type = CONSTANT;
     node->operation = UNKNOWN;
     node->value = value;
@@ -25,7 +41,6 @@ ComputationNode *constant(const float value) {
 
 ComputationNode *variable(const int index) {
     const ComputationNodePtr node = newNode();
-
     node->type = index;
     node->operation = UNKNOWN;
     return node;
@@ -33,7 +48,6 @@ ComputationNode *variable(const int index) {
 
 ComputationNode *intermediate(const OperationType operation) {
     const ComputationNodePtr node = newNode();
-
     node->type = INTERMEDIATE;
     node->operation = operation;
     return node;
@@ -45,6 +59,83 @@ void linkOperand(const ComputationNodePtr node, const ComputationNodePtr operand
     link->next = NULL;
     *node->lastNext = link;
     node->lastNext = &link->next;
+    operand->shared += 1;
+}
+
+ComputationNodePtr mfAdd(const ComputationNodePtr a, const ComputationNodePtr b) {
+    const ComputationNodePtr node = intermediate(ADD);
+    linkOperand(node, a);
+    linkOperand(node, b);
+    return node;
+}
+
+ComputationNodePtr mfInv(const ComputationNodePtr a) {
+    const ComputationNodePtr node = intermediate(INV);
+    linkOperand(node, a);
+    return node;
+}
+
+ComputationNodePtr mfSub(const ComputationNodePtr a, const ComputationNodePtr b) {
+    const ComputationNodePtr node = mfAdd(a, mfInv(b));
+    return node;
+}
+
+ComputationNodePtr mfMul(const ComputationNodePtr a, const ComputationNodePtr b) {
+    const ComputationNodePtr node = intermediate(MUL);
+    linkOperand(node, a);
+    linkOperand(node, b);
+    return node;
+}
+
+ComputationNodePtr mfMul3(const ComputationNodePtr a, const ComputationNodePtr b, const ComputationNodePtr c) {
+    const ComputationNodePtr node = intermediate(MUL);
+    linkOperand(node, a);
+    linkOperand(node, b);
+    linkOperand(node, c);
+    return node;
+}
+
+ComputationNodePtr mfDiv(const ComputationNodePtr a, const ComputationNodePtr b) {
+    const ComputationNodePtr rec = intermediate(REC);
+    linkOperand(rec, b);
+    return mfMul(a, rec);
+}
+
+ComputationNodePtr mfPow(const ComputationNodePtr a, const ComputationNodePtr b) {
+    const ComputationNodePtr node = intermediate(POW);
+    linkOperand(node, a);
+    linkOperand(node, b);
+    return node;
+}
+
+ComputationNodePtr mfExp(const ComputationNodePtr a) {
+    const ComputationNodePtr node = intermediate(EXP);
+    linkOperand(node, a);
+    return node;
+}
+
+ComputationNodePtr mfLog(const ComputationNodePtr a) {
+    const ComputationNodePtr node = intermediate(LOG);
+    linkOperand(node, a);
+    return node;
+}
+
+ComputationNodePtr mfSin(const ComputationNodePtr a) {
+    const ComputationNodePtr node = intermediate(SIN);
+    linkOperand(node, a);
+    return node;
+}
+
+ComputationNodePtr mfCos(const ComputationNodePtr a) {
+    const ComputationNodePtr node = intermediate(COS);
+    linkOperand(node, a);
+    return node;
+}
+
+ComputationNodePtr mfTan(const ComputationNodePtr a) {
+    const ComputationNodePtr node = intermediate(TAN);
+    linkOperand(node, a);
+    return node;
 }
 
 float calculate(MathFunction *const func) {
@@ -286,9 +377,16 @@ MathFunction *derivative(const MathFunction *func) {
             diff = mfInv(derivative(operand));
             break;
         case MUL:
-            diff = intermediate(MUL);
+            diff = intermediate(ADD);
             do {
-                /* ... */
+                const ComputationNodePtr mul = intermediate(MUL);
+                for(const ComputationLink *_link = func->link; _link != NULL; _link = _link->next) {
+                    if(_link == link)
+                        linkOperand(mul, derivative(link->node));
+                    else
+                        linkOperand(mul, _link->node);
+                }
+                linkOperand(diff, mul);
                 link = link->next;
             } while (link != NULL);
             break;
