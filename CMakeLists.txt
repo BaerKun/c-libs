@@ -16,4 +16,4 @@ add_subdirectory(geometry)
 add_subdirectory(test)
 
 # tmp
-#add_executable(tmp tmp.c)
+add_executable(tmp tmp.c)
