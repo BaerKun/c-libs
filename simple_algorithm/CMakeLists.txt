@@ -4,7 +4,7 @@ project(Algorithm)
 
 include_directories(include)
 
-file(GLOB SOURCES "*.c")
+file(GLOB SOURCES "src/*.c")
 
 add_library(algorithm STATIC ${SOURCES})
 target_include_directories(algorithm PRIVATE ../tree/include ../graph/include)
