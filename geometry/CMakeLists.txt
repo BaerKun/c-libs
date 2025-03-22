@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(geometry C)
+project(geometry C CXX)
 
 if (WIN32)
     if(MSVC)

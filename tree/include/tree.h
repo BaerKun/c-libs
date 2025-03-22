@@ -3,14 +3,22 @@
 
 #include <tree_struct.h>
 
-extern inline TreeNodePtr treeNewNode(DataType data);
+TreeNodePtr treeNewNode(DataType data);
 
-extern inline void treeInsertNode(TreeNodePtr *node2child, TreeNodePtr node);
-
-extern inline void treeInsertData(TreeNodePtr *node2child, DataType data);
-
-extern inline TreeNodePtr treeUnlink(TreeNodePtr *node2child);
+void treeInsertData(TreeNodePtr *node2child, DataType data);
 
 void treeDestroy(TreeNodePtr root);
+
+static inline void treeInsertNode(TreeNodePtr *const node2child, const TreeNodePtr node) {
+    node->next = *node2child;
+    *node2child = node;
+}
+
+static inline TreeNodePtr treeUnlink(TreeNodePtr *const node2child) {
+    const TreeNodePtr node = *node2child;
+    *node2child = node->next;
+    node->next = 0;
+    return node;
+}
 
 #endif //TREE_H

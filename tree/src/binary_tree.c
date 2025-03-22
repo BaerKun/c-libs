@@ -2,12 +2,12 @@
 #include <tree.h>
 #include <stdlib.h>
 
-inline void btDestroy(const TreeNodePtr root) {
-    treeDestroy(root);
+TreeNodePtr btNewNode(DataType data){
+    return treeNewNode(data);
 }
 
-inline TreeNodePtr btNewNode(const DataType data) {
-    return treeNewNode(data);
+void btDestroy(TreeNodePtr root){
+    treeDestroy(root);
 }
 
 TreeNodePtr btUnlink(TreeNodePtr *const parent2child, TreeNodePtr (*if2children)(TreeNodePtr *)) {
@@ -53,7 +53,7 @@ void btInsertNode(TreeNodePtr *const parent2child, const TreeNodePtr node) {
     }
 }
 
-inline void btInsertData(TreeNodePtr *const parent2child, const DataType data) {
+void btInsertData(TreeNodePtr *const parent2child, const DataType data) {
     const TreeNodePtr node = btNewNode(data);
     btInsertNode(parent2child, node);
 }

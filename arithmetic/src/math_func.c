@@ -76,7 +76,6 @@ static inline void deleteAutoConstInter(const ComputationNodePtr node) {
         free(node);
 }
 
-
 static inline float square(const float x) {
     return x * x;
 }
@@ -89,7 +88,8 @@ static inline ComputationNodePtr add_(const ComputationNodePtr a, const Computat
 }
 
 ComputationNodePtr mfAdd(const ComputationNodePtr a, const ComputationNodePtr b) {
-    switch ((b->type == CONSTANT) << 1 | a->type == CONSTANT) {
+    float value;
+    switch ((b->type == CONSTANT) << 1 | (a->type == CONSTANT)) {
         case 0:
             return add_(a, b);
         case 1:
@@ -103,7 +103,7 @@ ComputationNodePtr mfAdd(const ComputationNodePtr a, const ComputationNodePtr b)
             deleteAutoConstInter(b);
             return a;
         default:
-            const float value = a->value + b->value;
+            value = a->value + b->value;
             deleteAutoConstInter(a);
             deleteAutoConstInter(b);
             return autoConstant(value);
@@ -134,7 +134,8 @@ static inline ComputationNodePtr mul_(const ComputationNodePtr a, const Computat
 }
 
 ComputationNodePtr mfMul(const ComputationNodePtr a, const ComputationNodePtr b) {
-    switch ((b->type == CONSTANT) << 1 | a->type == CONSTANT) {
+    float value;
+    switch ((b->type == CONSTANT) << 1 | (a->type == CONSTANT)) {
         case 0:
             return mul_(a, b);
         case 1:
@@ -158,7 +159,7 @@ ComputationNodePtr mfMul(const ComputationNodePtr a, const ComputationNodePtr b)
             }
             return mul_(a, b);
         default:
-            const float value = a->value * b->value;
+            value = a->value * b->value;
             deleteAutoConstInter(a);
             deleteAutoConstInter(b);
             return autoConstant(value);
@@ -189,7 +190,8 @@ static inline ComputationNodePtr pow_(const ComputationNodePtr a, const Computat
 }
 
 ComputationNodePtr mfPow(const ComputationNodePtr a, const ComputationNodePtr b) {
-    switch ((b->type == CONSTANT) << 1 | a->type == CONSTANT) {
+    float value;
+    switch ((b->type == CONSTANT) << 1 | (a->type == CONSTANT)) {
         case 0:
             return pow_(a, b);
         case 1:
@@ -210,7 +212,7 @@ ComputationNodePtr mfPow(const ComputationNodePtr a, const ComputationNodePtr b)
             }
             return pow_(a, b);
         default:
-            const float value = powf(a->value, b->value);
+            value = powf(a->value, b->value);
             deleteAutoConstInter(a);
             deleteAutoConstInter(b);
             return autoConstant(value);
@@ -409,7 +411,7 @@ static void backward(const MathFunction *const func, float grad) {
             operand[0]->grad += grad;
             backward(operand[0], grad);
         default:
-
+            break;
     }
 }
 
@@ -519,6 +521,6 @@ void mfPrint(const MathFunction *const func) {
             mfPrint(operand[0]);
             putchar(')');
         default:
-
+            break;
     }
 }

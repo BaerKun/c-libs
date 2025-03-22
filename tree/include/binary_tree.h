@@ -3,7 +3,7 @@
 
 #include <tree_struct.h>
 
-extern inline TreeNodePtr btNewNode(DataType data);
+TreeNodePtr btNewNode(DataType data);
 
 void btDestroy(TreeNodePtr root);
 
@@ -13,6 +13,6 @@ void btDeleteNode(TreeNodePtr *parent2child, TreeNodePtr (*if2children)(TreeNode
 
 void btInsertNode(TreeNodePtr *parent2child, TreeNodePtr node);
 
-extern inline void btInsertData(TreeNodePtr *parent2child, DataType data);
+void btInsertData(TreeNodePtr *parent2child, DataType data);
 
 #endif //TREE_BINARY_TREE_H

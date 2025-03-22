@@ -30,17 +30,17 @@ TreeNodePtr *bstFindMax(TreeNodePtr *const root) {
     return parent2child;
 }
 
-inline TreeNodePtr bstUnlinkMax(TreeNodePtr *const root) {
+TreeNodePtr bstUnlinkMax(TreeNodePtr *const root) {
     TreeNodePtr *node2max = bstFindMax(root);
     return btUnlink(node2max, NULL);
 }
 
-inline void bstInsertNode(TreeNodePtr *const root, const TreeNodePtr node) {
+void bstInsertNode(TreeNodePtr *const root, const TreeNodePtr node) {
     TreeNodePtr *parent2child = bstFind(root, node->data);
     btInsertNode(parent2child, node);
 }
 
-inline void bstInsertData(TreeNodePtr *const root, const DataType data) {
+void bstInsertData(TreeNodePtr *const root, const DataType data) {
     TreeNodePtr *parent2child = bstFind(root, data);
     btInsertData(parent2child, data);
 }
@@ -69,11 +69,11 @@ static TreeNodePtr if2childrenCallback(TreeNodePtr *const parent2child) {
     return node;
 }
 
-inline TreeNodePtr bstUnlink(TreeNodePtr *const parent2child) {
+TreeNodePtr bstUnlink(TreeNodePtr *const parent2child) {
     return btUnlink(parent2child, if2childrenCallback);
 }
 
-inline TreeNodePtr bstUnlinkWithData(TreeNodePtr *const root, const DataType data) {
+TreeNodePtr bstUnlinkWithData(TreeNodePtr *const root, const DataType data) {
     TreeNodePtr *const parent2child = bstFind(root, data);
     return bstUnlink(parent2child);
 }
