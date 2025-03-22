@@ -1,17 +1,7 @@
+#include <long_long_long.h>
 #include <stdio.h>
-#include <string.h>
-#include <stdint.h>
 #include <stdlib.h>
 
-void lldMov(uint8_t *a, const uint8_t *b, const uint32_t size) {
-    memcpy(a, b, size);
-}
-
-void lldSet(uint8_t *a, const uint8_t val, const uint32_t size) {
-    memset(a, val, size);
-}
-
-// a > b -> 1; a == b -> 0; a < b -> -1
 int8_t lldComp(const uint8_t *a, const uint8_t *b, const uint32_t size) {
     const uint8_t *aptr = a + size, *bptr = b + size;
 
@@ -26,7 +16,7 @@ int8_t lldComp(const uint8_t *a, const uint8_t *b, const uint32_t size) {
     return 0;
 }
 
-void lldAdd(uint8_t *output, const uint8_t *input1, const uint8_t *input2, const uint32_t size) {
+void lllAdd(uint8_t *output, const uint8_t *input1, const uint8_t *input2, const uint32_t size) {
     uint16_t carry = 0;
     uint8_t *outptr = output;
     const uint8_t *inptr1 = input1, *inptr2 = input2, *end = output + size;
@@ -40,7 +30,7 @@ void lldAdd(uint8_t *output, const uint8_t *input1, const uint8_t *input2, const
     } while (++outptr != end);
 }
 
-void lldAdd32(uint8_t *output, const uint8_t *input1, const uint32_t input2, const uint32_t size) {
+void lllAdd32(uint8_t *output, const uint8_t *input1, const uint32_t input2, const uint32_t size) {
     uint64_t buffer = input2;
     uint8_t *outptr = output;
     const uint8_t *inptr = input1,
@@ -55,7 +45,7 @@ void lldAdd32(uint8_t *output, const uint8_t *input1, const uint32_t input2, con
     }
 }
 
-void lldComplement(uint8_t *out, const uint8_t *in, const uint32_t size) {
+void lllComplement(uint8_t *out, const uint8_t *in, const uint32_t size) {
     const uint8_t *inptr = in, *end = in + size;
     uint8_t *outptr = out;
 
@@ -76,14 +66,14 @@ void lldComplement(uint8_t *out, const uint8_t *in, const uint32_t size) {
     }
 }
 
-void lldSub(uint8_t *output, const uint8_t *minuend, const uint8_t *subtracted, const uint32_t size) {
+void lllSub(uint8_t *output, const uint8_t *minuend, const uint8_t *subtracted, const uint32_t size) {
     uint8_t *complement = malloc(size);
-    lldComplement(complement, subtracted, size);
-    lldAdd(output, minuend, complement, size);
+    lllComplement(complement, subtracted, size);
+    lllAdd(output, minuend, complement, size);
     free(complement);
 }
 
-void lldMul(uint8_t *output, const uint8_t *input1, const uint8_t *input2, const uint32_t size) {
+void lllMul(uint8_t *output, const uint8_t *input1, const uint8_t *input2, const uint32_t size) {
     uint32_t *temp = calloc(size, 4);
 
     for (int j, i = 0; i != size; ++i) {
@@ -104,7 +94,7 @@ void lldMul(uint8_t *output, const uint8_t *input1, const uint8_t *input2, const
     free(temp);
 }
 
-void lldMul32(uint8_t *output, const uint8_t *input1, const uint32_t input2, const uint32_t size) {
+void lllMul32(uint8_t *output, const uint8_t *input1, const uint32_t input2, const uint32_t size) {
     uint8_t *outptr = output;
     const uint8_t *inptr = input1, *end = input1 + size;
     uint64_t tmp = 0;
@@ -117,7 +107,7 @@ void lldMul32(uint8_t *output, const uint8_t *input1, const uint32_t input2, con
     }
 }
 
-const uint8_t *lldHigh(const uint8_t *a, const uint32_t size) {
+const uint8_t *lllHigh(const uint8_t *a, const uint32_t size) {
     const uint8_t *ptr = a + size;
 
     while (--ptr != a && *ptr == 0);
@@ -125,45 +115,45 @@ const uint8_t *lldHigh(const uint8_t *a, const uint32_t size) {
     return ptr;
 }
 
-void lldDiv8(uint8_t *quotient, const uint8_t *dividend, const uint8_t divisor, uint8_t *remainder, const uint32_t size) {
+void lllDiv8(uint8_t *quotient, const uint8_t *dividend, const uint8_t divisor, uint8_t *remainder, const uint32_t size) {
     if (divisor == 0) {
         fprintf(stderr, "Division by zero!\n");
         return;
     }
 
     uint8_t *quot_ptr = quotient + size;
-    const uint8_t *divd_ptr = dividend + size;
-    uint16_t divd_tmp = 0;
+    const uint8_t *dividend_ptr = dividend + size;
+    uint16_t dividend_tmp = 0;
 
     while (quot_ptr != quotient) {
         --quot_ptr;
-        --divd_ptr;
-        divd_tmp = divd_tmp << 8 | *divd_ptr;
+        --dividend_ptr;
+        dividend_tmp = dividend_tmp << 8 | *dividend_ptr;
         if(quotient != NULL)
-            *quot_ptr = divd_tmp / divisor;
-        divd_tmp = divd_tmp % divisor;
+            *quot_ptr = dividend_tmp / divisor;
+        dividend_tmp = dividend_tmp % divisor;
     }
 
     if (remainder != NULL)
-        *remainder = divd_tmp;
+        *remainder = dividend_tmp;
 }
 
-void lldDiv(uint8_t *quotient, const uint8_t *dividend, const uint8_t *divisor, uint8_t *remainder, const uint32_t size) {
-    const uint8_t *divisor_high = lldHigh(divisor, size);
-    const uint32_t dividend_size = lldHigh(dividend, size) - dividend + 1;
+void lllDiv(uint8_t *quotient, const uint8_t *dividend, const uint8_t *divisor, uint8_t *remainder, const uint32_t size) {
+    const uint8_t *divisor_high = lllHigh(divisor, size);
+    const uint32_t dividend_size = lllHigh(dividend, size) - dividend + 1;
     const uint32_t divisor_size = divisor_high - divisor + 1;
 
     if (divisor_size == 1) {
         if(remainder != NULL)
-            lldSet(remainder, 0, size);
+            lllSet(remainder, 0, size);
         if(quotient != NULL)
-            lldSet(quotient + dividend_size, 0, size - dividend_size);
-        lldDiv8(quotient, dividend, *divisor, remainder, dividend_size);
+            lllSet(quotient + dividend_size, 0, size - dividend_size);
+        lllDiv8(quotient, dividend, *divisor, remainder, dividend_size);
         return;
     }
 
     if(quotient != NULL)
-        lldSet(quotient, 0, size);
+        lllSet(quotient, 0, size);
     if (dividend_size < divisor_size)
         return;
 
@@ -177,8 +167,8 @@ void lldDiv(uint8_t *quotient, const uint8_t *dividend, const uint8_t *divisor, 
     uint8_t *divisor_complement = malloc(divisor_size_plus * 2);
     uint8_t *subtracted_buffer = divisor_complement + divisor_size_plus;
 
-    lldMov(remainder_, dividend, size);
-    lldComplement(divisor_complement, divisor, divisor_size_plus);
+    lllMov(remainder_, dividend, size);
+    lllComplement(divisor_complement, divisor, divisor_size_plus);
 
     for (uint8_t *ptr = quotient + dividend_size - divisor_size; ptr >= quotient; --ptr, --remainder_high) {
         dividend_16 = dividend_16 << 8 | *remainder_high;
@@ -190,18 +180,18 @@ void lldDiv(uint8_t *quotient, const uint8_t *dividend, const uint8_t *divisor, 
             continue;
 
         uint8_t *remainder_low = remainder_high - divisor_size + 1;
-        lldMul32(subtracted_buffer, divisor, quotient_tmp, divisor_size_plus);
+        lllMul32(subtracted_buffer, divisor, quotient_tmp, divisor_size_plus);
 
         if (lldComp(subtracted_buffer, remainder_low, divisor_size_plus) == 1) {
-            lldAdd(subtracted_buffer, subtracted_buffer, divisor_complement, divisor_size_plus);
+            lllAdd(subtracted_buffer, subtracted_buffer, divisor_complement, divisor_size_plus);
             --quotient_tmp;
         }
 
         if(quotient != NULL)
             *ptr = quotient_tmp;
 
-        lldComplement(subtracted_buffer, subtracted_buffer, divisor_size_plus);
-        lldAdd(remainder_low, remainder_low, subtracted_buffer, divisor_size_plus);
+        lllComplement(subtracted_buffer, subtracted_buffer, divisor_size_plus);
+        lllAdd(remainder_low, remainder_low, subtracted_buffer, divisor_size_plus);
         dividend_16 = *remainder_high;
     }
 
@@ -210,22 +200,22 @@ void lldDiv(uint8_t *quotient, const uint8_t *dividend, const uint8_t *divisor, 
         free(remainder_);
 }
 
-void lldPrint16(const uint8_t *a, const uint32_t size) {
-    const uint8_t *ptr = lldHigh(a, size);
+void lllPrint16(const uint8_t *a, const uint32_t size) {
+    const uint8_t *ptr = lllHigh(a, size);
     do {
         printf("%02x", *ptr);
     } while (ptr-- != a);
 }
 
-void lldPrint10(const uint8_t *a, const uint32_t size) {
+void lllPrint10(const uint8_t *a, const uint32_t size) {
     uint8_t *buffer = malloc(size + (int)(size * 8 * 0.301029995664) + 1);
     uint8_t *stack_buffer = buffer + size;
     uint8_t *top = stack_buffer;
 
-    lldMov(buffer, a, size);
-    const uint8_t *high_ptr = lldHigh(buffer, size);
+    lllMov(buffer, a, size);
+    const uint8_t *high_ptr = lllHigh(buffer, size);
     do {
-        lldDiv8(buffer, buffer, 10, top, size);
+        lllDiv8(buffer, buffer, 10, top, size);
         ++top;
         if(*high_ptr == 0) {
             if(high_ptr == buffer)
@@ -242,13 +232,13 @@ void lldPrint10(const uint8_t *a, const uint32_t size) {
     free(buffer);
 }
 
-void lldInput10(uint8_t *a, const uint8_t size) {
-    lldSet(a, 0, size);
+void lllInput10(uint8_t *a, const uint8_t size) {
+    lllSet(a, 0, size);
     while (1){
-        const char c = getchar();
+        const int c = getchar();
         if(c < '0' || c > '9')
             break;
-        lldMul32(a, a, 10, size);
-        lldAdd32(a, a, c - '0', size);
+        lllMul32(a, a, 10, size);
+        lllAdd32(a, a, c - '0', size);
     }
 }
